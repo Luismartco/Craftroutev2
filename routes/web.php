@@ -10,3 +10,7 @@ Route::get('/login', function () {
     return Inertia::render('Login'); // Renderiza Login.jsx
 })->name('login');
 
+Route::get('/register', function () {
+    return Inertia::render('Register'); // Renderiza Login.jsx
+})->name('register');
+

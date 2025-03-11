@@ -1,13 +1,13 @@
 import React from 'react';
 import MainLayout from '../Layouts/MainLayout';
-import MainLogin from '@/Components/login/Login';
+import MainRegister from '@/Components/register/Register';
 
-const Login = () => {
+const Register = () => {
     return (
         <MainLayout>
-                <MainLogin />
+                <MainRegister />
         </MainLayout>
     );
 };
 
-export default Login;
+export default Register;
