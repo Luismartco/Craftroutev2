@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function MainRegister() {
+  const navigate = useNavigate();
   const [role, setRole] = useState("cliente");
   const [location, setLocation] = useState({ lat: "", lon: "" });
 
@@ -47,8 +49,12 @@ export default function MainRegister() {
             <input type="text" placeholder="Barrio de residencia" className="w-full p-3 mb-4 border border-gray-300 rounded" />
             <input type="text" placeholder="Dirección" className="w-full p-3 mb-4 border border-gray-300 rounded" />
             <input type="text" placeholder="Teléfono de contacto" className="w-full p-3 mb-4 border border-gray-300 rounded" />
-            <button onClick={getLocation} className="w-full bg-[#4B3A3A] text-white py-3 rounded hover:bg-blue-600 transition mb-4">Obtener ubicación GPS</button>
-            <p className="text-sm text-[#2B1F1F] text-center mb-2">Los siguientes campos son obligatorios, debe darle en el botón de ‘Obtener’ y aceptar en el aviso para tener en consideración su ubicación GPS.</p>
+            <button onClick={getLocation} className="w-full bg-[#4B3A3A] text-white py-3 rounded hover:bg-blue-600 transition mb-4">
+              Obtener ubicación GPS
+            </button>
+            <p className="text-sm text-[#2B1F1F] text-center mb-4">
+              Los siguientes campos son obligatorios, debe darle en el botón de 'Obtener ubicación GPS' y luego 'Permitir' en el aviso para tener en consideración su ubicación GPS.
+            </p>
             <div className="w-full flex justify-between">
               <input type="text" value={location.lat} readOnly placeholder="Latitud" className="w-[48%] p-3 border border-gray-300 rounded bg-gray-100" />
               <input type="text" value={location.lon} readOnly placeholder="Longitud" className="w-[48%] p-3 border border-gray-300 rounded bg-gray-100" />
@@ -57,9 +63,14 @@ export default function MainRegister() {
         ) : (
           <input type="text" placeholder="Ciudad de residencia" className="w-full p-3 mb-4 border border-gray-300 rounded" />
         )}
-        <button className="w-full bg-[#2B1F1F] text-white py-4 rounded hover:bg-opacity-90 transition mt-4">Registrarse</button>
+        <button className="w-full bg-[#2B1F1F] text-white py-4 rounded hover:bg-opacity-90 transition mt-4">
+          Registrarse
+        </button>
         <p className="text-center text-sm text-gray-600 mt-4">
-          ¿Ya tienes cuenta? <a href="/login" className="text-blue-600 hover:underline">Inicia sesión</a>
+          ¿Ya tienes cuenta?{" "}
+          <button onClick={() => navigate("/login")} className="text-blue-600 hover:underline">
+            Inicia sesión
+          </button>
         </p>
       </div>
     </div>
