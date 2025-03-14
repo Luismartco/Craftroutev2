@@ -8,6 +8,7 @@ const FlexTricks = () => {
             <div class="card card2"></div>
             <div class="card card3"></div>
             <div class="card card4"></div>
+            <div class="card card5"></div>
         </div>
     );
 };
