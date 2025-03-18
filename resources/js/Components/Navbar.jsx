@@ -22,7 +22,7 @@ const Navbar = () => {
                         key={index}
                         onClick={() => navigate(item.path)}
                         className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
-                                   hover:bg-[#4B3A3A] active:bg-[#614545]"
+                                hover:bg-[#4B3A3A] active:bg-[#614545]"
                     >
                         {item.name}
                     </button>
