@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 
-const Navbar = () => {
+const Navbar = ({ auth = {} }) => {
     return (
         <nav>
             {/* Primera parte con el título */}
@@ -11,25 +11,51 @@ const Navbar = () => {
 
             {/* Segunda parte con los botones */}
             <div className="bg-[#2B1F1F] flex justify-center py-3">
-                {[
-                    { name: "Inicio", path: "/" },
-                    { name: "Blog", path: "/blog" },
-                    { name: "Ingreso", path: "/login" }
-                ].map((item, index) => (
+                <Link
+                    href="/"
+                    className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545]"
+                >
+                    Inicio
+                </Link>
+                <Link
+                    href="/blog"
+                    className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545]"
+                >
+                    Blog
+                </Link>
+
+                {/* Validación para evitar errores si auth es undefined */}
+                {auth.user ? (
                     <Link
-                        key={index}
-                        href={item.path}
-                        className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
-                                hover:bg-[#4B3A3A] active:bg-[#614545]"
+                        href={route('dashboard')}
+                        className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
+                                hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
                     >
-                        {item.name}
+                        Mi perfil
                     </Link>
-                ))}
+                ) : (
+                    <>
+                        <Link
+                            href={route('login')}
+                            className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
+                                    hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                        >
+                            Iniciar sesión
+                        </Link>
+                        <Link
+                            href={route('register')}
+                            className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
+                                    hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                        >
+                            Registrarse
+                        </Link>
+                    </>
+                )}
             </div>
         </nav>
     );
 };
 
 export default Navbar;
-
-
