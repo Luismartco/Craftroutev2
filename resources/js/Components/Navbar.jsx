@@ -1,9 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from '@inertiajs/react';
 
 const Navbar = () => {
-    const navigate = useNavigate();
-
     return (
         <nav>
             {/* Primera parte con el título */}
@@ -16,16 +14,16 @@ const Navbar = () => {
                 {[
                     { name: "Inicio", path: "/" },
                     { name: "Blog", path: "/blog" },
-                    { name: "Ingreso", path: "/ingreso" }
+                    { name: "Ingreso", path: "/login" }
                 ].map((item, index) => (
-                    <button
+                    <Link
                         key={index}
-                        onClick={() => navigate(item.path)}
+                        href={item.path}
                         className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
                                 hover:bg-[#4B3A3A] active:bg-[#614545]"
                     >
                         {item.name}
-                    </button>
+                    </Link>
                 ))}
             </div>
         </nav>
@@ -33,4 +31,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
