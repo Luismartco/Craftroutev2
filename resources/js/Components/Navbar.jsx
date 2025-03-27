@@ -30,8 +30,8 @@ const Navbar = ({ auth = {} }) => {
                 {auth.user ? (
                     <Link
                         href={route('dashboard')}
-                        className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
-                                hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                        className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545]"
                     >
                         Mi perfil
                     </Link>
@@ -39,15 +39,15 @@ const Navbar = ({ auth = {} }) => {
                     <>
                         <Link
                             href={route('login')}
-                            className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
-                                    hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                            className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545]"
                         >
                             Iniciar sesión
                         </Link>
                         <Link
                             href={route('register')}
-                            className="mx-4 rounded-md px-4 py-2 text-white ring-1 ring-transparent transition 
-                                    hover:text-white/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                            className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545]"
                         >
                             Registrarse
                         </Link>
