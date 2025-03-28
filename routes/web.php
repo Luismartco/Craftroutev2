@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -14,9 +14,38 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+
+        // Redirigir según el rol del usuario
+        if ($user->role === 'administrador') {
+            return redirect()->route('dashboard.admin');
+        } elseif ($user->role === 'artesano') {
+            return redirect()->route('dashboard.artesano');
+        } else {
+            return redirect()->route('dashboard.cliente');
+        }
+    })->name('dashboard');
+
+    Route::get('/dashboard/admin', function () {
+        return Inertia::render('Dashboard/Admin');
+    })->name('dashboard.admin');
+
+    Route::get('/dashboard/artesano', function () {
+        return Inertia::render('Dashboard/Artesano');
+    })->name('dashboard.artesano');
+
+    Route::get('/dashboard/cliente', function () {
+        return Inertia::render('Dashboard/Cliente');
+    })->name('dashboard.cliente');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
