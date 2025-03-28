@@ -1,18 +1,23 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import React from 'react';
+import Navbar from '../Components/Navbar';
+import Footer from '../Components/Footer';
 
-export default function GuestLayout({ children }) {
+const GuestLayout = ({ children, auth, fullWidth = false }) => {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0 dark:bg-gray-900">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
-                </Link>
-            </div>
-
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800">
-                {children}
-            </div>
+        <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-[#f5f5f5] font-sans">
+            <Navbar auth={auth} />
+            <main>
+                {fullWidth ? children : (
+                    <div className="flex justify-center items-center min-h-[calc(100vh-200px)] p-6">
+                        <div className="bg-white p-12 rounded-lg shadow-lg w-[480px] flex flex-col items-center">
+                            {children}
+                        </div>
+                    </div>
+                )}
+            </main>
+            <Footer />
         </div>
     );
-}
+};
+
+export default GuestLayout;

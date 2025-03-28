@@ -15,7 +15,6 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('login'), {
             onFinish: () => reset('password'),
         });
@@ -24,77 +23,82 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Log in" />
-
+            <h1 className="text-3xl font-bold text-[#2B1F1F] mb-6 text-center">Iniciar Sesión</h1>
+            
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
                     {status}
                 </div>
             )}
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="w-full max-w-md mx-auto">
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        placeholder="Correo electrónico"
+                        className="w-full p-4 mb-5 border border-gray-300 rounded"
                         autoComplete="username"
                         isFocused={true}
                         onChange={(e) => setData('email', e.target.value)}
                     />
-
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
+                <div>
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        placeholder="Contraseña"
+                        className="w-full p-4 mb-6 border border-gray-300 rounded"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
-
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
-                        />
-                        <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                            Remember me
-                        </span>
-                    </label>
+                <div className="mb-4 flex items-center">
+                    <Checkbox
+                        name="remember"
+                        checked={data.remember}
+                        onChange={(e) => setData('remember', e.target.checked)}
+                    />
+                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                        Recuérdame
+                    </span>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
+                {canResetPassword && (
+                    <div className="mb-4 text-right">
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                            className="text-blue-600 hover:underline text-sm"
                         >
-                            Forgot your password?
+                            ¿Olvidaste tu contraseña?
                         </Link>
-                    )}
+                    </div>
+                )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
+                <button
+                    type="submit"
+                    className="w-full bg-[#2B1F1F] text-white py-4 rounded hover:bg-opacity-90 transition"
+                    disabled={processing}
+                >
+                    Iniciar sesión
+                </button>
+
+                <p className="text-center text-sm text-gray-600 mt-4">
+                    ¿No tienes una cuenta?{' '}
+                    <Link href={route('register')} className="text-blue-600 hover:underline">
+                        Regístrate
+                    </Link>
+                </p>
             </form>
         </GuestLayout>
     );
 }
+
