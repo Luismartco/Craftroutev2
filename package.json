@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "bootstrap": "^5.3.3",
+        "framer-motion": "^12.6.3",
         "leaflet": "^1.9.4",
         "react-router-dom": "^7.3.0"
     }
