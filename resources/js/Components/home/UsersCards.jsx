@@ -21,15 +21,22 @@ export default function UserCards() {
             <div key={index} className="w-full h-40 bg-gray-200 rounded-xl" />
           ))
         : users.map((user) => (
-            <div key={user.login.uuid} className="shadow-md rounded-xl p-4 flex flex-col items-center bg-white border">
+            <div
+              key={user.login.uuid}
+              className="shadow-md rounded-xl p-4 flex flex-col items-center bg-white border transition-transform duration-300 hover:scale-105 hover:shadow-xl"
+            >
               <img
                 src={user.picture.large}
                 alt={`${user.name.first} ${user.name.last}`}
                 className="w-24 h-24 rounded-full mb-3 border"
               />
               <div className="text-center">
-                <h3 className="text-lg font-semibold">{user.name.first} {user.name.last}</h3>
-                <p className="text-sm text-gray-500">{user.location.city}, {user.location.country}</p>
+                <h3 className="text-lg font-semibold">
+                  {user.name.first} {user.name.last}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {user.location.city}, {user.location.country}
+                </p>
               </div>
             </div>
           ))}
