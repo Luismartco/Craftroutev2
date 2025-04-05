@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
     
         // Verificar que el usuario tiene un rol y redirigir
         return match ($user->role) {
-            'admi' => redirect()->intended(route('dashboard.admin')),
+            'admin' => redirect()->intended(route('dashboard.admin')),
             'artisan' => redirect()->intended(route('dashboard.artesano')),
             'customer' => redirect()->intended(route('dashboard.cliente')),
         };
