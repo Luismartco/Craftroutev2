@@ -7,19 +7,32 @@ Desarrollar un aplicativo tipo marketplace con sistemas de recomendación basado
 - Evaluar la  funcionalidad y usabilidad en el marketplace mediante la aplicación pruebas estandarizadas
 
 ## Acerca del proyecto
+
+### Gestión de proyectos y diseño:
+- [Jira](https://www.atlassian.com/es/software/jira)
+- [Trello](https://trello.com/)
+- [Figma](https://www.figma.com/)
+
 ### Tecnologias Front-end:
 - [React.js](https://es.react.dev/)
 - [Tailwind](https://tailwindcss.com/)
+- [Inertia.js](https://inertiajs.com/)
   
 ### Tecnologias Back-end:
 - [Laravel v.12](https://laravel.com/)
-- [MySql](https://www.mysql.com/)
-- [Inertia.js](https://inertiajs.com/)
 - (Posible integracion de [Flask](https://flask.palletsprojects.com/en/stable/) a futuro)
 
-## Herramientas de desarrollo:
-- [Figma](https://www.figma.com/)
+### Bases de datos
+- [MySQL](https://www.mysql.com/)
+
+### Entornos de desarrollo:
 - [Laragon](https://laragon.org)
 - [Laravel Herd](https://herd.laravel.com/windows)
+- (Posible integracion de [Docker](https://www.docker.com/) a futuro)
+
+### Control de versiones
 - [Git](https://git-scm.com/)
 - [GitHub](https://github.com/)
+
+### IA
+- (Posible integracion de [Ollama](https://ollama.com/) a futuro)
