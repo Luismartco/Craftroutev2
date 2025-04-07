@@ -23,3 +23,5 @@ composer.json
 /.nova
 /.vscode
 /.zed
+package-lock.json
+package.json
