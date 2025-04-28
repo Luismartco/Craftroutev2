@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\ClienteDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Middleware\CheckRole;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -26,23 +27,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
 
         // Redirigir según el rol del usuario
-        if ($user->role === 'administrador') {
-            return redirect()->route('dashboard.admin');
-        } elseif ($user->role === 'artesano') {
-            return redirect()->route('dashboard.artesano');
-        } else {
-            return redirect()->route('dashboard.cliente');
-        }
+        return match ($user->role) {
+            'admin' => redirect()->route('dashboard.admin.index'),
+            'artisan' => redirect()->route('dashboard.artesano.index'),
+            'customer' => redirect()->route('dashboard.cliente.index'),
+            default => abort(403, 'Rol no válido'),
+        };
     })->name('dashboard');
 
-    // Dashboard de administrador
-    Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
+    // Rutas del administrador
+    Route::middleware([CheckRole::class . ':admin'])->group(function () {
+        Route::prefix('dashboard/admin')->name('dashboard.admin.')->group(function () {
+            Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
+            Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
+            Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+        });
+    });
 
-    // Dashboard de artesano
-    Route::get('/dashboard/artesano', [ArtesanoDashboardController::class, 'index'])->name('dashboard.artesano');
+    // Rutas del artesano
+    Route::middleware([CheckRole::class . ':artisan'])->group(function () {
+        Route::prefix('dashboard/artesano')->name('dashboard.artesano.')->group(function () {
+            Route::get('/', [ArtesanoDashboardController::class, 'index'])->name('index');
+        });
+    });
 
-    // Dashboard de cliente
-    Route::get('/dashboard/cliente', [ClienteDashboardController::class, 'index'])->name('dashboard.cliente');
+    // Rutas del cliente
+    Route::middleware([CheckRole::class . ':customer'])->group(function () {
+        Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
+            Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
+        });
+    });
 });
 
 Route::middleware('auth')->group(function () {

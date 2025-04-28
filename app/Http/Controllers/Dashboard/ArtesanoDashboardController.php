@@ -10,15 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ArtesanoDashboardController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $user = Auth::user();
         
         return Inertia::render('Dashboard/Artesano/Index', [
             'stats' => [
                 'total_productos' => 0,
+                'total_ventas' => 0,
+                'total_pedidos' => 0,
             ],
-            'productos' => [],
         ]);
     }
 

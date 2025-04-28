@@ -13,7 +13,14 @@ class ClienteDashboardController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Dashboard/Cliente/Index');
+        $user = Auth::user();
+        
+        return Inertia::render('Dashboard/Cliente/Index', [
+            'stats' => [
+                'total_pedidos' => 0,
+                'artesanos_favoritos' => 0,
+            ],
+        ]);
     }
 
     public function pedidos()

@@ -1,6 +1,5 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Link } from '@inertiajs/react';
 
 export default function Index({ stats }) {
     return (
@@ -16,6 +15,14 @@ export default function Index({ stats }) {
                                 <div className="bg-white p-6 rounded-lg shadow">
                                     <h3 className="text-lg font-semibold text-gray-700">Total Productos</h3>
                                     <p className="text-3xl font-bold text-indigo-600">{stats.total_productos}</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-lg shadow">
+                                    <h3 className="text-lg font-semibold text-gray-700">Total Ventas</h3>
+                                    <p className="text-3xl font-bold text-indigo-600">{stats.total_ventas}</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-lg shadow">
+                                    <h3 className="text-lg font-semibold text-gray-700">Total Pedidos</h3>
+                                    <p className="text-3xl font-bold text-indigo-600">{stats.total_pedidos}</p>
                                 </div>
                             </div>
 
