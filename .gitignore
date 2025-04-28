@@ -23,6 +23,4 @@ composer.json
 /.nova
 /.vscode
 /.zed
-craftroutev2.test+4-key.pem
-craftroutev2.test+4.pem
 vite.config.js
