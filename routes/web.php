@@ -27,12 +27,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
 
         // Redirigir según el rol del usuario
-        return match ($user->role) {
-            'admin' => redirect()->route('dashboard.admin.index'),
-            'artisan' => redirect()->route('dashboard.artesano.index'),
-            'customer' => redirect()->route('dashboard.cliente.index'),
-            default => abort(403, 'Rol no válido'),
-        };
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('dashboard.admin.index');
+            case 'artisan':
+                return redirect()->route('dashboard.artesano.index');
+            case 'customer':
+                return redirect()->route('dashboard.cliente.index');
+            default:
+                abort(403, 'Rol no válido');
+        }
     })->name('dashboard');
 
     // Rutas del administrador
