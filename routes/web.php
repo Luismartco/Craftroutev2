@@ -1,6 +1,9 @@
 <?php
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Dashboard\AdminDashboardController;
+use App\Http\Controllers\Dashboard\ArtesanoDashboardController;
+use App\Http\Controllers\Dashboard\ClienteDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,7 +16,6 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -33,19 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
     })->name('dashboard');
 
-    Route::get('/dashboard/admin', function () {
-        return Inertia::render('Dashboard/Admin');
-    })->name('dashboard.admin');
+    // Dashboard de administrador
+    Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
 
-    Route::get('/dashboard/artesano', function () {
-        return Inertia::render('Dashboard/Artesano');
-    })->name('dashboard.artesano');
+    // Dashboard de artesano
+    Route::get('/dashboard/artesano', [ArtesanoDashboardController::class, 'index'])->name('dashboard.artesano');
 
-    Route::get('/dashboard/cliente', function () {
-        return Inertia::render('Dashboard/Cliente');
-    })->name('dashboard.cliente');
+    // Dashboard de cliente
+    Route::get('/dashboard/cliente', [ClienteDashboardController::class, 'index'])->name('dashboard.cliente');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
