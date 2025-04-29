@@ -57,4 +57,9 @@ class User extends Authenticatable
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
 }

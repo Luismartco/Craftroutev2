@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
+use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -64,6 +65,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             })->name('recomendaciones');
         });
     });
+
+    Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
+    Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
 
 Route::middleware('auth')->group(function () {

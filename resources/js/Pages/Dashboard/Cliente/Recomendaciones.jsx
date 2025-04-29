@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { router } from '@inertiajs/react';
 
 // Importar las imágenes
 import imagen1 from '../../../../media/recomendaciones/1.jpg';
@@ -31,7 +32,9 @@ const Recomendaciones = () => {
     };
 
     const handleSubmit = () => {
-        console.log('Imágenes seleccionadas:', selectedImages);
+        router.post(route('preferences.store'), {
+            selected_preferences: selectedImages
+        });
     };
 
     const images = [
@@ -63,7 +66,7 @@ const Recomendaciones = () => {
                                                 ? 'ring-4 ring-indigo-500 scale-105' 
                                                 : 'hover:scale-102'
                                         }`}
-                                        onPointerDown={() => toggleSelection(image.id)}
+                                        onClick={() => toggleSelection(image.id)}
                                     >
                                         <img
                                             src={image.src}
@@ -82,7 +85,12 @@ const Recomendaciones = () => {
                             <div className="mt-6 text-center">
                                 <button
                                     onClick={handleSubmit}
-                                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-300"
+                                    disabled={selectedImages.length !== 3}
+                                    className={`inline-flex items-center px-4 py-2 rounded-md transition-colors duration-300 ${
+                                        selectedImages.length === 3
+                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
                                 >
                                     Enviar
                                 </button>
