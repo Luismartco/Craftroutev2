@@ -59,6 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':customer'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
+            Route::get('/recomendaciones', function () {
+                return Inertia::render('Dashboard/Cliente/Recomendaciones');
+            })->name('recomendaciones');
         });
     });
 });

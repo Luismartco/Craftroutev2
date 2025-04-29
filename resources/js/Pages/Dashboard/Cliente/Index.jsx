@@ -1,5 +1,6 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Link } from '@inertiajs/react';
 
 export default function Index({ stats }) {
     return (
@@ -20,6 +21,16 @@ export default function Index({ stats }) {
                                     <h3 className="text-lg font-semibold text-gray-700">Artesanos Favoritos</h3>
                                     <p className="text-3xl font-bold text-indigo-600">{stats.artesanos_favoritos}</p>
                                 </div>
+                            </div>
+
+                            {/* Botón de recomendaciones */}
+                            <div className="mt-6">
+                                <Link
+                                    href={route('dashboard.cliente.recomendaciones')}
+                                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                >
+                                    Ver Recomendaciones
+                                </Link>
                             </div>
                         </div>
                     </div>
