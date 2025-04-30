@@ -20,6 +20,14 @@ class ClienteDashboardController extends Controller
                 'total_pedidos' => 0,
                 'artesanos_favoritos' => 0,
             ],
+            'user' => [
+                'name' => $user->name,
+                'last_name' => $user->last_name,
+                'residence_municipality' => $user->residence_municipality,
+                'phone' => $user->phone,
+                'latitude' => $user->latitude,
+                'longitude' => $user->longitude,
+            ],
         ]);
     }
 
