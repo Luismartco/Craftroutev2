@@ -11,7 +11,7 @@ class AdminDashboardController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Dashboard/Admin', [
+        return Inertia::render('Dashboard/Admin/Index', [
             'stats' => [
                 'total_users' => \App\Models\User::count(),
                 'total_artesanos' => \App\Models\User::where('role', 'artesano')->count(),

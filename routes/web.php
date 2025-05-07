@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
+use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -59,8 +60,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':customer'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
+            Route::get('/recomendaciones', function () {
+                return Inertia::render('Dashboard/Cliente/Recomendaciones');
+            })->name('recomendaciones');
         });
     });
+
+    Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
+    Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
 
 Route::middleware('auth')->group(function () {

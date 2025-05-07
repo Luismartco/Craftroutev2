@@ -57,4 +57,20 @@ class User extends Authenticatable
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    public function pedidosCliente()
+    {
+        return $this->hasMany(Pedido::class, 'cliente_id');
+    }
+
+    public function artesanosFavoritos()
+    {
+        return $this->belongsToMany(User::class, 'artesano_favorito', 'cliente_id', 'artesano_id')
+            ->where('role', 'artisan');
+    }
 }
