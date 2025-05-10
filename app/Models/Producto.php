@@ -11,15 +11,21 @@ class Producto extends Model
     use HasFactory;
 
     protected $fillable = [
-        'artesano_id',
-        'categoria_id',
         'nombre',
         'descripcion',
         'precio',
-        'stock',
-        'imagen',
-        'estado',
+        'cantidad_disponible',
+        'categoria',
+        'municipio_venta',
+        'tecnica_artesanal',
+        'materia_prima',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function artesano(): BelongsTo
     {

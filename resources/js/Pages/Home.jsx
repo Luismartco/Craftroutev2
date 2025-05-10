@@ -10,7 +10,7 @@ const Home = () => {
         <MainLayout>
                     <h1 className="text-[#2B1F1F] text-center py-4 text-2xl font-bold">"Cada pieza, una historia"</h1>
                     <FlexTricks />
-                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros artesanos</h1>
+                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras tiendas</h1>
                     <UserCards />
                     <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos</h1>
                     <ProductList />

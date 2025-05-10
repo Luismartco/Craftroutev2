@@ -53,6 +53,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':artisan'])->group(function () {
         Route::prefix('dashboard/artesano')->name('dashboard.artesano.')->group(function () {
             Route::get('/', [ArtesanoDashboardController::class, 'index'])->name('index');
+            Route::get('/create-producto', [ArtesanoDashboardController::class, 'createProducto'])->name('create-producto');
+            Route::post('/store-producto', [ArtesanoDashboardController::class, 'storeProducto'])->name('store-producto');
+            Route::get('/create-tienda', [ArtesanoDashboardController::class, 'createTienda'])->name('create-tienda');
+            Route::post('/store-tienda', [ArtesanoDashboardController::class, 'storeTienda'])->name('store-tienda');
+            Route::get('/gestionar-tienda', [ArtesanoDashboardController::class, 'gestionarTienda'])->name('gestionar-tienda');
+            Route::get('/edit-tienda', [ArtesanoDashboardController::class, 'editTienda'])->name('edit-tienda');
+            Route::put('/update-tienda', [ArtesanoDashboardController::class, 'updateTienda'])->name('update-tienda');
+            Route::get('/edit-producto/{id}', [ArtesanoDashboardController::class, 'editProducto'])->name('edit-producto');
+            Route::put('/update-producto/{id}', [ArtesanoDashboardController::class, 'updateProducto'])->name('update-producto');
+            Route::delete('/delete-producto/{id}', [ArtesanoDashboardController::class, 'deleteProducto'])->name('delete-producto');
         });
     });
 

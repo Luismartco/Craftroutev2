@@ -73,4 +73,14 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'artesano_favorito', 'cliente_id', 'artesano_id')
             ->where('role', 'artisan');
     }
+
+    public function tienda()
+    {
+        return $this->hasOne(Tienda::class);
+    }
+
+    public function productos()
+    {
+        return $this->hasMany(Producto::class);
+    }
 }
