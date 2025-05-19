@@ -1,9 +1,14 @@
 <?php
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Dashboard\AdminDashboardController;
+use App\Http\Controllers\Dashboard\ArtesanoDashboardController;
+use App\Http\Controllers\Dashboard\ClienteDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Middleware\CheckRole;
+use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -14,7 +19,6 @@ Route::get('/', function () {
     ]);
 });
 
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
@@ -24,28 +28,50 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
 
         // Redirigir según el rol del usuario
-        if ($user->role === 'administrador') {
-            return redirect()->route('dashboard.admin');
-        } elseif ($user->role === 'artesano') {
-            return redirect()->route('dashboard.artesano');
-        } else {
-            return redirect()->route('dashboard.cliente');
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('dashboard.admin.index');
+            case 'artisan':
+                return redirect()->route('dashboard.artesano.index');
+            case 'customer':
+                return redirect()->route('dashboard.cliente.index');
+            default:
+                abort(403, 'Rol no válido');
         }
     })->name('dashboard');
 
-    Route::get('/dashboard/admin', function () {
-        return Inertia::render('Dashboard/Admin');
-    })->name('dashboard.admin');
+    // Rutas del administrador
+    Route::middleware([CheckRole::class . ':admin'])->group(function () {
+        Route::prefix('dashboard/admin')->name('dashboard.admin.')->group(function () {
+            Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
+            Route::get('/categories', function() {
+                return Inertia::render('Dashboard/Admin/Categories');
+            })->name('view-state');
+            Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
+            Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+        });
+    });
 
-    Route::get('/dashboard/artesano', function () {
-        return Inertia::render('Dashboard/Artesano');
-    })->name('dashboard.artesano');
+    // Rutas del artesano
+    Route::middleware([CheckRole::class . ':artisan'])->group(function () {
+        Route::prefix('dashboard/artesano')->name('dashboard.artesano.')->group(function () {
+            Route::get('/', [ArtesanoDashboardController::class, 'index'])->name('index');
+        });
+    });
 
-    Route::get('/dashboard/cliente', function () {
-        return Inertia::render('Dashboard/Cliente');
-    })->name('dashboard.cliente');
+    // Rutas del cliente
+    Route::middleware([CheckRole::class . ':customer'])->group(function () {
+        Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
+            Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
+            Route::get('/recomendaciones', function () {
+                return Inertia::render('Dashboard/Cliente/Recomendaciones');
+            })->name('recomendaciones');
+        });
+    });
+
+    Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
+    Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

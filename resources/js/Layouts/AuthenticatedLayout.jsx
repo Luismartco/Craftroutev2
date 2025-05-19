@@ -105,6 +105,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     href={route('logout')}
                                     method="post"
                                     as="button"
+                                    preserveScroll
                                 >
                                     Log Out
                                 </Dropdown.Link>
@@ -150,6 +151,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 href={route('logout')}
                                 method="post"
                                 as="button"
+                                preserveScroll
                                 className="block text-white px-4 py-2 hover:bg-[#4B3A3A] text-left w-full"
                             >
                                 Log Out
