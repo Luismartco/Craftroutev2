@@ -23,6 +23,6 @@ composer.json
 /.nova
 /.vscode
 /.zed
-package-lock.json
-package.json
+packages-lock.json
+packages.json
 vite.config.js
