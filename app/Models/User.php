@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -35,7 +37,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -55,5 +57,30 @@ class User extends Authenticatable
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
-    
+
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    public function pedidosCliente()
+    {
+        return $this->hasMany(Pedido::class, 'cliente_id');
+    }
+
+    public function artesanosFavoritos()
+    {
+        return $this->belongsToMany(User::class, 'artesano_favorito', 'cliente_id', 'artesano_id')
+            ->where('role', 'artisan');
+    }
+
+    public function tienda()
+    {
+        return $this->hasOne(Tienda::class);
+    }
+
+    public function productos()
+    {
+        return $this->hasMany(Producto::class);
+    }
 }
