@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -10,28 +10,82 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 
 export default function EditProducto({ producto }) {
-    const { data, setData, put, processing, errors } = useForm({
-        nombre: producto.nombre,
-        descripcion: producto.descripcion,
-        precio: producto.precio,
-        cantidad_disponible: producto.cantidad_disponible,
-        categoria: producto.categoria,
-        municipio_venta: producto.municipio_venta,
-        tecnica_artesanal: producto.tecnica_artesanal,
-        materia_prima: producto.materia_prima,
-    });
+    // Función para construir la URL correcta de la imagen (igual que en tu Index)
+    const getImageUrl = (imagePath) => {
+        if (imagePath.startsWith('storage/')) {
+            return `/${imagePath}`;
+        }
+        if (imagePath.startsWith('productos/')) {
+            return `/storage/${imagePath}`;
+        }
+        return `/storage/${imagePath}`;
+    };
+
+    // Inicialización segura de datos con valores por defecto
+    const initialData = {
+        nombre: producto?.nombre || '',
+        descripcion: producto?.descripcion || '',
+        precio: producto?.precio?.toString() || '0',
+        cantidad_disponible: producto?.cantidad_disponible?.toString() || '0',
+        categoria: producto?.categoria || 'tejido',
+        municipio_venta: producto?.municipio_venta || 'morroa',
+        tecnica_artesanal: producto?.tecnica_artesanal || 'telar_horizontal',
+        materia_prima: producto?.materia_prima || 'paja',
+        imagenes_eliminadas: [],
+        imagen_principal: producto?.imagenes?.find(img => img.es_principal)?.id || null,
+        nuevas_imagenes: []
+    };
+
+    const { data, setData, put, processing, errors, reset } = useForm(initialData);
 
     const [previewImages, setPreviewImages] = useState([]);
+    const [existingImages, setExistingImages] = useState(producto?.imagenes || []);
+
+    // Limpiar las URLs de vista previa al desmontar
+    useEffect(() => {
+        return () => {
+            previewImages.forEach(image => URL.revokeObjectURL(image.preview));
+        };
+    }, [previewImages]);
+
+    // Resetear formulario cuando cambia el producto
+    useEffect(() => {
+        reset(initialData);
+        setExistingImages(producto?.imagenes || []);
+        setPreviewImages([]);
+    }, [producto]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route('dashboard.artesano.update-producto', producto.id));
+
+        const formData = new FormData();
+        Object.keys(data).forEach(key => {
+            if (key !== 'nuevas_imagenes') {
+                formData.append(key, data[key]);
+            }
+        });
+
+        data.nuevas_imagenes.forEach(file => {
+            formData.append('nuevas_imagenes[]', file);
+        });
+
+        put(route('dashboard.artesano.update-producto', producto.id), {
+            data: formData,
+            onSuccess: () => {
+                setPreviewImages([]);
+            },
+            preserveScroll: true,
+            forceFormData: true,
+            onError: (errors) => {
+                console.log('Errores del servidor:', errors);
+            }
+        });
     };
 
-    const handleImageChange = (e) => {
+    const handleNewImages = (e) => {
         const files = Array.from(e.target.files);
-        const totalImages = previewImages.length + files.length;
-        
+        const totalImages = existingImages.length - data.imagenes_eliminadas.length + previewImages.length + files.length;
+
         if (totalImages > 5) {
             alert('Solo puedes tener un máximo de 5 imágenes');
             return;
@@ -43,15 +97,35 @@ export default function EditProducto({ producto }) {
         }));
 
         setPreviewImages(prev => [...prev, ...newPreviewImages]);
+        setData('nuevas_imagenes', [...data.nuevas_imagenes, ...files]);
     };
 
-    const removeImage = (index) => {
-        setPreviewImages(prev => {
-            const newImages = [...prev];
-            URL.revokeObjectURL(newImages[index].preview);
-            newImages.splice(index, 1);
-            return newImages;
-        });
+    const removeNewImage = (index) => {
+        const newImages = [...data.nuevas_imagenes];
+        const newPreviews = [...previewImages];
+
+        URL.revokeObjectURL(newPreviews[index].preview);
+        newImages.splice(index, 1);
+        newPreviews.splice(index, 1);
+
+        setData('nuevas_imagenes', newImages);
+        setPreviewImages(newPreviews);
+    };
+
+    const removeExistingImage = (imageId) => {
+        setData('imagenes_eliminadas', [...data.imagenes_eliminadas, imageId]);
+
+        if (data.imagen_principal === imageId) {
+            setData('imagen_principal', null);
+        }
+    };
+
+    const restoreExistingImage = (imageId) => {
+        setData('imagenes_eliminadas', data.imagenes_eliminadas.filter(id => id !== imageId));
+    };
+
+    const setMainImage = (imageId) => {
+        setData('imagen_principal', imageId);
     };
 
     return (
@@ -63,7 +137,7 @@ export default function EditProducto({ producto }) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold">Editar Producto</h2>
+                                <h2 className="text-2xl font-bold">Editar Producto: {producto.nombre}</h2>
                                 <Link
                                     href={route('dashboard.artesano.gestionar-tienda')}
                                     className="text-indigo-600 hover:text-indigo-900"
@@ -74,8 +148,9 @@ export default function EditProducto({ producto }) {
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Campos del formulario */}
                                     <div>
-                                        <InputLabel htmlFor="nombre" value="Nombre del Producto" />
+                                        <InputLabel htmlFor="nombre" value="Nombre del Producto *" />
                                         <TextInput
                                             id="nombre"
                                             name="nombre"
@@ -88,7 +163,7 @@ export default function EditProducto({ producto }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="precio" value="Precio" />
+                                        <InputLabel htmlFor="precio" value="Precio *" />
                                         <TextInput
                                             id="precio"
                                             name="precio"
@@ -97,12 +172,14 @@ export default function EditProducto({ producto }) {
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData('precio', e.target.value)}
                                             required
+                                            min="0"
+                                            step="0.01"
                                         />
                                         <InputError message={errors.precio} className="mt-2" />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="cantidad_disponible" value="Cantidad Disponible" />
+                                        <InputLabel htmlFor="cantidad_disponible" value="Cantidad Disponible *" />
                                         <TextInput
                                             id="cantidad_disponible"
                                             name="cantidad_disponible"
@@ -111,12 +188,13 @@ export default function EditProducto({ producto }) {
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData('cantidad_disponible', e.target.value)}
                                             required
+                                            min="0"
                                         />
                                         <InputError message={errors.cantidad_disponible} className="mt-2" />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="categoria" value="Categoría" />
+                                        <InputLabel htmlFor="categoria" value="Categoría *" />
                                         <SelectInput
                                             id="categoria"
                                             name="categoria"
@@ -125,7 +203,6 @@ export default function EditProducto({ producto }) {
                                             onChange={(e) => setData('categoria', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione una categoría</option>
                                             <option value="tejido">Tejido</option>
                                             <option value="madera">Madera</option>
                                             <option value="ceramica">Cerámica</option>
@@ -135,7 +212,7 @@ export default function EditProducto({ producto }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="municipio_venta" value="Municipio de Venta" />
+                                        <InputLabel htmlFor="municipio_venta" value="Municipio de Venta *" />
                                         <SelectInput
                                             id="municipio_venta"
                                             name="municipio_venta"
@@ -144,7 +221,6 @@ export default function EditProducto({ producto }) {
                                             onChange={(e) => setData('municipio_venta', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione un municipio</option>
                                             <option value="morroa">Morroa</option>
                                             <option value="sampues">Sampues</option>
                                         </SelectInput>
@@ -152,7 +228,7 @@ export default function EditProducto({ producto }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="tecnica_artesanal" value="Técnica Artesanal" />
+                                        <InputLabel htmlFor="tecnica_artesanal" value="Técnica Artesanal *" />
                                         <SelectInput
                                             id="tecnica_artesanal"
                                             name="tecnica_artesanal"
@@ -161,7 +237,6 @@ export default function EditProducto({ producto }) {
                                             onChange={(e) => setData('tecnica_artesanal', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione una técnica</option>
                                             <option value="telar_horizontal">Telar Horizontal</option>
                                             <option value="bordado">Bordado</option>
                                             <option value="cosido">Cosido</option>
@@ -170,7 +245,7 @@ export default function EditProducto({ producto }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="materia_prima" value="Materia Prima" />
+                                        <InputLabel htmlFor="materia_prima" value="Materia Prima *" />
                                         <SelectInput
                                             id="materia_prima"
                                             name="materia_prima"
@@ -179,7 +254,6 @@ export default function EditProducto({ producto }) {
                                             onChange={(e) => setData('materia_prima', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione una materia prima</option>
                                             <option value="paja">Paja</option>
                                             <option value="algodon">Algodón</option>
                                             <option value="fique">Fique</option>
@@ -192,7 +266,7 @@ export default function EditProducto({ producto }) {
                                 </div>
 
                                 <div className="mt-6">
-                                    <InputLabel htmlFor="descripcion" value="Descripción" />
+                                    <InputLabel htmlFor="descripcion" value="Descripción *" />
                                     <TextArea
                                         id="descripcion"
                                         name="descripcion"
@@ -200,13 +274,60 @@ export default function EditProducto({ producto }) {
                                         className="mt-1 block w-full"
                                         onChange={(e) => setData('descripcion', e.target.value)}
                                         required
+                                        rows={5}
                                     />
                                     <InputError message={errors.descripcion} className="mt-2" />
                                 </div>
 
-                                {/* Campo de múltiples imágenes */}
+                                {/* Sección de imágenes existentes */}
                                 <div className="mt-6">
-                                    <InputLabel htmlFor="imagenes" value="Imágenes del Producto" />
+                                    <InputLabel value="Imágenes Actuales del Producto" />
+                                    <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                        {existingImages.map((imagen) => {
+                                            const isDeleted = data.imagenes_eliminadas.includes(imagen.id);
+                                            const isMain = data.imagen_principal === imagen.id;
+
+                                            return (
+                                                <div
+                                                    key={imagen.id}
+                                                    className={`relative aspect-square rounded-lg overflow-hidden border-2 ${isMain ? 'border-indigo-500' : 'border-transparent'} ${isDeleted ? 'opacity-50' : ''}`}
+                                                >
+                                                    <img
+                                                        src={getImageUrl(imagen.ruta_imagen)}
+                                                        alt="Imagen del producto"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.src = '/images/placeholder-product.jpg'; // fallback local
+                                                        }}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 flex flex-col justify-between p-2 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200">
+                                                        {!isDeleted && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setMainImage(imagen.id)}
+                                                                className={`self-end px-2 py-1 text-xs rounded-full ${isMain ? 'bg-indigo-500 text-white' : 'bg-white text-gray-800'}`}
+                                                            >
+                                                                {isMain ? 'Principal' : 'Hacer principal'}
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => isDeleted ? restoreExistingImage(imagen.id) : removeExistingImage(imagen.id)}
+                                                            className={`self-end px-2 py-1 text-xs rounded-full ${isDeleted ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
+                                                        >
+                                                            {isDeleted ? 'Restaurar' : 'Eliminar'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Sección para agregar nuevas imágenes */}
+                                <div className="mt-6">
+                                    <InputLabel htmlFor="nuevas_imagenes" value="Agregar Nuevas Imágenes" />
                                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                         <div className="space-y-1 text-center">
                                             <svg
@@ -225,76 +346,76 @@ export default function EditProducto({ producto }) {
                                             </svg>
                                             <div className="flex text-sm text-gray-600">
                                                 <label
-                                                    htmlFor="imagenes"
+                                                    htmlFor="nuevas_imagenes"
                                                     className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                                                 >
-                                                    <span>Agregar imágenes</span>
+                                                    <span>Seleccionar imágenes</span>
                                                     <input
-                                                        id="imagenes"
-                                                        name="imagenes[]"
+                                                        id="nuevas_imagenes"
+                                                        name="nuevas_imagenes"
                                                         type="file"
                                                         multiple
                                                         accept="image/*"
                                                         className="sr-only"
-                                                        onChange={handleImageChange}
+                                                        onChange={handleNewImages}
                                                     />
                                                 </label>
                                                 <p className="pl-1">o arrastrar y soltar</p>
                                             </div>
                                             <p className="text-xs text-gray-500">
-                                                PNG, JPG, GIF hasta 10MB (máximo 5 imágenes)
-                                                {previewImages.length > 0 && (
-                                                    <span className="block mt-1">
-                                                        {previewImages.length} imagen(es) seleccionada(s)
-                                                    </span>
-                                                )}
+                                                PNG, JPG, GIF hasta 10MB (máximo 5 imágenes en total)
                                             </p>
                                         </div>
                                     </div>
-                                    {/* Vista previa de imágenes */}
-                                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                        {previewImages.map((image, index) => (
-                                            <div key={index} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group">
-                                                <img
-                                                    src={image.preview}
-                                                    alt={`Vista previa ${index + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImage(index)}
-                                                    className="absolute top-2 right-2 bg-white text-red-500 rounded-full p-1.5 shadow-md hover:bg-red-500 hover:text-white transition-all duration-200"
-                                                    title="Eliminar imagen"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
+
+                                    {/* Vista previa de nuevas imágenes */}
+                                    {previewImages.length > 0 && (
+                                        <div className="mt-4">
+                                            <InputLabel value="Vista Previa de Nuevas Imágenes" />
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
+                                                {previewImages.map((image, index) => (
+                                                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                                        <img
+                                                            src={image.preview}
+                                                            alt={`Vista previa ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeNewImage(index)}
+                                                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                        {previewImages.length < 5 && (
-                                            <div className="relative aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <span className="text-gray-400">+</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Botón de envío */}
-                                <div className="flex justify-between">
+                                {/* Contador de imágenes */}
+                                <div className="text-sm text-gray-500">
+                                    Total imágenes después de guardar: {existingImages.length - data.imagenes_eliminadas.length + previewImages.length}/5
+                                </div>
+
+                                {/* Botones de acción */}
+                                <div className="flex justify-between pt-6">
                                     <Link
-                                        href={route('dashboard.artesano.index')}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                                        href={route('dashboard.artesano.gestionar-tienda')}
+                                        className="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-800 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
                                     >
-                                        Volver al Perfil
+                                        Cancelar
                                     </Link>
-                                    <button
+                                    <PrimaryButton
                                         type="submit"
                                         disabled={processing}
-                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                        className="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
                                     >
-                                        {processing ? 'Actualizando...' : 'Actualizar Producto'}
-                                    </button>
+                                        {processing ? 'Guardando...' : 'Guardar Cambios'}
+                                    </PrimaryButton>
                                 </div>
                             </form>
                         </div>
@@ -303,4 +424,4 @@ export default function EditProducto({ producto }) {
             </div>
         </AuthenticatedLayout>
     );
-} 
+}

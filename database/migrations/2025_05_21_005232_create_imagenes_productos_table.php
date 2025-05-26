@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_preferences', function (Blueprint $table) {
+        Schema::create('imagenes_productos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('producto_id')->constrained()->onDelete('cascade');
+            $table->string('ruta_imagen'); // Guardará la ruta de la imagen (ej: 'productos/1/imagen.jpg')
+            $table->boolean('es_principal')->default(false); // Para marcar una imagen como principal
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_preferences');
+        Schema::dropIfExists('imagenes_productos');
     }
 };
