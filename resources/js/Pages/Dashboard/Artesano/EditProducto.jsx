@@ -10,16 +10,37 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 
 export default function EditProducto({ producto }) {
-    // Función para construir la URL correcta de la imagen (igual que en tu Index)
+    // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
-        if (imagePath.startsWith('storage/')) {
-            return `/${imagePath}`;
+        if (!imagePath) {
+            console.log('No image path provided');
+            return '/images/placeholder.jpg';
         }
-        if (imagePath.startsWith('productos/')) {
-            return `/storage/${imagePath}`;
-        }
-        return `/storage/${imagePath}`;
+
+        // Log para debug
+        console.log('Original image path:', imagePath);
+
+        // Usar URL relativa
+        const url = `/storage/${imagePath}`;
+        
+        // Log para debug
+        console.log('Generated URL:', url);
+        
+        return url;
     };
+
+    // Función para manejar errores de carga de imágenes
+    const handleImageError = (e) => {
+        console.error('Error loading image:', e.target.src);
+        e.target.onerror = null;
+        e.target.src = '/images/placeholder.jpg';
+    };
+
+    // Log para debug cuando el componente se monta
+    useEffect(() => {
+        console.log('Producto:', producto);
+        console.log('Imágenes:', producto?.imagenes);
+    }, [producto]);
 
     // Inicialización segura de datos con valores por defecto
     const initialData = {
@@ -286,21 +307,28 @@ export default function EditProducto({ producto }) {
                                         {existingImages.map((imagen) => {
                                             const isDeleted = data.imagenes_eliminadas.includes(imagen.id);
                                             const isMain = data.imagen_principal === imagen.id;
+                                            const imageUrl = getImageUrl(imagen.ruta_imagen);
+
+                                            // Log para debug
+                                            console.log('Rendering image:', {
+                                                id: imagen.id,
+                                                path: imagen.ruta_imagen,
+                                                url: imageUrl
+                                            });
 
                                             return (
                                                 <div
                                                     key={imagen.id}
                                                     className={`relative aspect-square rounded-lg overflow-hidden border-2 ${isMain ? 'border-indigo-500' : 'border-transparent'} ${isDeleted ? 'opacity-50' : ''}`}
                                                 >
-                                                    <img
-                                                        src={getImageUrl(imagen.ruta_imagen)}
-                                                        alt="Imagen del producto"
-                                                        onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            e.target.src = '/images/placeholder-product.jpg'; // fallback local
-                                                        }}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                                    <div className="relative h-full w-full overflow-hidden bg-gray-100">
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt={`Imagen del producto ${imagen.id}`}
+                                                            className="h-full w-full object-cover"
+                                                            onError={handleImageError}
+                                                        />
+                                                    </div>
                                                     <div className="absolute inset-0 flex flex-col justify-between p-2 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200">
                                                         {!isDeleted && (
                                                             <button

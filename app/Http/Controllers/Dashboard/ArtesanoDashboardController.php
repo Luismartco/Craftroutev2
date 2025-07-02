@@ -193,10 +193,21 @@ public function storeProducto(Request $request)
 
     public function editProducto($id)
     {
-        $producto = Producto::with(['imagenes'])
-                    ->where('id', $id)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
+        $producto = Producto::with(['imagenes' => function($query) {
+            $query->orderBy('es_principal', 'desc');
+        }])
+        ->where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+
+        // Asegurarse de que las rutas de las imágenes sean correctas
+        $producto->imagenes->transform(function($imagen) {
+            // Si la ruta no comienza con 'storage/', agregarlo
+            if (!str_starts_with($imagen->ruta_imagen, 'storage/')) {
+                $imagen->ruta_imagen = 'storage/' . $imagen->ruta_imagen;
+            }
+            return $imagen;
+        });
 
         return Inertia::render('Dashboard/Artesano/EditProducto', [
             'producto' => $producto,

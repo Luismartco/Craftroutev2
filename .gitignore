@@ -26,3 +26,4 @@ composer.json
 packages-lock.json
 packages.json
 vite.config.js
+resources/views/app.blade.php
