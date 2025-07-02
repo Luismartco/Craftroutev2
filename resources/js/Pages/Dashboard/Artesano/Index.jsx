@@ -5,6 +5,27 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export default function Index({ stats, user, tienda }) {
+    // Función para construir la URL correcta de la imagen
+    const getImageUrl = (imagePath) => {
+        // Si la ruta ya incluye 'storage/', devolverla directamente
+        if (imagePath.startsWith('storage/')) {
+            return `/${imagePath}`;
+        }
+        // Si la ruta comienza con 'productos/', añadir '/storage/'
+        if (imagePath.startsWith('productos/')) {
+            return `/storage/${imagePath}`;
+        }
+        // Para cualquier otro caso, asumir que es una ruta relativa a storage
+        return `/storage/${imagePath}`;
+    };
+
+    // Función para manejar errores de carga de imágenes
+    const handleImageError = (e) => {
+        console.error('Error al cargar imagen:', e.target.src);
+        e.target.onerror = null;
+        e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
+    };
+
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-100">
@@ -172,52 +193,83 @@ export default function Index({ stats, user, tienda }) {
 
                                 {/* Grid de productos */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {stats.productos.map((producto) => (
-                                        <div key={producto.id} className="bg-white border rounded-lg overflow-hidden">
-                                            <div className="p-4">
-                                                <h4 className="text-lg font-medium text-gray-900">{producto.nombre}</h4>
-                                                <p className="mt-1 text-sm text-gray-500">{producto.descripcion}</p>
-                                                <div className="mt-4 space-y-2">
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">Precio:</span> ${producto.precio}
-                                                    </p>
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">Cantidad:</span> {producto.cantidad_disponible}
-                                                    </p>
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">Categoría:</span>{' '}
-                                                        <span className="capitalize">{producto.categoria}</span>
-                                                    </p>
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">Técnica:</span>{' '}
-                                                        <span className="capitalize">{producto.tecnica_artesanal.replace('_', ' ')}</span>
-                                                    </p>
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">Materia Prima:</span>{' '}
-                                                        <span className="capitalize">{producto.materia_prima}</span>
-                                                    </p>
+                                    {stats.productos.map((producto) => {
+                                        // Depuración en consola
+                                        console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
+                                        
+                                        // Obtener la imagen principal o la primera imagen
+                                        const imagenPrincipal = producto.imagenes?.find(img => img.es_principal) || producto.imagenes?.[0];
+                                        
+                                        return (
+                                            <div key={producto.id} className="bg-white border rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow">
+                                                {/* Sección de imágenes */}
+                                                <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+                                                    {imagenPrincipal ? (
+                                                        <>
+                                                            <img
+                                                                src={getImageUrl(imagenPrincipal.ruta_imagen)}
+                                                                alt={producto.nombre}
+                                                                className="h-full w-full object-cover"
+                                                                onError={handleImageError}
+                                                            />
+                                                            {producto.imagenes?.length > 1 && (
+                                                                <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                                                    +{producto.imagenes.length - 1} más
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <div className="h-full w-full flex items-center justify-center text-gray-400">
+                                                            Sin imágenes
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="mt-4 flex space-x-2">
-                                                    <Link
-                                                        href={route('dashboard.artesano.edit-producto', producto.id)}
-                                                        className="inline-flex items-center px-3 py-1.5 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
-                                                    >
-                                                        Editar
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            if (confirm('¿Está seguro de que desea eliminar este producto?')) {
-                                                                router.delete(route('dashboard.artesano.delete-producto', producto.id));
-                                                            }
-                                                        }}
-                                                        className="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"
-                                                    >
-                                                        Eliminar
-                                                    </button>
+                                                
+                                                <div className="p-4">
+                                                    <h4 className="text-lg font-medium text-gray-900">{producto.nombre}</h4>
+                                                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{producto.descripcion}</p>
+                                                    <div className="mt-4 space-y-2">
+                                                        <p className="text-sm">
+                                                            <span className="font-medium">Precio:</span> ${producto.precio.toLocaleString()}
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            <span className="font-medium">Cantidad:</span> {producto.cantidad_disponible}
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            <span className="font-medium">Categoría:</span>{' '}
+                                                            <span className="capitalize">{producto.categoria}</span>
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            <span className="font-medium">Técnica:</span>{' '}
+                                                            <span className="capitalize">{producto.tecnica_artesanal.replace('_', ' ')}</span>
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            <span className="font-medium">Materia Prima:</span>{' '}
+                                                            <span className="capitalize">{producto.materia_prima}</span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="mt-4 flex space-x-2">
+                                                        <Link
+                                                            href={route('dashboard.artesano.edit-producto', producto.id)}
+                                                            className="inline-flex items-center px-3 py-1.5 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                                                        >
+                                                            Editar
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => {
+                                                                if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+                                                                    router.delete(route('dashboard.artesano.delete-producto', producto.id));
+                                                                }
+                                                            }}
+                                                            className="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -226,4 +278,4 @@ export default function Index({ stats, user, tienda }) {
             </div>
         </AuthenticatedLayout>
     );
-} 
+}
