@@ -5,18 +5,26 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
     plugins: [
         laravel({
-            input: 'resources/js/app.jsx',
+            input: [
+                'resources/js/app.jsx',  // Punto de entrada principal
+                'resources/js/Pages/**/*.jsx'  // Todos los componentes de página
+            ],
             refresh: true,
         }),
         react(),
     ],
     server: {
-        host: 'craftroutev2.test',
-        hmr: { host: 'craftroutev2.test' },
-        //host: 'localhost', // Esto fuerza el uso de IPv4
-        port: 5173,         // Opcional: puedes especificar el puerto si quieres
-        https: false, // ESTO HABILITA HTTPS EN VITE
-    //host: 'craftroutev2.test',
-    
+        host: '0.0.0.0',
+        port: 5173,
+        https: false,
+        hmr: {
+            host: 'localhost',
+            protocol: 'ws'
+        },
+    },
+    build: {
+        rollupOptions: {
+            input: 'resources/js/app.jsx',  // Especifica el punto de entrada para la compilación
+        },
     },
 });

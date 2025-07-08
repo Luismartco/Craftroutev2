@@ -36,4 +36,14 @@ class Producto extends Model
     {
         return $this->belongsTo(Categoria::class);
     }
+    public function imagenes()
+    {
+        return $this->hasMany(ImagenProducto::class);
+    }
+
+    public function imagenPrincipal()
+    {
+        return $this->hasOne(ImagenProducto::class)->where('es_principal', true);
+    }
 } 
+

@@ -8,6 +8,7 @@ import TextInput from '@/Components/TextInput';
 import TextArea from '@/Components/TextArea';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
+import axios from 'axios';
 
 export default function CreateProducto() {
     const { data, setData, post, processing, errors } = useForm({
@@ -19,30 +20,61 @@ export default function CreateProducto() {
         municipio_venta: '',
         tecnica_artesanal: '',
         materia_prima: '',
+        imagenes: [],
     });
 
     const [previewImages, setPreviewImages] = useState([]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        post(route('dashboard.artesano.store-producto'));
-    };
+ const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    
+    // Agregar campos del formulario
+    Object.keys(data).forEach(key => {
+        if (key !== 'imagenes') {
+            formData.append(key, data[key]);
+        }
+    });
+    
+    // Agregar imágenes
+    previewImages.forEach((image, index) => {
+        formData.append(`imagenes[${index}]`, image.file);
+    });
+
+    // Verificar contenido del FormData antes de enviar
+    for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+    }
+
+    post(route('dashboard.artesano.store-producto'), formData, {
+        forceFormData: true,
+        onSuccess: () => {
+            reset();
+            setPreviewImages([]);
+        },
+        onError: (errors) => {
+            console.error('Errores de validación:', errors);
+        },
+    });
+};
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        const totalImages = previewImages.length + files.length;
-        
-        if (totalImages > 5) {
-            alert('Solo puedes tener un máximo de 5 imágenes');
+           console.log('Archivos seleccionados:', files); // <-- Añade esto
+        if (files.length + previewImages.length > 5) {
+            alert('Máximo 5 imágenes permitidas');
             return;
         }
 
-        const newPreviewImages = files.map(file => ({
-            file,
-            preview: URL.createObjectURL(file)
+        const newImages = files.map(file => ({
+            file: file,
+            preview: URL.createObjectURL(file),
+            name: file.name
         }));
 
-        setPreviewImages(prev => [...prev, ...newPreviewImages]);
+        setPreviewImages(prev => [...prev, ...newImages]);
+        setData('imagenes', [...previewImages, ...newImages].map(img => img.file));
     };
 
     const removeImage = (index) => {
@@ -50,9 +82,11 @@ export default function CreateProducto() {
             const newImages = [...prev];
             URL.revokeObjectURL(newImages[index].preview);
             newImages.splice(index, 1);
+            setData('imagenes', newImages.map(img => img.file));
             return newImages;
         });
     };
+
 
     return (
         <AuthenticatedLayout>
@@ -97,6 +131,8 @@ export default function CreateProducto() {
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData('precio', e.target.value)}
                                             required
+                                            min="0"
+                                            step="0.01"
                                         />
                                         <InputError message={errors.precio} className="mt-2" />
                                     </div>
@@ -111,6 +147,7 @@ export default function CreateProducto() {
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData('cantidad_disponible', e.target.value)}
                                             required
+                                            min="0"
                                         />
                                         <InputError message={errors.cantidad_disponible} className="mt-2" />
                                     </div>
@@ -200,14 +237,16 @@ export default function CreateProducto() {
                                         className="mt-1 block w-full"
                                         onChange={(e) => setData('descripcion', e.target.value)}
                                         required
+                                        rows={4}
                                     />
                                     <InputError message={errors.descripcion} className="mt-2" />
                                 </div>
 
-                                {/* Campo de múltiples imágenes */}
                                 <div className="mt-6">
                                     <InputLabel htmlFor="imagenes" value="Imágenes del Producto" />
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <InputError message={errors.imagenes} className="mt-2" />
+                                    
+                                    <div className="mt-2 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                         <div className="space-y-1 text-center">
                                             <svg
                                                 className="mx-auto h-12 w-12 text-gray-400"
@@ -223,12 +262,12 @@ export default function CreateProducto() {
                                                     strokeLinejoin="round"
                                                 />
                                             </svg>
-                                            <div className="flex text-sm text-gray-600">
+                                            <div className="flex justify-center text-sm text-gray-600">
                                                 <label
                                                     htmlFor="imagenes"
                                                     className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                                                 >
-                                                    <span>Agregar imágenes</span>
+                                                    <span>Subir imágenes</span>
                                                     <input
                                                         id="imagenes"
                                                         name="imagenes[]"
@@ -242,58 +281,59 @@ export default function CreateProducto() {
                                                 <p className="pl-1">o arrastrar y soltar</p>
                                             </div>
                                             <p className="text-xs text-gray-500">
-                                                PNG, JPG, GIF hasta 10MB (máximo 5 imágenes)
-                                                {previewImages.length > 0 && (
-                                                    <span className="block mt-1">
-                                                        {previewImages.length} imagen(es) seleccionada(s)
-                                                    </span>
-                                                )}
+                                                Formatos: PNG, JPG, JPEG, GIF (hasta 10MB cada una)
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                Máximo 5 imágenes. {previewImages.length > 0 && `${previewImages.length} seleccionadas`}
                                             </p>
                                         </div>
                                     </div>
-                                    {/* Vista previa de imágenes */}
-                                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                        {previewImages.map((image, index) => (
-                                            <div key={index} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group">
-                                                <img
-                                                    src={image.preview}
-                                                    alt={`Vista previa ${index + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImage(index)}
-                                                    className="absolute top-2 right-2 bg-white text-red-500 rounded-full p-1.5 shadow-md hover:bg-red-500 hover:text-white transition-all duration-200"
-                                                    title="Eliminar imagen"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
+
+                                    {previewImages.length > 0 && (
+                                        <div className="mt-4">
+                                            <h3 className="text-sm font-medium text-gray-700 mb-2">Vista previa</h3>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                                {previewImages.map((image, index) => (
+                                                    <div key={index} className="relative group">
+                                                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                                            <img
+                                                                src={image.preview}
+                                                                alt={`Vista previa ${index + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeImage(index)}
+                                                            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm hover:bg-red-500 hover:text-white transition-colors"
+                                                            title="Eliminar imagen"
+                                                        >
+                                                            <svg className="w-4 h-4 text-red-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                        {previewImages.length < 5 && (
-                                            <div className="relative aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <span className="text-gray-400">+</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Botón de envío */}
-                                <div className="flex justify-between">
+                                <div className="flex items-center justify-between pt-6">
                                     <Link
                                         href={route('dashboard.artesano.index')}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                                        className="inline-flex items-center px-4 py-2 bg-gray-100 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                     >
-                                        Volver al Perfil
+                                        Cancelar
                                     </Link>
                                     <button
                                         type="submit"
-                                        disabled={processing}
-                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                        disabled={processing || previewImages.length === 0}
+                                        className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                                            processing || previewImages.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                     >
-                                        {processing ? 'Creando...' : 'Crear Producto'}
+                                        {processing ? 'Guardando...' : 'Guardar Producto'}
                                     </button>
                                 </div>
                             </form>
@@ -303,4 +343,4 @@ export default function CreateProducto() {
             </div>
         </AuthenticatedLayout>
     );
-} 
+}
