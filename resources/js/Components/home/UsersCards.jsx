@@ -79,6 +79,11 @@ export default function UserCards() {
                     {user.location.city}, {user.location.country}
                   </p>
                 </div>
+                <button
+                  className="mt-3 px-4 py-1 text-sm bg-[#2B1F1F] text-white rounded hover:bg-opacity-80 transition-colors duration-200"
+                >
+                  Ver tienda
+                </button>
               </div>
             ))}
       </div>
