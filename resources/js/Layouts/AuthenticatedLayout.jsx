@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
 import Footer from '../Components/Footer';  // Assuming you'll use the Footer you mentioned
+import logo_white from '../../media/logo/logo_white.png';
+
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
@@ -13,20 +15,29 @@ export default function AuthenticatedLayout({ header, children }) {
         <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-[#f5f5f5] font-sans">
             <nav>
                 <div className="bg-[#3C2F2F] text-white text-center py-4 text-2xl font-bold">
-                    CraftRoute
+                <img 
+                    src={logo_white} 
+                    alt="CraftRoute Logo" 
+                    className="mx-auto w-12 h-12 mb-2" // puedes ajustar w/h para el tamaño
+                />
+                <div className="flex items-center justify-center w-full">
+                    <div className="flex-grow h-[2px] bg-white mx-4" />
+                    <span className="px-2">CraftRoute</span>
+                    <div className="flex-grow h-[2px] bg-white mx-4" />
                 </div>
+            </div>
                 
                 <div className="bg-[#2B1F1F] flex justify-center py-3 items-center">
                     <Link
                         href="/"
-                        className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300
+                        className="mx-4 text-white px-4 py-2 no-underline rounded-md transition-colors duration-300
                                 hover:bg-[#4B3A3A] active:bg-[#614545]"
                     >
                         Inicio
                     </Link>
                     <Link
                         href="/blog"
-                        className="mx-4 text-white px-4 py-2 rounded-md transition-colors duration-300
+                        className="mx-4 text-white px-4 py-2 no-underline rounded-md transition-colors duration-300
                                 hover:bg-[#4B3A3A] active:bg-[#614545]"
                     >
                         blog
