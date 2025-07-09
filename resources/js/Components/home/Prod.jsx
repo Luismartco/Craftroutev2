@@ -168,6 +168,41 @@ const ProductGallery = () => {
 
   return (
     <>
+    <br />
+<div className="mb-6 flex flex-wrap gap-10 justify-center">
+  {/* Filtro por Municipio */}
+  <div className="flex flex-col w-80">
+    <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
+    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
+      <option value="">Todos los municipios</option>
+      <option value="Morroa">Morroa</option>
+      <option value="Sampués">Sampués</option>
+    </select>
+  </div>
+
+  {/* Filtro por Categoría */}
+  <div className="flex flex-col w-80">
+    <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
+      <option value="">Todas las categorías</option>
+      <option value="ropa">Ropa</option>
+      <option value="joyería">Joyería</option>
+      <option value="electrónica">Electrónica</option>
+    </select>
+  </div>
+
+  {/* Filtro por Precio */}
+  <div className="flex flex-col w-80">
+    <label className="mb-1 text-sm font-semibold text-gray-700">Precio máximo</label>
+    <input
+      type="number"
+      placeholder="Ej: 100.000"
+      className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+    />
+  </div>
+</div>
+
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
         {productosAMostrar.map((prod, index) => (
           <Prod
