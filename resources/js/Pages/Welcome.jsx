@@ -21,17 +21,14 @@ export default function Welcome({ auth }) {
             <Head title="Welcome" />
             <h1 className="text-[#2B1F1F] text-center py-4 text-2xl font-bold">"Cada pieza, una historia"</h1>
             <FlexTricks />
-<<<<<<< HEAD
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras Tiendas</h1>
             <Tiendas />
             {/*<UserCards />*/}
-=======
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros artesanos</h1>
             <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
                 Descubre nuestras tiendas locales, ubicadas en el corazón de municipios con rica tradición artesanal. Cada espacio es una ventana a la cultura, donde podrás conocer a los artesanos, ver el proceso de creación y adquirir productos únicos.
             </p>
             <UserCards />
->>>>>>> dev
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos</h1>
             <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
                 Descubre nuestra selección de productos artesanales únicos, 
