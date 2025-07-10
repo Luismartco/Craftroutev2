@@ -81,45 +81,50 @@ const Tiendas = () => {
   const tiendasParaMostrar = verTodas ? todasLasTiendas : todasLasTiendas.slice(0, 3);
 
   return (
-    <div className="px-6 py-10 bg-gray-50">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {tiendasParaMostrar.map((tienda, index) => (
-          <div
-            key={index}
-            className="bg-white shadow-md hover:shadow-xl transition-shadow rounded-xl p-6 flex items-start gap-4 border border-gray-100"
-          >
-            <div className="w-16 h-16 bg-gray-300 rounded-full shrink-0"></div>
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-800 mb-1">{tienda.nombre}</h3>
-              <p className="text-sm text-gray-600">{tienda.descripcion}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Artesano: <span className="font-medium">{tienda.artesano}</span> |{" "}
-                {tienda.ubicacion}
-              </p>
-              <div className="mt-4 text-center">
-                <Link
-                  href={route('blog')}
-                  className="inline-block mt-4 px-4 py-2 no-underline bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition"
-                  >
-                  Ver tienda
-                </Link>
-              </div>
-            </div>
+<div className="px-6 py-10 bg-gray-50">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {tiendasParaMostrar.map((tienda, index) => (
+      <div
+        key={index}
+        className="bg-white shadow-md hover:shadow-xl transition-shadow rounded-xl p-6 flex items-start gap-4 border border-gray-100"
+      >
+        <img
+          src={tienda.imagen}
+          alt={tienda.nombre}
+          className="w-16 h-16 object-cover rounded-full shrink-0"
+        />
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold text-gray-800 mb-1">{tienda.nombre}</h3>
+          <p className="text-sm text-gray-600">{tienda.descripcion}</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Artesano: <span className="font-medium">{tienda.artesano}</span> |{" "}
+            {tienda.ubicacion}
+          </p>
+          <div className="mt-4 text-center">
+            <Link
+              href={route('blog')}
+              className="inline-block mt-4 px-4 py-2 no-underline bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition"
+            >
+              Ver tienda
+            </Link>
           </div>
-        ))}
-      </div>
-
-      {!verTodas && (
-        <div className="mt-10 text-center">
-          <button
-            onClick={() => setVerTodas(true)}
-            className="px-6 py-2 bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition"
-          >
-            Ver más tiendas
-          </button>
         </div>
-      )}
+      </div>
+    ))}
+  </div>
+
+  {!verTodas && (
+    <div className="mt-10 text-center">
+      <button
+        onClick={() => setVerTodas(true)}
+        className="px-6 py-2 bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition"
+      >
+        Ver más
+      </button>
     </div>
+  )}
+</div>
+
   );
 };
 

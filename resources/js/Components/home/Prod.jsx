@@ -193,12 +193,14 @@ const ProductGallery = () => {
 
   {/* Filtro por Precio */}
   <div className="flex flex-col w-80">
-    <label className="mb-1 text-sm font-semibold text-gray-700">Precio máximo</label>
-    <input
-      type="number"
-      placeholder="Ej: 100.000"
-      className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-    />
+    <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
+      <option value="ropa">5.000 - 10.000</option>
+      <option value="joyería">10.000 - 50.000</option>
+      <option value="electrónica">50.000 - 100.000</option>
+      <option value="electrónica">100.000 - 200.000</option>
+      <option value="electrónica">Más de 200.000</option>
+    </select>
   </div>
 </div>
 

@@ -4,8 +4,11 @@ import CasaCulMorr from '../../../media/CasaCulMorr.png';
 import hilaza from '../../../media/hilaza.jpg';
 import Sampues from '../../../media/Sampues.jpg';
 import sombrero from '../../../media/sombrero.jpg';
+import artisan from '../../../media/artisan.png';
+import mochila from '../../../media/mochila.png';
+import prod from '../../../media/prod.jpeg';
 
-const images = [AMorroa, CasaCulMorr, hilaza, Sampues, sombrero];
+const images = [CasaCulMorr, prod, mochila, artisan, sombrero];
 
 const FlexTricks = () => {
     return (
