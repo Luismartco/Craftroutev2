@@ -313,7 +313,7 @@ const Prod = ({ producto, onClick, onBuy }) => {
       <p className="text-gray-800 font-semibold mb-4">
         ${producto.precio.toLocaleString()}
       </p>
-      <div className="flex flex-wrap justify-center  space-x-10">
+      <div className="flex flex-wrap justify-center space-x-2">
         <button
           onClick={onBuy}
           className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
