@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('email')->after('last_name')->change(); // Mueve email después de last_name (sin UNIQUE)
             $table->date('birth_date')->nullable()->after('password'); // Mueve birth_date después de password
             $table->enum('gender', ['Male', 'Female', 'Other'])->nullable()->after('birth_date');
-            $table->enum('role', ['artisan', 'customer'])->after('gender');
+            $table->enum('role', ['artisan', 'customer', 'admin'])->after('gender');
             $table->string('residence_municipality', 255)->nullable()->after('role');
             $table->string('neighborhood', 255)->nullable()->after('residence_municipality');
             $table->string('address', 255)->nullable()->after('neighborhood');
