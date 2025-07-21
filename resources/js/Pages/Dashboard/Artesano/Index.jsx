@@ -62,10 +62,10 @@ export default function Index({ stats, user, tienda }) {
                                                     className="h-full w-full object-cover"
                                                 />
                                             ) : (
-                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
-                                                    <span className="text-2xl font-medium text-gray-600">
-                                                        {user.name.charAt(0)}{user.last_name.charAt(0)}
-                                                    </span>
+                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
+                                                <span className="text-2xl font-medium text-gray-600">
+                                                    {user.name.charAt(0)}{user.last_name.charAt(0)}
+                                                </span>
                                                 </div>
                                             )}
                                             <input
@@ -128,12 +128,18 @@ export default function Index({ stats, user, tienda }) {
                                     <div className="space-y-4">
                                         <div className="flex items-center space-x-4">
                                             <div className="flex-shrink-0">
-                                                <div className="h-16 w-16 rounded-full bg-white border-2 border-gray-200 overflow-hidden">
-                                                    <img
-                                                        src={tienda.foto_perfil || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80'}
-                                                        alt={tienda.nombre}
-                                                        className="h-full w-full object-cover"
-                                                    />
+                                                <div className="h-16 w-16 rounded-full bg-white border-2 border-gray-200 overflow-hidden flex items-center justify-center relative">
+                                                    {tienda.foto_perfil ? (
+                                                        <img
+                                                            src={tienda.foto_perfil.startsWith('http') ? tienda.foto_perfil : `/storage/${tienda.foto_perfil}`}
+                                                            alt={tienda.nombre}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-xl font-medium text-gray-600">
+                                                            {tienda.nombre ? tienda.nombre.charAt(0) : '?'}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div>

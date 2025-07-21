@@ -17,7 +17,8 @@ class Tienda extends Model
         'municipio_venta',
         'latitude',
         'longitude',
-        'user_id'
+        'user_id',
+        'foto_perfil', // Added for store profile photo
     ];
 
     protected $casts = [

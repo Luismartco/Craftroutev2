@@ -76,6 +76,7 @@ class ArtesanoDashboardController extends Controller
             'municipio_venta' => 'required|in:morroa,sampues',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
         $user = auth()->user();
@@ -85,7 +86,13 @@ class ArtesanoDashboardController extends Controller
             return redirect()->back()->with('error', 'Ya tienes una tienda creada.');
         }
 
-        $data = $request->all();
+        $data = $request->except('foto_perfil');
+
+        // Manejar la imagen de perfil si se sube
+        if ($request->hasFile('foto_perfil')) {
+            $path = $request->file('foto_perfil')->store('tiendas', 'public');
+            $data['foto_perfil'] = $path;
+        }
 
         // Crear la tienda
         $tienda = $user->tienda()->create($data);
