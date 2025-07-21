@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, Head, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useRef, useState } from 'react';
 
 export default function Index({ stats, user, tienda }) {
     // Función para construir la URL correcta de la imagen
@@ -26,6 +27,21 @@ export default function Index({ stats, user, tienda }) {
         e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
     };
 
+    const [profilePhoto, setProfilePhoto] = useState(user.profile_photo || null);
+    const fileInputRef = useRef(null);
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('profile_photo', file);
+            router.post(route('profile.photo.update'), formData, {
+                onSuccess: (page) => {
+                    setProfilePhoto(page.props.auth.user.profile_photo);
+                },
+            });
+        }
+    };
+
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-100">
@@ -38,11 +54,31 @@ export default function Index({ stats, user, tienda }) {
                             <div className="bg-white rounded-lg shadow p-10 mb-10 w-full max-w-full mx-auto">
                                 <div className="flex items-center space-x-4">
                                     <div className="flex-shrink-0">
-                                        <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
-                                                <span className="text-2xl font-medium text-gray-600">
-                                                    {user.name.charAt(0)}{user.last_name.charAt(0)}
-                                                </span>
+                                        <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                                            {profilePhoto ? (
+                                                <img
+                                                    src={profilePhoto.startsWith('http') ? profilePhoto : `/storage/${profilePhoto}`}
+                                                    alt="Foto de perfil"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
+                                                    <span className="text-2xl font-medium text-gray-600">
+                                                        {user.name.charAt(0)}{user.last_name.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                ref={fileInputRef}
+                                                onChange={handlePhotoChange}
+                                            />
+                                            <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md">
+                                                <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3zm0 0v3h3" />
+                                                </svg>
                                             </div>
                                         </div>
                                     </div>
