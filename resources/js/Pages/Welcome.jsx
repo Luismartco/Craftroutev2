@@ -42,7 +42,7 @@ export default function Welcome({ auth }) {
             {/* <ProductList />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">¿Cómo llegar a esos municipios?</h1>
             <MapasMorroaSampues />
-            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold pb-8">Te esperamos ;)</h1>           
+            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold pb-8">Te esperamos 😊</h1>           
         </GuestLayout>
         </>
     );

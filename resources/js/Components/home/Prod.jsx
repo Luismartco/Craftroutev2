@@ -205,7 +205,7 @@ const ProductGallery = () => {
 </div>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
         {productosAMostrar.map((prod, index) => (
           <Prod
             key={index}
@@ -270,22 +270,22 @@ const ProductGallery = () => {
                 <p className="text-[#4B3A3A] font-bold text-3xl mb-8">
                   ${selected.precio.toLocaleString()}
                 </p>
-                <div className="flex flex-col gap-3 md:flex-row md:gap-6">
+                <div className="flex flex-col md:flex-wrap items-center gap-3 md:flex-row md:gap-6">
                   <button
                     onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
-                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                    className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
                   >
                     Agregar al carrito
                   </button>
                   <button
                     onClick={() => alert('Ver ruta de: ' + selected.nombre)}
-                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"
+                    className="min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"
                   >
                     Ver ruta
                   </button>
                   <button
                     onClick={() => handleBuy(selected)}
-                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
+                    className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
                   >
                     Comprar
                   </button>
@@ -302,7 +302,7 @@ const ProductGallery = () => {
 // Actualiza el componente Prod con los botones en orden invertido
 const Prod = ({ producto, onClick, onBuy }) => {
   return (
-    <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition">
+    <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
       <img
         src={producto.imagenes[0]}
         alt={producto.nombre}
@@ -313,16 +313,16 @@ const Prod = ({ producto, onClick, onBuy }) => {
       <p className="text-gray-800 font-semibold mb-4">
         ${producto.precio.toLocaleString()}
       </p>
-      <div className="flex justify-between">
+      <div className="flex flex-wrap justify-center space-x-2">
         <button
           onClick={onBuy}
-          className="px-3 py-1 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
+          className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
         >
           Comprar
         </button>
         <button
           onClick={onClick}
-          className="px-3 py-1 text-sm bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
+          className="p-2 text-sm bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
         >
           Ver detalles
         </button>
