@@ -27,6 +27,7 @@ class ClienteDashboardController extends Controller
                 'phone' => $user->phone,
                 'latitude' => $user->latitude,
                 'longitude' => $user->longitude,
+                'profile_photo' => $user->profile_photo, // Add this line
             ],
         ]);
     }

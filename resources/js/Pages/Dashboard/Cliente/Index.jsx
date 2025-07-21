@@ -1,46 +1,29 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useRef, useState } from 'react';
 
 export default function Index({ stats, user }) {
+        const [profilePhoto, setProfilePhoto] = useState(user.profile_photo || null);
+        const fileInputRef = useRef(null);
+        const handlePhotoChange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('profile_photo', file);
+                router.post(route('profile.photo.update'), formData, {
+                    onSuccess: (page) => {
+                        setProfilePhoto(page.props.auth.user.profile_photo);
+                    },
+                });
+            }
+        };
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-100">
-                {/* Información del perfil */}
-                <div className="bg-white shadow-lg border-b border-gray-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex-shrink-0">
-                                <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
-                                        <span className="text-2xl font-medium text-gray-600">
-                                            {user.name.charAt(0)}{user.last_name.charAt(0)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex items-center space-x-2">
-                                    <h1 className="text-xl font-semibold text-gray-900">
-                                        {user.name} {user.last_name}
-                                    </h1>
-                                    <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">
-                                        Cliente
-                                    </span>
-                                </div>
-                                <div className="mt-1 flex items-center">
-                                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <span className="ml-1 text-sm text-gray-500">{user.residence_municipality}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 {/* Contenido principal */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -51,11 +34,31 @@ export default function Index({ stats, user }) {
                             <div className="bg-white rounded-lg shadow p-6 mb-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="flex-shrink-0">
-                                        <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
-                                                <span className="text-2xl font-medium text-gray-600">
-                                                    {user.name.charAt(0)}{user.last_name.charAt(0)}
-                                                </span>
+                                        <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                                            {profilePhoto ? (
+                                                <img
+                                                    src={profilePhoto.startsWith('http') ? profilePhoto : `/storage/${profilePhoto}`}
+                                                    alt="Foto de perfil"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
+                                                    <span className="text-2xl font-medium text-gray-600">
+                                                        {user.name.charAt(0)}{user.last_name.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                ref={fileInputRef}
+                                                onChange={handlePhotoChange}
+                                            />
+                                            <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md">
+                                                <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3zm0 0v3h3" />
+                                                </svg>
                                             </div>
                                         </div>
                                     </div>
