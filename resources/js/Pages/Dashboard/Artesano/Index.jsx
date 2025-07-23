@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, Head, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 export default function Index({ stats, user, tienda }) {
     // Función para construir la URL correcta de la imagen
@@ -41,6 +41,26 @@ export default function Index({ stats, user, tienda }) {
             });
         }
     };
+
+    const [carouselIndexes, setCarouselIndexes] = useState({});
+    const handlePrev = (productoId, totalImages) => {
+    setCarouselIndexes(prev => {
+        const currentIndex = prev[productoId] ?? 0;
+        const newIndex = (currentIndex - 1 + totalImages) % totalImages;
+        return { ...prev, [productoId]: newIndex };
+    });
+};
+
+const handleNext = (productoId, totalImages) => {
+    setCarouselIndexes(prev => {
+        const currentIndex = prev[productoId] ?? 0;
+        const newIndex = (currentIndex + 1) % totalImages;
+        return { ...prev, [productoId]: newIndex };
+    });
+};
+
+
+
 
     return (
         <AuthenticatedLayout>
