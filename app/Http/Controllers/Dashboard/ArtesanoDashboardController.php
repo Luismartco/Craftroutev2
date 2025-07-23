@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Tienda;
 use App\Models\Producto;
 use App\Models\ImagenProducto; // Importación crucial
+use Illuminate\Support\Facades\Log;
 
 
 class ArtesanoDashboardController extends Controller
@@ -214,8 +215,16 @@ public function storeProducto(Request $request)
         ]);
     }
 
-  public function updateProducto(Request $request, $id)
+
+    public function updateProducto(Request $request, $id)
 {
+    Log::info('Datos recibidos en updateProducto', [
+        'request' => $request->all(),
+        'files' => $request->allFiles(),
+        'producto_id' => $id,
+        'user_id' => auth()->id(),
+    ]);
+
     $validatedData = $request->validate([
         'nombre' => 'nullable|string|max:255',
         'descripcion' => 'nullable|string',
@@ -230,6 +239,7 @@ public function storeProducto(Request $request)
         'imagen_principal' => 'nullable|integer|exists:imagenes_productos,id',
         'nuevas_imagenes' => 'nullable|array|max:5',
         'nuevas_imagenes.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+
     ]);
 
     $producto = Producto::findOrFail($id);
@@ -238,13 +248,42 @@ public function storeProducto(Request $request)
         abort(403, 'No tienes permiso para editar este producto');
     }
 
-    $dataToUpdate = array_filter($validatedData, function ($value, $key) {
-        $excludeFields = ['imagenes_eliminadas', 'imagen_principal', 'nuevas_imagenes'];
-        return !in_array($key, $excludeFields) && $value !== null && $value !== '';
-    }, ARRAY_FILTER_USE_BOTH);
 
-    if (!empty($dataToUpdate)) {
-        $producto->update($dataToUpdate);
+ // Solo excluye los campos especiales
+    $excludeFields = ['imagenes_eliminadas', 'imagen_principal', 'nuevas_imagenes'];
+    $dataToUpdate = array_diff_key($validatedData, array_flip($excludeFields));
+
+    // Actualizar campos básicos
+    try {
+        $producto->update($request->only([
+            'nombre', 
+            'descripcion', 
+            'precio', 
+            'cantidad_disponible',
+            'categoria',
+            'municipio_venta',
+            'tecnica_artesanal',
+            'materia_prima'
+        ]));
+        Log::info('Producto actualizado correctamente', [
+            'producto_id' => $producto->id,
+            'datos_actualizados' => $request->only([
+                'nombre', 
+                'descripcion', 
+                'precio', 
+                'cantidad_disponible',
+                'categoria',
+                'municipio_venta',
+                'tecnica_artesanal',
+                'materia_prima'
+            ]),
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error al actualizar producto', [
+            'producto_id' => $producto->id,
+            'error' => $e->getMessage(),
+        ]);
+        return back()->withErrors(['update' => 'Error al actualizar el producto: ' . $e->getMessage()])->withInput();
     }
 
     // Eliminar imágenes
@@ -260,25 +299,24 @@ public function storeProducto(Request $request)
 
     // Imagen principal
     if ($request->filled('imagen_principal')) {
-        $imagenPrincipal = ImagenProducto::where('id', $request->imagen_principal)
+        // Resetear todas las imágenes principales
+        ImagenProducto::where('producto_id', $producto->id)
+            ->update(['es_principal' => false]);
+        
+        // Establecer nueva imagen principal
+        ImagenProducto::where('id', $request->imagen_principal)
             ->where('producto_id', $producto->id)
-            ->first();
-
-        if ($imagenPrincipal) {
-            ImagenProducto::where('producto_id', $producto->id)
-                ->update(['es_principal' => false]);
-
-            $imagenPrincipal->update(['es_principal' => true]);
-        }
+            ->update(['es_principal' => true]);
     }
 
     // Subir nuevas imágenes
     if ($request->hasFile('nuevas_imagenes')) {
         $imagenesActuales = ImagenProducto::where('producto_id', $producto->id)->count();
         $nuevasImagenes = count($request->file('nuevas_imagenes'));
+        $totalImagenes = $imagenesActuales + $nuevasImagenes;
 
-        if (($imagenesActuales + $nuevasImagenes) > 5) {
-            return redirect()->back()
+        if ($totalImagenes > 5) {
+            return back()
                 ->withErrors(['nuevas_imagenes' => 'El producto no puede tener más de 5 imágenes en total.'])
                 ->withInput();
         }
@@ -289,27 +327,26 @@ public function storeProducto(Request $request)
             ImagenProducto::create([
                 'producto_id' => $producto->id,
                 'ruta_imagen' => $path,
-                'es_principal' => false,
+                'es_principal' => false, // Por defecto no es principal
             ]);
         }
     }
 
     // Asegurar que haya al menos una imagen principal
-    $imagenPrincipal = ImagenProducto::where('producto_id', $producto->id)
+    $tieneImagenPrincipal = ImagenProducto::where('producto_id', $producto->id)
         ->where('es_principal', true)
-        ->first();
+        ->exists();
 
-    if (!$imagenPrincipal) {
+    if (!$tieneImagenPrincipal) {
         $primeraImagen = ImagenProducto::where('producto_id', $producto->id)->first();
         if ($primeraImagen) {
             $primeraImagen->update(['es_principal' => true]);
         }
     }
 
-    return redirect()->route('dashboard.artesano.gestionar-tienda')
+    return redirect()->route('dashboard.artesano.index')
         ->with('success', 'Producto actualizado exitosamente');
 }
-
 
     public function deleteProducto($id)
     {
