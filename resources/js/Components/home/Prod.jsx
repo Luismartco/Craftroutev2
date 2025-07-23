@@ -67,6 +67,7 @@ import prod12img2 from "../../../media/Products/producto12/2.jpeg";
 
 const productos = [
   {
+    id: 1,
     nombre: "Canasto Artesanal para Lámpara",
     descripcion: "Tejido a mano en fibras naturales",
     precio: 120000,
@@ -74,66 +75,77 @@ const productos = [
   },
   
   {
+    id: 2,
     nombre: "Manilla Tejida a Mano",
     descripcion: "Colorida y elaborada con hilos resistentes",
     precio: 95000,
     imagenes: [prod2img1, prod2img2],
   },
   {
+    id: 3,
     nombre: "Hamaca Artesanal",
     descripcion: "Práctica y auténtica, tejida a mano.",
     precio: 85000,
     imagenes: [prod3img1, prod3img2],
   },
   {
+    id: 4,
     nombre: "Sombrero Vueltiao Tradicional",
     descripcion: "Tejido a mano con caña flecha.",
     precio: 45000,
     imagenes: [prod4img1, prod4img2],
   },
   {
+    id: 5,
     nombre: "Adornos para mesas",
     descripcion: "Conjunto de adornos tejidos que embellecen tu hogar.",
     precio: 40000,
     imagenes: [prod5img1, prod5img2],
   },
   {
+    id: 6,
     nombre: "Mochila Tejida",
     descripcion: "Diseño tradicional, tejida con amor por artesanas locales",
     precio: 30000,
     imagenes: [prod6img1, prod6img2],
   },
   {
+    id: 7,
     nombre: "Mochila Artesanal de Hilo",
     descripcion: "Ligera, colorida y tejida a mano con diseños únicos",
     precio: 65000,
     imagenes: [prod7img1, prod7img2],
   },
   {
+    id: 8,
     nombre: "Canasta de picnic artesanal",
     descripcion: "Canasta tejida ideal para salidas al aire libre.",
     precio: 70000,
     imagenes: [prod8img1, prod8img2],
   },
   {
+    id: 9,
     nombre: "Loro Artesanal en Madera",
     descripcion: "Tallado y pintado a mano, con detalles vibrantes",
     precio: 60000,
     imagenes: [prod9img1, prod9img2],
   },
   {
+    id: 10,
     nombre: "Sobremesa artesanal",
     descripcion: "Elemento decorativo hecho a mano para realzar.",
     precio: 60000,
     imagenes: [prod10img1, prod10img2],
   },
   {
+    id: 11,
     nombre: " Centro de Mesa con Tejido Artesanal",
     descripcion: "Hecho a mano con detalles finos.",
     precio: 60000,
     imagenes: [prod11img1, prod11img2],
   },
   {
+    id: 12,
     nombre: "Mochila Tradicional",
     descripcion: "Tejido firme y elegante.",
     precio: 60000,
@@ -143,10 +155,141 @@ const productos = [
 
 // ...importaciones
 
+// CartModal como componente hijo
+function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, goToCheckout }) {
+  return show ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
+        <button
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+          onClick={onClose}
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <h2 className="text-2xl font-bold mb-6 text-center">Carrito de compras</h2>
+        <div className="space-y-6 max-h-[50vh] overflow-y-auto">
+          {cart.length === 0 && (
+            <div className="text-center text-gray-500">No hay productos en el carrito.</div>
+          )}
+          {cart.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center border rounded-lg p-4 shadow-sm bg-gray-50"
+            >
+              <div className="flex-1">
+                <div className="font-semibold text-lg mb-2">{p.nombre}</div>
+                <div className="flex items-center">
+                  <img
+                    src={p.imagenes ? p.imagenes[0] : ''}
+                    alt={p.nombre}
+                    className="w-20 h-20 object-contain rounded mr-4"
+                  />
+                  <div className="flex flex-1 flex-col md:flex-row md:items-center md:justify-between w-full">
+                    {/* Controles de cantidad y eliminar */}
+                    <div className="flex items-center space-x-2 mb-2 md:mb-0">
+                      <button
+                        onClick={() => changeQuantity(p.id, -1)}
+                        className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                      >
+                        –
+                      </button>
+                      <span className="text-xl font-medium w-8 text-center">
+                        {p.quantity}
+                      </span>
+                      <button
+                        onClick={() => changeQuantity(p.id, 1)}
+                        className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={() => removeProduct(p.id)}
+                        className="ml-4 text-red-500 hover:text-red-700"
+                        title="Eliminar producto"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    {/* Precio y subtotal alineados a la derecha */}
+                    <br />
+                    <div className="flex flex-col items-end ml-auto">
+                      <div className="text-gray-600 text-sm">
+                        Precio: ${p.precio.toLocaleString()}
+                      </div>
+                      <div className="text-gray-900 font-semibold">
+                        Subtotal: ${(p.precio * p.quantity).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Total y checkout */}
+        <div className="mt-8 border-t pt-4">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-xl font-medium text-gray-900">Total:</span>
+            <span className="text-2xl font-bold text-gray-900">
+              ${total.toLocaleString()}
+            </span>
+          </div>
+          <button
+            className="w-full bg-[#4B3A3A] text-white py-3 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold"
+            onClick={goToCheckout}
+          >
+            Ir al checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+}
+
 const ProductGallery = () => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
   const [verTodos, setVerTodos] = useState(false);
+
+  // Estado y lógica global del carrito
+  const [showCart, setShowCart] = useState(false);
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (producto) => {
+    setShowCart(true);
+    setCart((prev) => {
+      const found = prev.find((p) => p.id === producto.id);
+      if (found) {
+        return prev.map((p) =>
+          p.id === producto.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+      return [...prev, { ...producto, quantity: 1 }];
+    });
+  };
+
+  const changeQuantity = (id, delta) => {
+    setCart((prev) =>
+      prev
+        .map((p) =>
+          p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
+        )
+        .filter((p) => p.quantity > 0)
+    );
+  };
+
+  const removeProduct = (id) => {
+    setCart((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const total = cart.reduce((sum, p) => sum + p.precio * p.quantity, 0);
+
+  const goToCheckout = () => {
+    alert('Ir al checkout');
+  };
 
   const closeModal = () => {
     setSelected(null);
@@ -214,7 +357,7 @@ const ProductGallery = () => {
               setSelected(prod);
               setImgIndex(0);
             }}
-            onBuy={() => handleBuy(prod)}
+            onBuy={() => addToCart(prod)}
           />
         ))}
       </div>
@@ -284,17 +427,34 @@ const ProductGallery = () => {
                     Ver ruta
                   </button>
                   <button
+                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
+                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                  >
+                    Agregar al carrito
+                  </button> 
+               {/*<button
                     onClick={() => handleBuy(selected)}
                     className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
                   >
                     Comprar
-                  </button>
+                  </button>*/}
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Modal de carrito global */}
+      <CartModal
+        show={showCart}
+        onClose={() => setShowCart(false)}
+        cart={cart}
+        changeQuantity={changeQuantity}
+        removeProduct={removeProduct}
+        total={total}
+        goToCheckout={goToCheckout}
+      />
     </>
   );
 };
@@ -318,7 +478,7 @@ const Prod = ({ producto, onClick, onBuy }) => {
           onClick={onBuy}
           className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
         >
-          Comprar
+          Agregar al carrito
         </button>
         <button
           onClick={onClick}
@@ -332,3 +492,128 @@ const Prod = ({ producto, onClick, onBuy }) => {
 };
 
 export default ProductGallery;
+
+// --- INICIO: Hook y Modal de Carrito ---
+export function useCartModal() {
+  const [showCart, setShowCart] = useState(false);
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (producto) => {
+    setShowCart(true);
+    setCart((prev) => {
+      const found = prev.find((p) => p.id === producto.id);
+      if (found) {
+        return prev.map((p) =>
+          p.id === producto.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+      return [...prev, { ...producto, quantity: 1 }];
+    });
+  };
+
+  const changeQuantity = (id, delta) => {
+    setCart((prev) =>
+      prev
+        .map((p) =>
+          p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
+        )
+        .filter((p) => p.quantity > 0)
+    );
+  };
+
+  const removeProduct = (id) => {
+    setCart((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const total = cart.reduce((sum, p) => sum + p.precio * p.quantity, 0);
+
+  const CartModal = () =>
+    showCart ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
+          <button
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+            onClick={() => setShowCart(false)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <h2 className="text-2xl font-bold mb-6 text-center">Carrito de compras</h2>
+          <div className="space-y-6 max-h-[50vh] overflow-y-auto">
+            {cart.length === 0 && (
+              <div className="text-center text-gray-500">No hay productos en el carrito.</div>
+            )}
+            {cart.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center border rounded-lg p-4 shadow-sm"
+              >
+                <div className="flex-1">
+                  <div className="font-semibold text-lg mb-2">{p.nombre}</div>
+                  <div className="flex items-center">
+                    <img
+                      src={p.imagenes ? p.imagenes[0] : ''}
+                      alt={p.nombre}
+                      className="w-20 h-20 object-contain rounded mr-4"
+                    />
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <button
+                          onClick={() => changeQuantity(p.id, -1)}
+                          className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                        >
+                          –
+                        </button>
+                        <span className="text-xl font-medium w-8 text-center">
+                          {p.quantity}
+                        </span>
+                        <button
+                          onClick={() => changeQuantity(p.id, 1)}
+                          className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={() => removeProduct(p.id)}
+                          className="ml-4 text-red-500 hover:text-red-700"
+                          title="Eliminar producto"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="text-gray-600 text-sm">
+                        Precio: ${p.precio.toLocaleString()}
+                      </div>
+                      <div className="text-gray-900 font-semibold">
+                        Subtotal: ${(p.precio * p.quantity).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Total y checkout */}
+          <div className="mt-8 border-t pt-4">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-xl font-medium text-gray-900">Total:</span>
+              <span className="text-2xl font-bold text-gray-900">
+                ${total.toLocaleString()}
+              </span>
+            </div>
+            <button
+              className="w-full bg-[#4B3A3A] text-white py-3 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold"
+              onClick={() => alert('Ir al checkout')}
+            >
+              Ir al checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null;
+
+  return { addToCart, CartModal };
+}
+// --- FIN: Hook y Modal de Carrito ---

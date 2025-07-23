@@ -64,7 +64,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/edit-tienda', [ArtesanoDashboardController::class, 'editTienda'])->name('edit-tienda');
             Route::put('/update-tienda', [ArtesanoDashboardController::class, 'updateTienda'])->name('update-tienda');
             Route::get('/edit-producto/{id}', [ArtesanoDashboardController::class, 'editProducto'])->name('edit-producto');
-            Route::put('/update-producto/{id}', [ArtesanoDashboardController::class, 'updateProducto'])->name('update-producto');
+            Route::match(['put', 'post'], 'update-producto/{id}', [
+                App\Http\Controllers\Dashboard\ArtesanoDashboardController::class, 'updateProducto'
+            ])->name('update-producto');
             Route::delete('/delete-producto/{id}', [ArtesanoDashboardController::class, 'deleteProducto'])->name('delete-producto');
         });
     });

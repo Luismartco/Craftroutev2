@@ -12,28 +12,21 @@ import SelectInput from '@/Components/SelectInput';
 export default function EditProducto({ producto }) {
     // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
-        if (!imagePath) {
-            console.log('No image path provided');
-            return '/images/placeholder.jpg';
+        if (!imagePath) return '';
+        if (imagePath.startsWith('storage/')) {
+            return `/${imagePath}`;
         }
-
-        // Log para debug
-        console.log('Original image path:', imagePath);
-
-        // Usar URL relativa
-        const url = `/storage/${imagePath}`;
-        
-        // Log para debug
-        console.log('Generated URL:', url);
-        
-        return url;
+        if (imagePath.startsWith('productos/')) {
+            return `/storage/${imagePath}`;
+        }
+        return `/storage/${imagePath}`;
     };
 
     // Función para manejar errores de carga de imágenes
     const handleImageError = (e) => {
-        console.error('Error loading image:', e.target.src);
+        console.error('Error al cargar imagen:', e.target.src);
         e.target.onerror = null;
-        e.target.src = '/images/placeholder.jpg';
+        e.target.style.display = 'none';
     };
 
     // Log para debug cuando el componente se monta
@@ -57,10 +50,12 @@ export default function EditProducto({ producto }) {
         nuevas_imagenes: []
     };
 
-    const { data, setData, put, processing, errors, reset } = useForm(initialData);
+    const { data, setData, post, processing, errors, reset } = useForm(initialData);
 
     const [previewImages, setPreviewImages] = useState([]);
     const [existingImages, setExistingImages] = useState(producto?.imagenes || []);
+    const [imgIndex, setImgIndex] = useState(0);
+    const visibleImages = existingImages.filter(img => !data.imagenes_eliminadas.includes(img.id));
 
     // Limpiar las URLs de vista previa al desmontar
     useEffect(() => {
@@ -85,15 +80,16 @@ export default function EditProducto({ producto }) {
                 formData.append(key, data[key]);
             }
         });
-
         data.nuevas_imagenes.forEach(file => {
             formData.append('nuevas_imagenes[]', file);
         });
+        formData.append('_method', 'PUT'); // Importante para Laravel
 
-        put(route('dashboard.artesano.update-producto', producto.id), {
+        post(route('dashboard.artesano.update-producto', producto.id), {
             data: formData,
             onSuccess: () => {
                 setPreviewImages([]);
+                window.location.href = route('dashboard.artesano.index');
             },
             preserveScroll: true,
             forceFormData: true,
@@ -147,6 +143,13 @@ export default function EditProducto({ producto }) {
 
     const setMainImage = (imageId) => {
         setData('imagen_principal', imageId);
+    };
+
+    const handlePrevImg = () => {
+        setImgIndex(idx => (idx > 0 ? idx - 1 : visibleImages.length - 1));
+    };
+    const handleNextImg = () => {
+        setImgIndex(idx => (idx < visibleImages.length - 1 ? idx + 1 : 0));
     };
 
     return (
@@ -304,33 +307,26 @@ export default function EditProducto({ producto }) {
                                 <div className="mt-6">
                                     <InputLabel value="Imágenes Actuales del Producto" />
                                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                        {existingImages.map((imagen) => {
-                                            const isDeleted = data.imagenes_eliminadas.includes(imagen.id);
+                                        {existingImages.filter(img => !data.imagenes_eliminadas.includes(img.id)).map((imagen) => {
+                                            const url = getImageUrl(imagen.ruta_imagen);
                                             const isMain = data.imagen_principal === imagen.id;
-                                            const imageUrl = getImageUrl(imagen.ruta_imagen);
-
-                                            // Log para debug
-                                            console.log('Rendering image:', {
-                                                id: imagen.id,
-                                                path: imagen.ruta_imagen,
-                                                url: imageUrl
-                                            });
-
                                             return (
                                                 <div
                                                     key={imagen.id}
-                                                    className={`relative aspect-square rounded-lg overflow-hidden border-2 ${isMain ? 'border-indigo-500' : 'border-transparent'} ${isDeleted ? 'opacity-50' : ''}`}
+                                                    className={`relative rounded-lg border-2 ${isMain ? 'border-indigo-500' : 'border-gray-200'}`}
+                                                    style={{ background: '#fff', minHeight: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                 >
-                                                    <div className="relative h-full w-full overflow-hidden bg-gray-100">
-                                                        <img
-                                                            src={imageUrl}
-                                                            alt={`Imagen del producto ${imagen.id}`}
-                                                            className="h-full w-full object-cover"
-                                                            onError={handleImageError}
-                                                        />
-                                                    </div>
-                                                    <div className="absolute inset-0 flex flex-col justify-between p-2 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200">
-                                                        {!isDeleted && (
+                                                    <img
+                                                        src={url}
+                                                        alt={`Imagen del producto ${imagen.id}`}
+                                                        className="w-full max-h-48"
+                                                        style={{ display: 'block', margin: '0 auto' }}
+                                                    />
+                                                    <div
+                                                        className="absolute inset-0 flex flex-col justify-between p-2 pointer-events-none"
+                                                        style={{ background: 'transparent' }}
+                                                    >
+                                                        <div className="pointer-events-auto">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => setMainImage(imagen.id)}
@@ -338,14 +334,14 @@ export default function EditProducto({ producto }) {
                                                             >
                                                                 {isMain ? 'Principal' : 'Hacer principal'}
                                                             </button>
-                                                        )}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => isDeleted ? restoreExistingImage(imagen.id) : removeExistingImage(imagen.id)}
-                                                            className={`self-end px-2 py-1 text-xs rounded-full ${isDeleted ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
-                                                        >
-                                                            {isDeleted ? 'Restaurar' : 'Eliminar'}
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeExistingImage(imagen.id)}
+                                                                className="self-end px-2 py-1 text-xs rounded-full bg-red-500 text-white"
+                                                            >
+                                                                Eliminar
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );

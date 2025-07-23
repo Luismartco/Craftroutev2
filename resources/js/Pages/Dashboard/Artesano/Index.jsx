@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, Head, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -243,28 +243,48 @@ export default function Index({ stats, user, tienda }) {
                                         // Obtener la imagen principal o la primera imagen
                                         const imagenPrincipal = producto.imagenes?.find(img => img.es_principal) || producto.imagenes?.[0];
                                         
+                                        const imagenes = producto.imagenes || [];
+                                        const currentImg = carouselIndexes[producto.id] || 0;
+
                                         return (
                                             <div key={producto.id} className="bg-white border rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow flex flex-col md:flex-row w-full">
-                                                {/* Sección de imágenes */}
-                                                <div className="relative h-48 md:h-auto md:w-48 w-full overflow-hidden bg-gray-100 flex-shrink-0">
-                                                    {imagenPrincipal ? (
+                                                {/* Carrusel de imágenes */}
+                                                <div className="relative h-48 md:h-auto md:w-48 w-full overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                                                    {imagenes.length > 0 && (
                                                         <>
                                                             <img
-                                                                src={getImageUrl(imagenPrincipal.ruta_imagen)}
+                                                                src={getImageUrl(imagenes[currentImg]?.ruta_imagen)}
                                                                 alt={producto.nombre}
                                                                 className="h-full w-full object-contain"
                                                                 onError={handleImageError}
                                                             />
-                                                            {producto.imagenes?.length > 1 && (
-                                                                <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                                                    +{producto.imagenes.length - 1} más
-                                                                </div>
+                                                            {imagenes.length > 1 && (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => handlePrev(producto.id, imagenes.length)}
+                                                                        className="absolute left-2 top-1/2 -translate-y-1/2 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                        aria-label="Anterior"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleNext(producto.id, imagenes.length)}
+                                                                        className="absolute right-2 top-1/2 -translate-y-1/2 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                        aria-label="Siguiente"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                                    </button>
+                                                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                                                        {imagenes.map((_, idx) => (
+                                                                            <span
+                                                                                key={idx}
+                                                                                className={`inline-block w-2 h-2 rounded-full ${idx === currentImg ? 'bg-[#4B3A3A]' : 'bg-gray-300'}`}
+                                                                            />
+                                                                        ))}
+                                                                    </div>
+                                                                </>
                                                             )}
                                                         </>
-                                                    ) : (
-                                                        <div className="h-full w-full flex items-center justify-center text-gray-400">
-                                                            Sin imágenes
-                                                        </div>
                                                     )}
                                                 </div>
                                                 
