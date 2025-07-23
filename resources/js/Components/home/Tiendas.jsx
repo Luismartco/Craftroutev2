@@ -82,7 +82,7 @@ const Tiendas = () => {
 
   return (
 <div className="px-6 py-10 bg-gray-50">
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
     {tiendasParaMostrar.map((tienda, index) => (
       <div
         key={index}
@@ -93,7 +93,7 @@ const Tiendas = () => {
           alt={tienda.nombre}
           className="w-16 h-16 object-cover rounded-full shrink-0"
         />
-        <div className="flex-1">
+        <div className="w-full">
           <h3 className="text-xl font-semibold text-gray-800 mb-1">{tienda.nombre}</h3>
           <p className="text-sm text-gray-600">{tienda.descripcion}</p>
           <p className="text-sm text-gray-500 mt-2">

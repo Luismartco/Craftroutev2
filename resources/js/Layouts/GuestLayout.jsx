@@ -4,7 +4,7 @@ import Footer from '../Components/Footer';
 
 const GuestLayout = ({ children, auth, fullWidth = false }) => {
     return (
-        <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-[#f5f5f5] font-sans">
+        <div className="min-h-screen flex flex-col bg-[#f5f5f5] font-sans">
             <Navbar auth={auth} />
             <main>
                 {fullWidth ? children : (

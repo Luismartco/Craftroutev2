@@ -25,15 +25,16 @@ const MapasMorroaSampues = () => {
     }, []);
 
     return (
-        <div style={{display: "flex", justifyContent: "center"}}> 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px",  width: "auto"}}>
+        <div className="flex justify-center px-4 py-8"> 
+            <div className="grid gird-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl" >
                 <div>
-                    <h3 style={{ textAlign: "center", color: "#333" }}>Morroa</h3>
-                    <div id="map-morroa" style={{ width: "600px", height: "400px",  borderRadius: "10px", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}></div>
+                    <h3 className="text-center">Morroa</h3>
+                    <div id="map-morroa" 
+                    className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md"></div>
                 </div>
                 <div>
-                    <h3 style={{ textAlign: "center", color: "#333" }}>Sampués</h3>
-                    <div id="map-sampues" style={{ width: "600px",  height: "400px", borderRadius: "10px", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}></div>
+                    <h3 className="text-center">Sampués</h3>
+                    <div id="map-sampues" className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md"></div>
                 </div>
             </div>
         </div>
