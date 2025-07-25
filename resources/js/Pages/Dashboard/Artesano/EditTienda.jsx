@@ -7,6 +7,7 @@ import SelectInput from '@/Components/SelectInput';
 import InputError from '@/Components/InputError';
 
 export default function EditTienda({ tienda }) {
+    const [previewImage, setPreviewImage] = useState(tienda.foto_perfil ? `/storage/${tienda.foto_perfil}` : null);
     const { data, setData, post, processing, errors } = useForm({
         nombre: tienda.nombre,
         barrio: tienda.barrio,
@@ -21,7 +22,42 @@ export default function EditTienda({ tienda }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('dashboard.artesano.update-tienda'));
+        const formData = new FormData();
+        formData.append('nombre', data.nombre);
+        formData.append('barrio', data.barrio);
+        formData.append('direccion', data.direccion);
+        formData.append('telefono', data.telefono);
+        formData.append('municipio_venta', data.municipio_venta);
+        formData.append('latitude', data.latitude);
+        formData.append('longitude', data.longitude);
+        formData.append('_method', 'PUT');
+        if (data.foto_perfil) {
+            formData.append('foto_perfil', data.foto_perfil);
+        }
+        post(route('dashboard.artesano.update-tienda'), {
+            data: formData,
+            forceFormData: true,
+        });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) { // 10MB
+                alert('La imagen no debe superar los 10MB');
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecciona un archivo de imagen válido');
+                return;
+            }
+            setData('foto_perfil', file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const getLocation = () => {
@@ -169,20 +205,20 @@ export default function EditTienda({ tienda }) {
                                     </button>
                                 </div>
 
-                                {/* Campo de imagen (sin funcionalidad) */}
-                                <div className="mt-6">
+                                {/* Campo de imagen con vista previa */}
+                                <div className="mt-6 flex flex-col items-center">
                                     <InputLabel htmlFor="foto_perfil" value="Foto de Perfil" />
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div className="space-y-1 text-center">
-                                            {tienda.foto_perfil && (
-                                                <div className="mb-4">
-                                                    <img
-                                                        src={`/storage/${tienda.foto_perfil}`}
-                                                        alt="Foto actual"
-                                                        className="mx-auto h-32 w-32 object-cover rounded-full"
-                                                    />
-                                                </div>
-                                            )}
+                                    <div
+                                        className="h-32 w-32 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden cursor-pointer flex items-center justify-center relative"
+                                        onClick={() => document.getElementById('foto_perfil').click()}
+                                    >
+                                        {previewImage ? (
+                                            <img
+                                                src={previewImage}
+                                                alt="Vista previa"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
                                             <svg
                                                 className="mx-auto h-12 w-12 text-gray-400"
                                                 stroke="currentColor"
@@ -197,25 +233,29 @@ export default function EditTienda({ tienda }) {
                                                     strokeLinejoin="round"
                                                 />
                                             </svg>
-                                            <div className="flex text-sm text-gray-600">
-                                                <label
-                                                    htmlFor="foto_perfil"
-                                                    className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                                                >
-                                                    <span>Cambiar foto</span>
-                                                    <input
-                                                        id="foto_perfil"
-                                                        name="foto_perfil"
-                                                        type="file"
-                                                        className="sr-only"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <p className="pl-1">o arrastrar y soltar</p>
-                                            </div>
-                                            <p className="text-xs text-gray-500">PNG, JPG, GIF hasta 10MB</p>
-                                        </div>
+                                        )}
+                                        <input
+                                            id="foto_perfil"
+                                            name="foto_perfil"
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
+                                        {previewImage && (
+                                            <button
+                                                type="button"
+                                                onClick={e => { e.stopPropagation(); setPreviewImage(null); setData('foto_perfil', null); }}
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                            >
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
                                     </div>
+                                    <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF hasta 10MB</p>
+                                    <InputError message={errors.foto_perfil} className="mt-2" />
                                 </div>
 
                                 {/* Botón de envío */}
