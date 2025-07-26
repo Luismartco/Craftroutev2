@@ -39,7 +39,7 @@ const Categories = () => {
                 prev.map((cat) => (cat.id === category.id ? category : cat))
         );
         } else {
-            setCategories((prev) => [...prev, category]);
+            setCategories((prev) => [category,...prev]);
         }
         setModalOpen(false);
     };
