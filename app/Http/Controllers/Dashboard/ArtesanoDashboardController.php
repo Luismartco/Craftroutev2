@@ -182,6 +182,7 @@ public function storeProducto(Request $request)
         'municipio_venta' => 'required|string|in:morroa,sampues',
         'tecnica_artesanal' => 'required|string|in:telar_horizontal,bordado,cosido',
         'materia_prima' => 'required|string|in:paja,algodon,fique,ceramica,hilos,canamos',
+        'color' => 'nullable|string|max:255',
     ]);
 
     // Validación de imágenes por separado
@@ -252,6 +253,7 @@ public function storeProducto(Request $request)
         'municipio_venta' => 'nullable|string|in:morroa,sampues',
         'tecnica_artesanal' => 'nullable|string|in:telar_horizontal,bordado,cosido',
         'materia_prima' => 'nullable|string|in:paja,algodon,fique,ceramica,hilos,canamos',
+        'color' => 'nullable|string|max:255',
         'imagenes_eliminadas' => 'nullable|array',
         'imagenes_eliminadas.*' => 'integer|exists:imagenes_productos,id',
         'imagen_principal' => 'nullable|integer|exists:imagenes_productos,id',
@@ -281,7 +283,8 @@ public function storeProducto(Request $request)
             'categoria',
             'municipio_venta',
             'tecnica_artesanal',
-            'materia_prima'
+            'materia_prima',
+            'color'
         ]));
         Log::info('Producto actualizado correctamente', [
             'producto_id' => $producto->id,
@@ -293,7 +296,8 @@ public function storeProducto(Request $request)
                 'categoria',
                 'municipio_venta',
                 'tecnica_artesanal',
-                'materia_prima'
+                'materia_prima',
+                'color'
             ]),
         ]);
     } catch (\Exception $e) {
