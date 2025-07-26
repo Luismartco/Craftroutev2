@@ -19,6 +19,7 @@ class Producto extends Model
         'municipio_venta',
         'tecnica_artesanal',
         'materia_prima',
+        'color',
         'user_id',
     ];
 

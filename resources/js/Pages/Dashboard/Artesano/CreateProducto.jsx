@@ -20,6 +20,7 @@ export default function CreateProducto() {
         municipio_venta: '',
         tecnica_artesanal: '',
         materia_prima: '',
+        color: '',
         imagenes: [],
     });
 
@@ -225,6 +226,19 @@ export default function CreateProducto() {
                                             <option value="canamos">Cañamos</option>
                                         </SelectInput>
                                         <InputError message={errors.materia_prima} className="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel htmlFor="color" value="Color" />
+                                        <TextInput
+                                            id="color"
+                                            name="color"
+                                            value={data.color}
+                                            className="mt-1 block w-full"
+                                            onChange={(e) => setData('color', e.target.value)}
+                                            placeholder="Ej: Rojo, Azul, Verde, etc."
+                                        />
+                                        <InputError message={errors.color} className="mt-2" />
                                     </div>
                                 </div>
 

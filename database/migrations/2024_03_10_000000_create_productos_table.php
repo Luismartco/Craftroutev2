@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('municipio_venta');
             $table->string('tecnica_artesanal');
             $table->string('materia_prima');
+            $table->string('color')->nullable();
             $table->timestamps();
         });
     }
