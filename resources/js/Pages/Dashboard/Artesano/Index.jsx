@@ -311,6 +311,10 @@ export default function Index({ stats, user, tienda }) {
                                                                 <span className="font-medium">Materia Prima:</span>{' '}
                                                                 <span className="capitalize">{producto.materia_prima}</span>
                                                             </p>
+                                                            <p className="text-sm">
+                                                                <span className="font-medium">Color:</span>{' '}
+                                                                <span className="capitalize">{producto.color || 'No especificado'}</span>
+                                                            </p>
                                                         </div>
                                                     </div>
                                                     <div className="mt-4 flex space-x-2">
