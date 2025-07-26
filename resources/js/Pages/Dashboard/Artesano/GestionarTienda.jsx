@@ -25,12 +25,18 @@ export default function GestionarTienda({ tienda, productos = [] }) {
                         {/* Columna izquierda - Información de la tienda */}
                         <div className="bg-white rounded-lg shadow p-10 w-full max-w-full mx-auto">
                             {/* Foto de perfil */}
-                            <div className="h-32 w-32 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden">
-                                <img
-                                    src={tienda.foto_perfil ? `/storage/${tienda.foto_perfil}` : 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80'}
-                                    alt={tienda.nombre}
-                                    className="h-full w-full object-cover"
-                                />
+                            <div className="h-32 w-32 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden flex items-center justify-center relative">
+                                {tienda.foto_perfil ? (
+                                    <img
+                                        src={tienda.foto_perfil.startsWith('http') ? tienda.foto_perfil : `/storage/${tienda.foto_perfil}`}
+                                        alt={tienda.nombre}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-3xl font-medium text-gray-600">
+                                        {tienda.nombre ? tienda.nombre.charAt(0) : '?'}
+                                    </span>
+                                )}
                             </div>
                             
                             {/* Información básica */}

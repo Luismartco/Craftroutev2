@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
             'name' => 'Administrador',
             'last_name' => 'Craftroute',
             'email' => 'admin@craftroute.com',
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('123456789'),
             'role' => 'admin',
             'birth_date' => null,
             'gender' => null,
