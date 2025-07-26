@@ -45,6 +45,7 @@ export default function EditProducto({ producto }) {
         municipio_venta: producto?.municipio_venta || 'morroa',
         tecnica_artesanal: producto?.tecnica_artesanal || 'telar_horizontal',
         materia_prima: producto?.materia_prima || 'paja',
+        color: producto?.color || '',
         imagenes_eliminadas: [],
         imagen_principal: producto?.imagenes?.find(img => img.es_principal)?.id || null,
         nuevas_imagenes: []
@@ -286,6 +287,19 @@ export default function EditProducto({ producto }) {
                                             <option value="canamos">Cañamos</option>
                                         </SelectInput>
                                         <InputError message={errors.materia_prima} className="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel htmlFor="color" value="Color" />
+                                        <TextInput
+                                            id="color"
+                                            name="color"
+                                            value={data.color}
+                                            className="mt-1 block w-full"
+                                            onChange={(e) => setData('color', e.target.value)}
+                                            placeholder="Ej: Rojo, Azul, Verde, etc."
+                                        />
+                                        <InputError message={errors.color} className="mt-2" />
                                     </div>
                                 </div>
 
