@@ -43,7 +43,7 @@ export default function EditProducto({ producto }) {
         cantidad_disponible: producto?.cantidad_disponible?.toString() || '0',
         categoria: producto?.categoria || 'tejido',
         municipio_venta: producto?.municipio_venta || 'morroa',
-        tecnica_artesanal: producto?.tecnica_artesanal || 'telar_horizontal',
+        tecnica_artesanal: producto?.tecnica_artesanal || 'telar horizontal',
         materia_prima: producto?.materia_prima || 'paja',
         color: producto?.color || '',
         imagenes_eliminadas: [],
@@ -262,7 +262,7 @@ export default function EditProducto({ producto }) {
                                             onChange={(e) => setData('tecnica_artesanal', e.target.value)}
                                             required
                                         >
-                                            <option value="telar_horizontal">Telar Horizontal</option>
+                                            <option value="telar horizontal">Telar Horizontal</option>
                                             <option value="bordado">Bordado</option>
                                             <option value="cosido">Cosido</option>
                                         </SelectInput>
@@ -442,7 +442,7 @@ export default function EditProducto({ producto }) {
                                 {/* Botones de acción */}
                                 <div className="flex justify-between pt-6">
                                     <Link
-                                        href={route('dashboard.artesano.gestionar-tienda')}
+                                        href={route('dashboard.artesano.index')}
                                         className="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-800 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
                                     >
                                         Cancelar

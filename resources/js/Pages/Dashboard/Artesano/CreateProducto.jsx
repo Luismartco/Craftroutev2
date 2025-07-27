@@ -200,7 +200,7 @@ export default function CreateProducto() {
                                             required
                                         >
                                             <option value="">Seleccione una técnica</option>
-                                            <option value="telar_horizontal">Telar Horizontal</option>
+                                            <option value="telar horizontal">Telar Horizontal</option>
                                             <option value="bordado">Bordado</option>
                                             <option value="cosido">Cosido</option>
                                         </SelectInput>
