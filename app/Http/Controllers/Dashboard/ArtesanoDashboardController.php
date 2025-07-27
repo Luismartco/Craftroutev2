@@ -180,7 +180,7 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'required|integer|min:0',
         'categoria' => 'required|string|in:tejido,madera,ceramica,joyeria',
         'municipio_venta' => 'required|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'required|string|in:telar_horizontal,bordado,cosido',
+        'tecnica_artesanal' => 'required|string|in:telar horizontal,bordado,cosido',
         'materia_prima' => 'required|string|in:paja,algodon,fique,ceramica,hilos,canamos',
         'color' => 'nullable|string|max:255',
     ]);
@@ -251,7 +251,7 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'nullable|integer|min:0',
         'categoria' => 'nullable|string|in:tejido,madera,ceramica,joyeria',
         'municipio_venta' => 'nullable|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'nullable|string|in:telar_horizontal,bordado,cosido',
+        'tecnica_artesanal' => 'nullable|string|in:telar horizontal,bordado,cosido',
         'materia_prima' => 'nullable|string|in:paja,algodon,fique,ceramica,hilos,canamos',
         'color' => 'nullable|string|max:255',
         'imagenes_eliminadas' => 'nullable|array',
