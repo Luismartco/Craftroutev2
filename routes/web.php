@@ -12,12 +12,14 @@ use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
+    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user'])->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
         'tiendas' => $tiendas,
+        'productos' => $productos,
     ]);
 });
 

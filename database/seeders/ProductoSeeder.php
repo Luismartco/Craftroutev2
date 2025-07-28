@@ -64,6 +64,33 @@ class ProductoSeeder extends Seeder
                         'color' => 'Blanco y Azul',
                     ]
                 ],
+            ],
+            [
+                'email' => 'patricia@cr.com',
+                'productos' => [
+                    [
+                        'nombre' => 'Tapete de Cañamo Tejido',
+                        'descripcion' => 'Tapete artesanal tejido con fibra de cáñamo. Resistente al tráfico y perfecto para decoración del hogar. Elaborado con técnicas tradicionales.',
+                        'precio' => 95000,
+                        'cantidad_disponible' => 10,
+                        'categoria' => 'tejido',
+                        'municipio_venta' => 'morroa',
+                        'tecnica_artesanal' => 'telar horizontal',
+                        'materia_prima' => 'canamos',
+                        'color' => 'Marrón Natural',
+                    ],
+                    [
+                        'nombre' => 'Bolso de Fique Ecológico',
+                        'descripcion' => 'Bolso elaborado con fibra de fique, material 100% natural y biodegradable. Perfecto para compras ecológicas. Resistente al peso y duradero.',
+                        'precio' => 45000,
+                        'cantidad_disponible' => 25,
+                        'categoria' => 'tejido',
+                        'municipio_venta' => 'sampues',
+                        'tecnica_artesanal' => 'cosido',
+                        'materia_prima' => 'fique',
+                        'color' => 'Natural',
+                    ]
+                ],
             ]
         ];
 

@@ -8,7 +8,7 @@ import Tiendas from '../Components/home/Tiendas';
 import Maps from '../Components/home/Maps';
 import Prod from '@/Components/home/Prod';
 
-export default function Welcome({ auth, tiendas = [] }) {
+export default function Welcome({ auth, tiendas = [], productos = [], user }) {
     const locations = {
         morroa: { lat: 9.3337, lng: -75.3022, name: "Morroa" },
         sampues: { lat: 9.1835, lng: -75.3812, name: "Sampués" }
@@ -40,7 +40,7 @@ export default function Welcome({ auth, tiendas = [] }) {
                         elaborados con técnicas tradicionales y materiales de la más alta calidad.
                     </p>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-            <Prod />
+            <Prod productos={productos} user={auth?.user || user} />
             <div className="w-50 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
             {/* <ProductList />*/}
