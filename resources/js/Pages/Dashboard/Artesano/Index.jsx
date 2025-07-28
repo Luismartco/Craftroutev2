@@ -4,6 +4,7 @@ import { Link, Head, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useRef } from 'react';
+import Maps from '@/Components/home/Maps';
 
 export default function Index({ stats, user, tienda }) {
     // Función para construir la URL correcta de la imagen
@@ -59,8 +60,11 @@ const handleNext = (productoId, totalImages) => {
     });
 };
 
-
-
+const location = {
+    lat: parseFloat(user.latitude),
+    lng: parseFloat(user.longitude),
+    name: user.residence_municipality
+}
 
     return (
         <AuthenticatedLayout>
@@ -202,21 +206,7 @@ const handleNext = (productoId, totalImages) => {
                                 <div className="mt-10 bg-white rounded-lg shadow p-10 w-full max-w-full mx-auto">
                                     <h2 className="text-lg font-semibold mb-4">Ubicación</h2>
                                     <div className="h-64 w-full rounded-lg overflow-hidden">
-                                        <MapContainer
-                                            center={[user.latitude, user.longitude]}
-                                            zoom={13}
-                                            style={{ height: '100%', width: '100%' }}
-                                        >
-                                            <TileLayer
-                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                            />
-                                            <Marker position={[user.latitude, user.longitude]}>
-                                                <Popup>
-                                                    Tu ubicación
-                                                </Popup>
-                                            </Marker>
-                                        </MapContainer>
+                                        <Maps position={location} />
                                     </div>
                                 </div>
                             )}
