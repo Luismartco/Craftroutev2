@@ -1,6 +1,7 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, useForm, Head, router } from '@inertiajs/react';
+import Maps from '@/Components/home/Maps';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -16,6 +17,12 @@ export default function GestionarTienda({ tienda, productos = [] }) {
             destroy(route('dashboard.artesano.delete-producto', id));
         }
     };
+
+    const location = {
+        lat: parseFloat(tienda.latitude),
+        lng: parseFloat(tienda.longitude),
+        name: tienda.municipio_venta
+    }
 
     return (
         <AuthenticatedLayout>
@@ -74,7 +81,7 @@ export default function GestionarTienda({ tienda, productos = [] }) {
                             </div>
                         </div>
 
-                        {/* Columna izquierda - Información detallada */}
+                        {/* Columna derecha - Información detallada */}
                         <div className="lg:col-span-1 space-y-6">
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                                 <div className="p-6">
@@ -96,20 +103,12 @@ export default function GestionarTienda({ tienda, productos = [] }) {
                                 </div>
                             </div>
 
-                            {/* Mapa en la columna izquierda */}
+                            {/* Mapa en la columna derecha */}
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                                 <div className="p-6">
                                     <h3 className="text-lg font-medium text-gray-900 mb-4">Ubicación</h3>
                                     <div className="h-64 bg-gray-100 rounded-lg">
-                                        <MapContainer
-                                            center={[tienda.latitude || 9.3047, tienda.longitude || -75.3977]}
-                                            zoom={13}
-                                            className="h-full w-full rounded-lg"
-                                        >
-                                            {tienda.latitude && tienda.longitude && (
-                                                <Marker position={[tienda.latitude, tienda.longitude]} />
-                                            )}
-                                        </MapContainer>
+                                       <Maps position={location} />
                                     </div>
                                 </div>
                             </div>

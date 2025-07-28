@@ -5,11 +5,17 @@ import FlexTricks from '../Components/home/FlexTricks';
 import UserCards from '../Components/home/UsersCards';
 import ProductList from '../Components/home/Products';
 import Tiendas from '../Components/home/Tiendas';
-import MapasMorroaSampues from '../Components/home/Mapas';
+import Maps from '../Components/home/Maps';
 import Prod from '@/Components/home/Prod';
 
 
 export default function Welcome({ auth }) {
+
+    const locations = {
+        morroa: { lat: 9.3337, lng: -75.3022, name: "Morroa" },
+        sampues: { lat: 9.1835, lng: -75.3812, name: "Sampués" }
+    };
+
     return (
          <>
          <style>{`
@@ -41,7 +47,25 @@ export default function Welcome({ auth }) {
 
             {/* <ProductList />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">¿Cómo llegar a esos municipios?</h1>
-            <MapasMorroaSampues />
+            {/* Mapas */}
+            <div className="flex justify-center px-4 py-8"> 
+            <div className="grid gird-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl" >
+                <div>
+                    <h3 className="text-center">Morroa</h3>
+                    <div id="map-morroa" 
+                    className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md">
+                        <Maps position={locations.morroa} />
+                    </div>
+                </div>
+                <div>
+                    <h3 className="text-center">Sampués</h3>
+                    <div id="map-sampues" className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md">
+                        <Maps position={locations.sampues} />
+                    </div>
+                </div>
+            </div>
+        </div>
+            
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold pb-8">Te esperamos 😊</h1>           
         </GuestLayout>
         </>

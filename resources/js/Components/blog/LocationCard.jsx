@@ -1,6 +1,14 @@
 import React from 'react';
+import Maps from '../home/Maps';
 
 const LocationCard = () => {
+
+    const location = {
+        lat: 9.3337,
+        lng: -75.3022,
+        name: "Morroa"
+    }
+
     return (
         <article className="bg-white shadow-lg rounded-2xl overflow-hidden w-full h-60 hover:-translate-y-2 transition-all duration-500 border border-gray-100">
             <div className="flex h-full">
@@ -19,15 +27,7 @@ const LocationCard = () => {
                 {/* Mapa expandido */}
                 <div className="flex-1 p-3">
                     <div className="h-full rounded-lg overflow-hidden shadow-inner">
-                        <iframe
-                            title="ubicación de la tienda"
-                            src="https://maps.google.com/maps?q=9.3337,-75.3022&z=15&output=embed"
-                            className="w-full h-full"
-                            style={{ border: 0 }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                        />
+                        <Maps position={location} />
                     </div>
                 </div>
             </div>
