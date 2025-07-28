@@ -249,14 +249,87 @@ function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, 
   ) : null;
 }
 
-const ProductGallery = () => {
+const CATEGORIAS = [
+  { value: '', label: 'Todas las categorías' },
+  { value: 'tejido', label: 'Tejido' },
+  { value: 'madera', label: 'Madera' },
+  { value: 'ceramica', label: 'Cerámica' },
+  { value: 'joyeria', label: 'Joyería' },
+];
+const MUNICIPIOS = [
+  { value: '', label: 'Todos los municipios' },
+  { value: 'morroa', label: 'Morroa' },
+  { value: 'sampues', label: 'Sampues' },
+];
+const RANGOS_PRECIOS = [
+  { value: '', label: 'Todos los precios' },
+  { value: '0-10000', label: 'Hasta $10.000' },
+  { value: '10001-50000', label: '$10.001 - $50.000' },
+  { value: '50001-100000', label: '$50.001 - $100.000' },
+  { value: '100001-200000', label: '$100.001 - $200.000' },
+  { value: '200001-', label: 'Más de $200.000' },
+];
+
+const Prod = ({ producto, onClick, onBuy, user }) => {
+  const isCustomer = user && user.role === 'customer';
+  const isLogged = !!user;
+  let img = '';
+  if (producto.imagenes && producto.imagenes.length > 0) {
+    img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
+  }
+  const showAddToCart = !isLogged || isCustomer;
+  return (
+    <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
+      {img && (
+        <img
+          src={img}
+          alt={producto.nombre}
+          className="w-full h-48 object-contain rounded-lg mb-4"
+        />
+      )}
+      <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
+      <p className="text-gray-600 mb-2">{producto.descripcion}</p>
+      <p className="text-gray-800 font-semibold mb-4">
+        ${producto.precio?.toLocaleString?.() ?? producto.precio}
+      </p>
+      <div className="flex flex-row justify-center gap-2">
+        {showAddToCart && (
+          <button
+            onClick={() => {
+              if (!isLogged) {
+                alert('Debes iniciar sesión para poder adquirir el artículo.');
+              } else if (isCustomer) {
+                onBuy();
+              }
+            }}
+            className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
+          >
+            Agregar al carrito
+          </button>
+        )}
+        <button
+          onClick={onClick}
+          className="p-2 text-sm bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
+        >
+          Ver detalles
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const ProductGallery = ({ productos = [], user }) => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
   const [verTodos, setVerTodos] = useState(false);
-
-  // Estado y lógica global del carrito
   const [showCart, setShowCart] = useState(false);
   const [cart, setCart] = useState([]);
+  const [categoria, setCategoria] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [rangoPrecio, setRangoPrecio] = useState('');
+
+  // Ordenar productos de más nuevo a más antiguo (por id descendente)
+  const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
   const addToCart = (producto) => {
     setShowCart(true);
@@ -271,6 +344,7 @@ const ProductGallery = () => {
     });
   };
 
+  // --- FUNCIONES PARA EL CARRITO (usadas por CartModal) ---
   const changeQuantity = (id, delta) => {
     setCart((prev) =>
       prev
@@ -290,69 +364,74 @@ const ProductGallery = () => {
   const goToCheckout = () => {
     alert('Ir al checkout');
   };
+  // --- FIN FUNCIONES CARRITO ---
 
-  const closeModal = () => {
-    setSelected(null);
-    setImgIndex(0);
-  };
+  // Filtrado conjunto
+  let productosFiltrados = productosOrdenados.filter((prod) => {
+    let ok = true;
+    if (categoria && prod.categoria !== categoria) ok = false;
+    if (municipio && prod.municipio_venta !== municipio) ok = false;
+    if (rangoPrecio) {
+      const [min, max] = rangoPrecio.split('-');
+      const precio = Number(prod.precio);
+      if (min && precio < Number(min)) ok = false;
+      if (max && max !== '' && precio > Number(max)) ok = false;
+    }
+    return ok;
+  });
 
-  const nextImg = () =>
-    setImgIndex((prev) => (prev + 1) % selected.imagenes.length);
-
-  const prevImg = () =>
-    setImgIndex((prev) => (prev - 1 + selected.imagenes.length) % selected.imagenes.length);
-
-  const handleBuy = (producto) => {
-    alert(`Comprando: ${producto.nombre}`);
-    // Aquí puedes redirigir o abrir un checkout
-  };
-
-  const productosAMostrar = verTodos ? productos : productos.slice(0, 4);
+  const productosAMostrar = verTodos ? productosFiltrados : productosFiltrados.slice(0, 4);
 
   return (
     <>
-    <br />
-<div className="mb-6 flex flex-wrap gap-10 justify-center">
-  {/* Filtro por Municipio */}
-  <div className="flex flex-col w-80">
-    <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
-    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
-      <option value="">Todos los municipios</option>
-      <option value="Morroa">Morroa</option>
-      <option value="Sampués">Sampués</option>
-    </select>
-  </div>
-
-  {/* Filtro por Categoría */}
-  <div className="flex flex-col w-80">
-    <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
-    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
-      <option value="">Todas las categorías</option>
-      <option value="ropa">Ropa</option>
-      <option value="joyería">Joyería</option>
-      <option value="electrónica">Electrónica</option>
-    </select>
-  </div>
-
-  {/* Filtro por Precio */}
-  <div className="flex flex-col w-80">
-    <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
-    <select className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
-      <option value="ropa">5.000 - 10.000</option>
-      <option value="joyería">10.000 - 50.000</option>
-      <option value="electrónica">50.000 - 100.000</option>
-      <option value="electrónica">100.000 - 200.000</option>
-      <option value="electrónica">Más de 200.000</option>
-    </select>
-  </div>
-</div>
-
-
+      <br />
+      <div className="mb-6 flex flex-wrap gap-10 justify-center">
+        {/* Filtro por Municipio */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={municipio}
+            onChange={e => setMunicipio(e.target.value)}
+          >
+            {MUNICIPIOS.map(m => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Filtro por Categoría */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={categoria}
+            onChange={e => setCategoria(e.target.value)}
+          >
+            {CATEGORIAS.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Filtro por Precio */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={rangoPrecio}
+            onChange={e => setRangoPrecio(e.target.value)}
+          >
+            {RANGOS_PRECIOS.map(r => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
         {productosAMostrar.map((prod, index) => (
           <Prod
-            key={index}
+            key={prod.id || index}
             producto={prod}
+            user={user}
             onClick={() => {
               setSelected(prod);
               setImgIndex(0);
@@ -361,8 +440,7 @@ const ProductGallery = () => {
           />
         ))}
       </div>
-
-      {!verTodos && (
+      {!verTodos && productosFiltrados.length > 4 && (
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setVerTodos(true)}
@@ -378,34 +456,45 @@ const ProductGallery = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-10 w-full max-w-5xl relative shadow-2xl border border-gray-200">
             <button
-              onClick={closeModal}
+              onClick={() => {
+                setSelected(null);
+                setImgIndex(0);
+              }}
               className="absolute top-4 right-6 text-3xl font-bold text-gray-400 hover:text-[#2B1F1F] transition"
               aria-label="Cerrar"
             >
               ×
             </button>
-
             <div className="flex flex-col md:flex-row gap-10 items-center mb-6">
               <div className="flex flex-col items-center min-w-[340px]">
                 <div className="flex items-center mb-3">
-                  <button onClick={prevImg} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">‹</button>
-                  <img
-                    src={selected.imagenes[imgIndex]}
-                    alt="Producto"
-                    className="w-96 h-80 object-contain mx-2 rounded-xl"
-                  />
-                  <button onClick={nextImg} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">›</button>
+                  {selected.imagenes && selected.imagenes.length > 0 && (
+                    <>
+                      <button onClick={() => setImgIndex((prev) => (prev - 1 + selected.imagenes.length) % selected.imagenes.length)} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">‹</button>
+                      <img
+                        src={`/storage/${selected.imagenes[imgIndex].ruta_imagen}`}
+                        alt="Producto"
+                        className="w-96 h-80 object-contain mx-2 rounded-xl"
+                      />
+                      <button onClick={() => setImgIndex((prev) => (prev + 1) % selected.imagenes.length)} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">›</button>
+                    </>
+                  )}
+                  {(!selected.imagenes || selected.imagenes.length === 0) && (
+                    <div className="w-96 h-80 flex items-center justify-center bg-gray-100 rounded-xl text-gray-400">Sin imagen</div>
+                  )}
                 </div>
-                <div className="flex gap-2 mt-2">
-                  {selected.imagenes.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setImgIndex(idx)}
-                      className={`w-4 h-4 rounded-full border-2 ${imgIndex === idx ? 'bg-[#4B3A3A] border-[#4B3A3A]' : 'bg-gray-200 border-gray-300'} transition`}
-                      aria-label={`Ver imagen ${idx + 1}`}
-                    />
-                  ))}
-                </div>
+                {selected.imagenes && selected.imagenes.length > 1 && (
+                  <div className="flex gap-2 mt-2">
+                    {selected.imagenes.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setImgIndex(idx)}
+                        className={`w-4 h-4 rounded-full border-2 ${imgIndex === idx ? 'bg-[#4B3A3A] border-[#4B3A3A]' : 'bg-gray-200 border-gray-300'} transition`}
+                        aria-label={`Ver imagen ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex-1 w-full max-w-xl">
                 <h2 className="text-3xl font-extrabold mb-3 text-[#2B1F1F]">{selected.nombre}</h2>
@@ -460,40 +549,6 @@ const ProductGallery = () => {
 };
 
 // Actualiza el componente Prod con los botones en orden invertido
-const Prod = ({ producto, onClick, onBuy }) => {
-  return (
-    <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
-      <img
-        src={producto.imagenes[0]}
-        alt={producto.nombre}
-        className="w-full h-48 object-contain rounded-lg mb-4"
-      />
-      <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
-      <p className="text-gray-600 mb-2">{producto.descripcion}</p>
-      <p className="text-gray-800 font-semibold mb-4">
-        ${producto.precio.toLocaleString()}
-      </p>
-      <div className="flex flex-wrap justify-center space-x-2">
-        <button
-          onClick={onBuy}
-          className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
-        >
-          Agregar al carrito
-        </button>
-        <button
-          onClick={onClick}
-          className="p-2 text-sm bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
-        >
-          Ver detalles
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default ProductGallery;
-
-// --- INICIO: Hook y Modal de Carrito ---
 export function useCartModal() {
   const [showCart, setShowCart] = useState(false);
   const [cart, setCart] = useState([]);
@@ -616,4 +671,5 @@ export function useCartModal() {
 
   return { addToCart, CartModal };
 }
-// --- FIN: Hook y Modal de Carrito ---
+
+export default ProductGallery;

@@ -8,7 +8,7 @@ const Maps = ({position}) => {
 
         const [camera, setCamera] = useState({
             center: position,
-            zoom: 14
+            zoom: 15
         });
 
         //Esto es para manejar el estado del popup del marker cuando se hace click en el
