@@ -48,24 +48,21 @@ export default function Welcome({ auth }) {
             {/* <ProductList />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">¿Cómo llegar a esos municipios?</h1>
             {/* Mapas */}
-            <div className="flex justify-center px-4 py-8"> 
-            <div className="grid gird-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl" >
-                <div>
-                    <h3 className="text-center">Morroa</h3>
-                    <div id="map-morroa" 
-                    className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md">
-                        <Maps position={locations.morroa} />
-                    </div>
-                </div>
-                <div>
-                    <h3 className="text-center">Sampués</h3>
-                    <div id="map-sampues" className="w-full h-[300px] md:h-[400px] rounded-lg shadow-md">
-                        <Maps position={locations.sampues} />
-                    </div>
+            <div className="flex flex-wrap gap-6 justify-center max-w-[1500px] mx-auto">
+            <div className="w-full md:w-[46%]">
+                <h3 className="text-center text-xl font-semibold mb-2">Morroa</h3>
+                <div id="map-morroa" className="w-full h-[400px] md:h-[500px] rounded-lg shadow-md">
+                <Maps position={locations.morroa} />
                 </div>
             </div>
-        </div>
-            
+
+            <div className="w-full md:w-[46%]">
+                <h3 className="text-center text-xl font-semibold mb-2">Sampués</h3>
+                <div id="map-sampues" className="w-full h-[400px] md:h-[500px] rounded-lg shadow-md">
+                <Maps position={locations.sampues} />
+                </div>
+            </div>
+            </div>  
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold pb-8">Te esperamos 😊</h1>           
         </GuestLayout>
         </>
