@@ -46,8 +46,8 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
             {/* <ProductList />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">¿Cómo llegar a esos municipios?</h1>
             {/* Mapas */}
-            <div className="flex flex-wrap gap-6 justify-center max-w-[1500px] mx-auto">
-            <div className="w-full md:w-[46%]">
+            <div className="flex flex-wrap gap-6 justify-center max-w-[1500px] mx-auto p-4">
+            <div className="w-full md:w-1/2">
                 <h3 className="text-center text-xl font-semibold mb-2">Morroa</h3>
                 <div id="map-morroa" className="w-full h-[400px] md:h-[500px] rounded-lg shadow-md">
                 <Maps position={locations.morroa} />
