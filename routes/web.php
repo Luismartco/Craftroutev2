@@ -11,11 +11,13 @@ use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
+    $tiendas = \App\Models\Tienda::with('user')->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'tiendas' => $tiendas,
     ]);
 });
 

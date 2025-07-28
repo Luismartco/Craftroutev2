@@ -8,9 +8,7 @@ import Tiendas from '../Components/home/Tiendas';
 import Maps from '../Components/home/Maps';
 import Prod from '@/Components/home/Prod';
 
-
-export default function Welcome({ auth }) {
-
+export default function Welcome({ auth, tiendas = [] }) {
     const locations = {
         morroa: { lat: 9.3337, lng: -75.3022, name: "Morroa" },
         sampues: { lat: 9.1835, lng: -75.3812, name: "Sampués" }
@@ -34,7 +32,7 @@ export default function Welcome({ auth }) {
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
-            <Tiendas />
+            <Tiendas tiendas={tiendas} />
             {/*<UserCards />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos</h1>
             <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">

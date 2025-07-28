@@ -390,4 +390,12 @@ public function storeProducto(Request $request)
         return redirect()->route('dashboard.artesano.gestionar-tienda')
             ->with('success', 'Producto eliminado exitosamente');
     }
+
+    public function tiendas()
+    {
+        $tiendas = \App\Models\Tienda::with('user')->get();
+        return \Inertia\Inertia::render('Tiendas', [
+            'tiendas' => $tiendas
+        ]);
+    }
 } 
