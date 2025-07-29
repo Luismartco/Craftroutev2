@@ -1,160 +1,5 @@
 import React, { useState } from "react";
 
-// Importa imágenes
-import prod1img1 from "../../../media/Products/producto1/1.jpeg";
-import prod1img2 from "../../../media/Products/producto1/2.jpeg";
-
-
-import prod2img1 from "../../../media/Products/producto2/1.jpg";
-import prod2img2 from "../../../media/Products/producto2/2.jpg";
-//import prod2img3 from "../../../media/Products/producto2/3.jpeg";
-//import prod2img4 from "../../../media/Products/producto2/4.jpeg";
-//import prod2img5 from "../../../media/Products/producto2/5.jpeg";
-
-import prod3img1 from "../../../media/Products/producto3/1.jpg";
-import prod3img2 from "../../../media/Products/producto3/2.jpg";
-//import prod3img3 from "../../../media/Products/producto3/3.jpeg";
-//import prod3img4 from "../../../media/Products/producto3/4.jpeg";
-//import prod3img5 from "../../../media/Products/producto3/5.jpeg";
-
-import prod4img1 from "../../../media/Products/producto4/1.jpeg";
-import prod4img2 from "../../../media/Products/producto4/2.jpeg";
-//import prod4img3 from "../../../media/Products/producto4/3.jpeg";
-//import prod4img4 from "../../../media/Products/producto4/4.jpeg";
-//import prod4img5 from "../../../media/Products/producto4/5.jpeg";
-
-import prod5img1 from "../../../media/Products/producto5/1.jpg";
-import prod5img2 from "../../../media/Products/producto5/2.jpeg";
-//import prod5img3 from "../../../media/Products/producto5/3.jpeg";
-//import prod5img4 from "../../../media/Products/producto5/4.jpeg";
-//import prod5img5 from "../../../media/Products/producto5/5.jpeg";
-
-import prod6img1 from "../../../media/Products/producto6/1.png";
-import prod6img2 from "../../../media/Products/producto6/2.png";
-//import prod6img3 from "../../../media/Products/producto6/3.jpeg";
-//import prod6img4 from "../../../media/Products/producto6/4.jpeg";
-//import prod6img5 from "../../../media/Products/producto6/5.jpeg";
-
-import prod7img1 from "../../../media/Products/producto7/1.jpg";
-import prod7img2 from "../../../media/Products/producto7/2.jpeg";
-//import prod7img3 from "../../../media/Products/producto7/3.jpeg";
-//import prod7img4 from "../../../media/Products/producto7/4.jpeg";
-//import prod7img5 from "../../../media/Products/producto7/5.jpeg";
-
-import prod8img1 from "../../../media/Products/producto8/1.png";
-import prod8img2 from "../../../media/Products/producto8/2.png";
-//import prod8img3 from "../../../media/Products/producto8/3.jpeg";
-//import prod8img4 from "../../../media/Products/producto8/4.jpeg";
-//import prod8img5 from "../../../media/Products/producto8/5.jpeg";
-
-import prod9img1 from "../../../media/Products/producto9/1.jpg";
-import prod9img2 from "../../../media/Products/producto9/2.jpg";
-//import prod9img3 from "../../../media/Products/producto9/3.jpeg";
-//import prod9img4 from "../../../media/Products/producto9/4.jpeg";
-//import prod9img5 from "../../../media/Products/producto9/5.jpeg";
-
-
-import prod10img1 from "../../../media/Products/producto10/1.png";
-import prod10img2 from "../../../media/Products/producto10/2.png";
-
-
-import prod11img1 from "../../../media/Products/producto11/1.png";
-import prod11img2 from "../../../media/Products/producto11/2.png";
-
-import prod12img1 from "../../../media/Products/producto12/1.jpeg";
-import prod12img2 from "../../../media/Products/producto12/2.jpeg";
-
-
-const productos = [
-  {
-    id: 1,
-    nombre: "Canasto Artesanal para Lámpara",
-    descripcion: "Tejido a mano en fibras naturales",
-    precio: 120000,
-    imagenes: [prod1img1, prod1img2],
-  },
-  
-  {
-    id: 2,
-    nombre: "Manilla Tejida a Mano",
-    descripcion: "Colorida y elaborada con hilos resistentes",
-    precio: 95000,
-    imagenes: [prod2img1, prod2img2],
-  },
-  {
-    id: 3,
-    nombre: "Hamaca Artesanal",
-    descripcion: "Práctica y auténtica, tejida a mano.",
-    precio: 85000,
-    imagenes: [prod3img1, prod3img2],
-  },
-  {
-    id: 4,
-    nombre: "Sombrero Vueltiao Tradicional",
-    descripcion: "Tejido a mano con caña flecha.",
-    precio: 45000,
-    imagenes: [prod4img1, prod4img2],
-  },
-  {
-    id: 5,
-    nombre: "Adornos para mesas",
-    descripcion: "Conjunto de adornos tejidos que embellecen tu hogar.",
-    precio: 40000,
-    imagenes: [prod5img1, prod5img2],
-  },
-  {
-    id: 6,
-    nombre: "Mochila Tejida",
-    descripcion: "Diseño tradicional, tejida con amor por artesanas locales",
-    precio: 30000,
-    imagenes: [prod6img1, prod6img2],
-  },
-  {
-    id: 7,
-    nombre: "Mochila Artesanal de Hilo",
-    descripcion: "Ligera, colorida y tejida a mano con diseños únicos",
-    precio: 65000,
-    imagenes: [prod7img1, prod7img2],
-  },
-  {
-    id: 8,
-    nombre: "Canasta de picnic artesanal",
-    descripcion: "Canasta tejida ideal para salidas al aire libre.",
-    precio: 70000,
-    imagenes: [prod8img1, prod8img2],
-  },
-  {
-    id: 9,
-    nombre: "Loro Artesanal en Madera",
-    descripcion: "Tallado y pintado a mano, con detalles vibrantes",
-    precio: 60000,
-    imagenes: [prod9img1, prod9img2],
-  },
-  {
-    id: 10,
-    nombre: "Sobremesa artesanal",
-    descripcion: "Elemento decorativo hecho a mano para realzar.",
-    precio: 60000,
-    imagenes: [prod10img1, prod10img2],
-  },
-  {
-    id: 11,
-    nombre: " Centro de Mesa con Tejido Artesanal",
-    descripcion: "Hecho a mano con detalles finos.",
-    precio: 60000,
-    imagenes: [prod11img1, prod11img2],
-  },
-  {
-    id: 12,
-    nombre: "Mochila Tradicional",
-    descripcion: "Tejido firme y elegante.",
-    precio: 60000,
-    imagenes: [prod12img1, prod12img2],
-  },
-];
-
-// ...importaciones
-
 // CartModal como componente hijo
 function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, goToCheckout }) {
   return show ? (
@@ -290,7 +135,6 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
         />
       )}
       <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
-      <p className="text-gray-600 mb-2">{producto.descripcion}</p>
       <p className="text-gray-800 font-semibold mb-4">
         ${producto.precio?.toLocaleString?.() ?? producto.precio}
       </p>
@@ -386,6 +230,25 @@ const ProductGallery = ({ productos = [], user }) => {
     window.location.href = '/checkout';
   };
   // --- FIN FUNCIONES CARRITO ---
+
+  // Función para determinar si mostrar el botón de agregar al carrito
+  const shouldShowAddToCart = (user) => {
+    const isCustomer = user && user.role === 'customer';
+    const isLogged = !!user;
+    return !isLogged || isCustomer;
+  };
+
+  // Función para manejar el clic en agregar al carrito en el modal
+  const handleModalAddToCart = (producto, user) => {
+    const isLogged = !!user;
+    const isCustomer = user && user.role === 'customer';
+    
+    if (!isLogged) {
+      alert('Debes iniciar sesión para poder adquirir el artículo.');
+    } else if (isCustomer) {
+      addToCart(producto);
+    }
+  };
 
   // Filtrado conjunto
   let productosFiltrados = productosOrdenados.filter((prod) => {
@@ -524,23 +387,19 @@ const ProductGallery = ({ productos = [], user }) => {
                   ${selected.precio.toLocaleString()}
                 </p>
                 <div className="flex flex-col md:flex-wrap items-center gap-3 md:flex-row md:gap-6">
-                  <button
-                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
-                    className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
-                  >
-                    Agregar al carrito
-                  </button>
+                  {shouldShowAddToCart(user) && (
+                    <button
+                      onClick={() => handleModalAddToCart(selected, user)}
+                      className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                    >
+                      Agregar al carrito
+                    </button>
+                  )}
                   <button
                     onClick={() => alert('Ver ruta de: ' + selected.nombre)}
                     className="min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"
                   >
                     Ver ruta
-                  </button>
-                  <button
-                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
-                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
-                  >
-                    Agregar al carrito
                   </button> 
                {/*<button
                     onClick={() => handleBuy(selected)}
