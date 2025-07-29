@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, usePage } from '@inertiajs/react';
 import Menu from '@/Components/admin/Menu';
-import Dashboard from '@/Components/admin/Dashboard';
+import DetailsPanel from '@/Components/admin/DetailsPanel';
 import { Head } from '@inertiajs/react';
+import { MenuContext } from '@/Components/admin/MenuContext';
+import { ModalContext } from '@/Components/admin/ModalContext';
 
 export default function Index({ stats}) {
 
@@ -52,13 +54,44 @@ const productsStatistics = [
         municipality: 'Sampués',
     },
 ]
+
+const categories = [
+    {id: 1, name: "Categoría 1", description: "Descripción de la categoría 1"},
+    {id: 2, name: "Categoría 2", description: "Descripción de la categoría 2"},
+    {id: 3, name: "Categoría 3", description: "Descripción de la categoría 3"},
+    {id: 4, name: "Categoría 4", description: "Descripción de la categoría 4"},
+    {id: 5, name: "Categoría 5", description: "Descripción de la categoría 5"},
+]
+
+const Materials = [
+    {id: 1, name: "Material 1", description: "Descripción del material 1"},
+    {id: 2, name: "Material 2", description: "Descripción del material 2"},
+    {id: 3, name: "Material 3", description: "Descripción del material 3"},
+    {id: 4, name: "Material 4", description: "Descripción del material 4"},
+    {id: 5, name: "Material 5", description: "Descripción del material 5"},
+]
+
+const Techniques = [
+    {id: 1, name: "Técnica 1", description: "Descripción de la técnica 1"},
+    {id: 2, name: "Técnica 2", description: "Descripción de la técnica 2"},
+    {id: 3, name: "Técnica 3", description: "Descripción de la técnica 3"},
+    {id: 4, name: "Técnica 4", description: "Descripción de la técnica 4"},
+    {id: 5, name: "Técnica 5", description: "Descripción de la técnica 5"},
+]
     
+const [show, setShow] = useState("dashboard");
+const [isModalOpen, setIsModalOpen] = useState(false);
     
     return (
-       <div className='flex'>
-        <Head title="Dashboard Admin" />
-        <Menu user={user} />
-        <Dashboard stats={stats} chartData={data} products={productsStatistics} />
-       </div>
+
+        <MenuContext.Provider value={{show, setShow}}>
+            <ModalContext.Provider value={{isModalOpen, setIsModalOpen}}>
+            <div className='flex'>
+                <Head title="Dashboard Admin" />
+                <Menu user={user} />
+                <DetailsPanel stats={stats} chartData={data} products={productsStatistics} categories={categories} Materials={Materials} Techniques={Techniques} />
+            </div>
+            </ModalContext.Provider>
+        </MenuContext.Provider>
     );
 }

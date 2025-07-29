@@ -4,8 +4,14 @@ import User from '../../../media/admin/user-admin.png';
 import Logout from '../../../media/admin/logout.png';
 import ButtonMenu from './ButtonMenu';
 import { Link } from '@inertiajs/react';
+import {useContext } from 'react';
+import { MenuContext } from './MenuContext';
+
 
 const Menu = ({user}) => {
+
+    const {setShow} = useContext(MenuContext);
+
     return (
             <aside className='bg-[#3c2f2f] text-white  min-h-screen max-w-xs w-full py-4 px-1 flex flex-col justify-between'>
                 <div>
@@ -20,10 +26,11 @@ const Menu = ({user}) => {
                 <div className='py-4'>
                     <h2 className='text-center text-xl font-bold'>MENÚ ADMINISTRADOR</h2>
                     <div className='flex flex-col px-4 py-6 gap-8'>
-                        <ButtonMenu text="Dashboard" link="/dashboard/admin" />
+                        <ButtonMenu text="Dashboard" onClick={() => setShow("dashboard")} />
                         <ButtonMenu text="Reportes" link="/dashboard/admin/users" />
-                        <ButtonMenu text="Gestión categorías" link={route('dashboard.admin.view-state')} />
-                        <ButtonMenu text="Gestión Materias" link="/dashboard/admin/products" />
+                        <ButtonMenu text="Gestión Categorías" onClick={() => setShow("categories")} />
+                        <ButtonMenu text="Gestión Materiales" onClick={() => setShow("materials")} />
+                        <ButtonMenu text="Gestión Técnicas" onClick={() => setShow("techniques")} />
                     </div>
                 </div>
                 </div>

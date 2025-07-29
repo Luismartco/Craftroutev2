@@ -5,10 +5,9 @@ import StatisticsTable from './StatisticsTable';
 import Filters from './Filters';
 
 const Dashboard = ({stats, chartData, products}) => {
-    
     return (
-        <main className='flex-1 py-2 px-4 overflow-y-auto'>
-            <h1 className='text-2xl font-extrabold mt-2'>Dashboard administrativo</h1>
+        <div>
+          <h1 className='text-2xl font-extrabold mt-2'>Dashboard administrativo</h1>
             <p className='text-lg italic'>Gestión de reportes</p>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6'>
                 <StatsCard title="Total Artesanos" value={stats.total_users} />
@@ -59,9 +58,9 @@ const Dashboard = ({stats, chartData, products}) => {
                     ))}
                     </tbody>
                 </table>
-            </div>
-        </main>
-    );
+            </div> 
+        </div>
+    )
 }
 
 export default Dashboard;

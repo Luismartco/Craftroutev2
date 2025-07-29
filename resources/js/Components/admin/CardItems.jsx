@@ -1,6 +1,6 @@
 import React from "react";
 
-const CardCategories = ({data, onDelete, onEdit}) => {
+const CardItems = ({data, onDelete, onEdit}) => {
     return (
         <article className="flex items-center justify-between border border-black rounded-lg p-4 shadow-sm w-full max-w-md mt-3 bg-white transform hover:translate-x-2 transition duration-300 ease-in-out">
 
@@ -23,4 +23,4 @@ const CardCategories = ({data, onDelete, onEdit}) => {
     );
 }
 
-export default CardCategories;
+export default CardItems;
