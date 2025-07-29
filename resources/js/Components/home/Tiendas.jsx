@@ -3,9 +3,8 @@ import { Link } from '@inertiajs/react';
 
 const Tiendas = ({ tiendas = [] }) => {
   const [verTodas, setVerTodas] = useState(false);
-
   const tiendasParaMostrar = verTodas ? tiendas : tiendas.slice(0, 3);
-
+  
   return (
     <div className="px-6 py-10 bg-gray-50">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -14,7 +13,7 @@ const Tiendas = ({ tiendas = [] }) => {
             key={tienda.id || index}
             className="bg-white shadow-md hover:shadow-xl transition-shadow rounded-xl p-6 flex items-start gap-4 border border-gray-100"
           >
-            <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden flex items-center justify-center relative mr-4">
+            <div className="h-20 w-20 rounded-full bg-gray-100 shadow-lg overflow-hidden flex items-center justify-center flex-shrink-0">
               {tienda.foto_perfil ? (
                 <img
                   src={`/storage/${tienda.foto_perfil}`}
@@ -44,7 +43,6 @@ const Tiendas = ({ tiendas = [] }) => {
           </div>
         ))}
       </div>
-
       {!verTodas && tiendas.length > 3 && (
         <div className="mt-10 text-center">
           <button

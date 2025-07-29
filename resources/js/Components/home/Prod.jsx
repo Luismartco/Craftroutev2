@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useCart } from '../../Contexts/CartContext';
 
 // Importa imágenes
 import prod1img1 from "../../../media/Products/producto1/1.jpeg";
@@ -291,7 +290,6 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
         />
       )}
       <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
-      <p className="text-gray-600 mb-2">{producto.descripcion}</p>
       <p className="text-gray-800 font-semibold mb-4">
         ${producto.precio?.toLocaleString?.() ?? producto.precio}
       </p>
@@ -322,19 +320,251 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
 };
 
 const ProductGallery = ({ productos = [], user }) => {
-  const { addToCart } = useCart();
+  const [selected, setSelected] = useState(null);
+  const [imgIndex, setImgIndex] = useState(0);
+  const [verTodos, setVerTodos] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [categoria, setCategoria] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [rangoPrecio, setRangoPrecio] = useState('');
+
+  // Ordenar productos de más nuevo a más antiguo (por id descendente)
+  const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
+
+  const addToCart = (producto) => {
+    setShowCart(true);
+    setCart((prev) => {
+      const found = prev.find((p) => p.id === producto.id);
+      if (found) {
+        return prev.map((p) =>
+          p.id === producto.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+      return [...prev, { ...producto, quantity: 1 }];
+    });
+  };
+
+  // --- FUNCIONES PARA EL CARRITO (usadas por CartModal) ---
+  const changeQuantity = (id, delta) => {
+    setCart((prev) =>
+      prev
+        .map((p) =>
+          p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
+        )
+        .filter((p) => p.quantity > 0)
+    );
+  };
+
+  const removeProduct = (id) => {
+    setCart((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const total = cart.reduce((sum, p) => sum + p.precio * p.quantity, 0);
+
+  const goToCheckout = () => {
+    // Guardar el carrito en localStorage
+    const cartData = cart.map(item => {
+      let imagenUrl = '';
+      if (item.imagenes && item.imagenes.length > 0) {
+        imagenUrl = item.imagenes[0].ruta_imagen ? `/storage/${item.imagenes[0].ruta_imagen}` : '';
+      }
+      
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        nombre: item.nombre,
+        precio: item.precio,
+        imagenes: [imagenUrl] // Guardar la URL procesada
+      };
+    });
+    
+    localStorage.setItem('cart_data', JSON.stringify(cartData));
+    
+    // Redirigir al checkout
+    window.location.href = '/checkout';
+  };
+  // --- FIN FUNCIONES CARRITO ---
+
+  // Filtrado conjunto
+  let productosFiltrados = productosOrdenados.filter((prod) => {
+    let ok = true;
+    if (categoria && prod.categoria !== categoria) ok = false;
+    if (municipio && prod.municipio_venta !== municipio) ok = false;
+    if (rangoPrecio) {
+      const [min, max] = rangoPrecio.split('-');
+      const precio = Number(prod.precio);
+      if (min && precio < Number(min)) ok = false;
+      if (max && max !== '' && precio > Number(max)) ok = false;
+    }
+    return ok;
+  });
+
+  const productosAMostrar = verTodos ? productosFiltrados : productosFiltrados.slice(0, 4);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {productos.map((producto) => (
-        <Prod
-          key={producto.id}
-          producto={producto}
-          onBuy={() => addToCart(producto)}
-          user={user}
-        />
-      ))}
-    </div>
+    <>
+      <br />
+      <div className="mb-6 flex flex-wrap gap-10 justify-center">
+        {/* Filtro por Municipio */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={municipio}
+            onChange={e => setMunicipio(e.target.value)}
+          >
+            {MUNICIPIOS.map(m => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Filtro por Categoría */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={categoria}
+            onChange={e => setCategoria(e.target.value)}
+          >
+            {CATEGORIAS.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Filtro por Precio */}
+        <div className="flex flex-col w-80">
+          <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+          <select
+            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+            value={rangoPrecio}
+            onChange={e => setRangoPrecio(e.target.value)}
+          >
+            {RANGOS_PRECIOS.map(r => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
+        {productosAMostrar.map((prod, index) => (
+          <Prod
+            key={prod.id || index}
+            producto={prod}
+            user={user}
+            onClick={() => {
+              setSelected(prod);
+              setImgIndex(0);
+            }}
+            onBuy={() => addToCart(prod)}
+          />
+        ))}
+      </div>
+      {!verTodos && productosFiltrados.length > 4 && (
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={() => setVerTodos(true)}
+            className="px-4 py-2 bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
+          >
+            Ver más productos
+          </button>
+        </div>
+      )}
+
+      {/* Modal de los productos */}
+      {selected && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-10 w-full max-w-5xl relative shadow-2xl border border-gray-200">
+            <button
+              onClick={() => {
+                setSelected(null);
+                setImgIndex(0);
+              }}
+              className="absolute top-4 right-6 text-3xl font-bold text-gray-400 hover:text-[#2B1F1F] transition"
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+            <div className="flex flex-col md:flex-row gap-10 items-center mb-6">
+              <div className="flex flex-col items-center min-w-[340px]">
+                <div className="flex items-center mb-3">
+                  {selected.imagenes && selected.imagenes.length > 0 && (
+                    <>
+                      <button onClick={() => setImgIndex((prev) => (prev - 1 + selected.imagenes.length) % selected.imagenes.length)} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">‹</button>
+                      <img
+                        src={`/storage/${selected.imagenes[imgIndex].ruta_imagen}`}
+                        alt="Producto"
+                        className="w-96 h-80 object-contain mx-2 rounded-xl"
+                      />
+                      <button onClick={() => setImgIndex((prev) => (prev + 1) % selected.imagenes.length)} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">›</button>
+                    </>
+                  )}
+                  {(!selected.imagenes || selected.imagenes.length === 0) && (
+                    <div className="w-96 h-80 flex items-center justify-center bg-gray-100 rounded-xl text-gray-400">Sin imagen</div>
+                  )}
+                </div>
+                {selected.imagenes && selected.imagenes.length > 1 && (
+                  <div className="flex gap-2 mt-2">
+                    {selected.imagenes.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setImgIndex(idx)}
+                        className={`w-4 h-4 rounded-full border-2 ${imgIndex === idx ? 'bg-[#4B3A3A] border-[#4B3A3A]' : 'bg-gray-200 border-gray-300'} transition`}
+                        aria-label={`Ver imagen ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 w-full max-w-xl">
+                <h2 className="text-3xl font-extrabold mb-3 text-[#2B1F1F]">{selected.nombre}</h2>
+                <p className="text-gray-700 mb-4 text-lg">{selected.descripcion}</p>
+                <p className="text-[#4B3A3A] font-bold text-3xl mb-8">
+                  ${selected.precio.toLocaleString()}
+                </p>
+                <div className="flex flex-col md:flex-wrap items-center gap-3 md:flex-row md:gap-6">
+                  <button
+                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
+                    className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                  >
+                    Agregar al carrito
+                  </button>
+                  <button
+                    onClick={() => alert('Ver ruta de: ' + selected.nombre)}
+                    className="min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"
+                  >
+                    Ver ruta
+                  </button>
+                  <button
+                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
+                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                  >
+                    Agregar al carrito
+                  </button> 
+               {/*<button
+                    onClick={() => handleBuy(selected)}
+                    className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
+                  >
+                    Comprar
+                  </button>*/}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de carrito global */}
+      <CartModal
+        show={showCart}
+        onClose={() => setShowCart(false)}
+        cart={cart}
+        changeQuantity={changeQuantity}
+        removeProduct={removeProduct}
+        total={total}
+        goToCheckout={goToCheckout}
+      />
+    </>
   );
 };
 
