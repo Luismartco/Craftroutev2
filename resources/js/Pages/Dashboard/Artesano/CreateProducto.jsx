@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -11,6 +11,9 @@ import SelectInput from '@/Components/SelectInput';
 import axios from 'axios';
 
 export default function CreateProducto() {
+    const [previewImages, setPreviewImages] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
         nombre: '',
         descripcion: '',
@@ -24,41 +27,37 @@ export default function CreateProducto() {
         imagenes: [],
     });
 
-    const [previewImages, setPreviewImages] = useState([]);
 
  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    
-    // Agregar campos del formulario
-    Object.keys(data).forEach(key => {
-        if (key !== 'imagenes') {
-            formData.append(key, data[key]);
-        }
-    });
-    
-    // Agregar imágenes
-    previewImages.forEach((image, index) => {
-        formData.append(`imagenes[${index}]`, image.file);
-    });
+        e.preventDefault();
+        setIsSubmitting(true);
+        
+        const formData = new FormData();
+        
+        // Agregar campos del formulario
+        Object.keys(data).forEach(key => {
+            if (key !== 'imagenes') {
+                formData.append(key, data[key]);
+            }
+        });
+        
+        // Agregar imágenes
+        previewImages.forEach((image, index) => {
+            formData.append(`imagenes[${index}]`, image.file);
+        });
 
-    // Verificar contenido del FormData antes de enviar
-    for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-    }
-
-    post(route('dashboard.artesano.store-producto'), formData, {
-        forceFormData: true,
-        onSuccess: () => {
-            reset();
-            setPreviewImages([]);
-        },
-        onError: (errors) => {
-            console.error('Errores de validación:', errors);
-        },
-    });
-};
+        post(route('dashboard.artesano.store-producto'), formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                setIsSubmitting(false);
+                // Redirigir al dashboard para ver todos los productos
+                window.location.href = route('dashboard.artesano.index');
+            },
+            onError: (errors) => {
+                setIsSubmitting(false);
+            }
+        });
+    };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -93,8 +92,13 @@ export default function CreateProducto() {
         <AuthenticatedLayout>
             <Head title="Agregar Producto" />
 
+            {/* Mensaje de éxito local */}
+            {/* Removed local success message as it's now handled by Inertia */}
+
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    
+
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
@@ -343,7 +347,7 @@ export default function CreateProducto() {
                                     <button
                                         type="submit"
                                         disabled={processing || previewImages.length === 0}
-                                        className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                                        className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#4B3A3A] hover:bg-[#2B1F1F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4B3A3A] ${
                                             processing || previewImages.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                                         }`}
                                     >

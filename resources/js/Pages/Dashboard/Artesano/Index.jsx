@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link, Head, router } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -7,6 +7,45 @@ import { useRef } from 'react';
 import Maps from '@/Components/home/Maps';
 
 export default function Index({ stats, user, tienda }) {
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Verificar si hay un mensaje de éxito en parámetros de URL
+    useEffect(() => {
+        console.log('Dashboard cargado, verificando parámetros de URL...');
+        console.log('URL completa:', window.location.href);
+        console.log('Search params:', window.location.search);
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const successParam = urlParams.get('success');
+        console.log('Parámetro success encontrado:', successParam);
+        
+        let message = null;
+        if (successParam === 'created') {
+            message = '¡Producto creado con éxito!';
+            console.log('Mensaje de creación asignado:', message);
+        } else if (successParam === 'updated') {
+            message = '¡Producto editado con éxito!';
+            console.log('Mensaje de edición asignado:', message);
+        }
+        
+        if (message) {
+            console.log('Configurando mensaje de éxito:', message);
+            setSuccessMessage(message);
+            setShowSuccessMessage(true);
+            console.log('Mensaje mostrado:', message);
+            console.log('Estado showSuccessMessage:', true);
+            // Limpiar el parámetro de la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            setTimeout(() => {
+                console.log('Ocultando mensaje después de 8 segundos');
+                setShowSuccessMessage(false);
+            }, 8000); // Ocultar después de 8 segundos
+        } else {
+            console.log('No se encontró mensaje para mostrar');
+        }
+    }, []);
+
     // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
         // Si la ruta ya incluye 'storage/', devolverla directamente
@@ -69,6 +108,24 @@ const location = {
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-100">
+                {/* Mensaje de éxito */}
+                {showSuccessMessage && (
+                    <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {successMessage}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Contenido principal */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

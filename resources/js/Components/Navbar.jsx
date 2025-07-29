@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import { useCart } from '../Contexts/CartContext';
 import logo_white from '../../media/logo/logo_white.png';
 
 const Navbar = ({ auth = {} }) => {
+    const { cartItemCount, setShowCart } = useCart();
+
     return (
         <nav>
             {/* Primera parte con el título */}
@@ -21,7 +24,7 @@ const Navbar = ({ auth = {} }) => {
             </div>
 
             {/* Segunda parte con los botones */}
-            <div className="bg-[#2B1F1F] flex justify-center text-center py-3 flex-wrap ">
+            <div className="bg-[#2B1F1F] flex justify-center text-center py-3 flex-wrap items-center">
                 <Link
                     href="/"
                     className="mx-4 text-white p-2 no-underline rounded-md transition-colors duration-300 
@@ -36,6 +39,22 @@ const Navbar = ({ auth = {} }) => {
                 >
                     Blog
                 </Link>
+
+                {/* Icono del carrito */}
+                <button
+                    onClick={() => setShowCart(true)}
+                    className="mx-4 text-white p-3 no-underline rounded-md transition-colors duration-300 
+                            hover:bg-[#4B3A3A] active:bg-[#614545] relative"
+                >
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    {cartItemCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {cartItemCount}
+                        </span>
+                    )}
+                </button>
 
                 {/* Validación para evitar errores si auth es undefined */}
                 {auth.user ? (

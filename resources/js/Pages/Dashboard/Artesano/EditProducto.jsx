@@ -74,6 +74,7 @@ export default function EditProducto({ producto }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('Iniciando envío del formulario de edición...');
 
         const formData = new FormData();
         Object.keys(data).forEach(key => {
@@ -86,11 +87,15 @@ export default function EditProducto({ producto }) {
         });
         formData.append('_method', 'PUT'); // Importante para Laravel
 
+        console.log('Enviando formulario de edición a:', route('dashboard.artesano.update-producto', producto.id));
+
         post(route('dashboard.artesano.update-producto', producto.id), {
             data: formData,
-            onSuccess: () => {
-                setPreviewImages([]);
-                window.location.href = route('dashboard.artesano.index');
+            onSuccess: (page) => {
+                console.log('Producto editado exitosamente, redirigiendo...');
+                console.log('Página de respuesta:', page);
+                // Usar router.visit para navegación SPA sin recarga completa
+                router.visit(route('dashboard.artesano.index') + '?success=updated');
             },
             preserveScroll: true,
             forceFormData: true,
@@ -159,6 +164,9 @@ export default function EditProducto({ producto }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/* Mensaje de éxito */}
+                    {/* El estado showSuccessMessage y el componente de mensaje de éxito se eliminaron */}
+
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
@@ -450,7 +458,7 @@ export default function EditProducto({ producto }) {
                                     <PrimaryButton
                                         type="submit"
                                         disabled={processing}
-                                        className="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+                                        className="inline-flex items-center px-4 py-2 bg-[#4B3A3A] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-[#2B1F1F] focus:outline-none focus:ring-2 focus:ring-[#4B3A3A] focus:ring-offset-2 transition-all"
                                     >
                                         {processing ? 'Guardando...' : 'Guardar Cambios'}
                                     </PrimaryButton>
