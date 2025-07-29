@@ -1,26 +1,30 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
+import { ModalContext } from "./ModalContext";
 
-const ModalCategories = ({data, onClose, onSubmit, existingCategory}) => {
+const ModalItems = ({data, onClose, onSubmit, existingItem, title}) => {
+
+    const {setIsModalOpen} = useContext(ModalContext);
+
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
 
     useEffect(() => {
-        if (existingCategory) {
-            setName(existingCategory.name);
-            setDescription(existingCategory.description);
+        if (existingItem) {
+            setName(existingItem.name);
+            setDescription(existingItem.description);
         } else {
             setName("");
             setDescription("");
         }
-    }, [existingCategory]);
+    }, [existingItem]);
 
-    const areEquals = (category) => {
-        const result = data.find((cat) => cat.name.toLowerCase() === category.name.toLowerCase());
+    const areEquals = (item) => {
+        const result = data.find((itm) => itm.name.toLowerCase() === item.name.toLowerCase());
 
         if (!result) {
             return false;
         } else {
-            return result.name.toLowerCase() === category.name.toLowerCase();
+            return result.name.toLowerCase() === item.name.toLowerCase();
         }        
 
     }
@@ -28,25 +32,27 @@ const ModalCategories = ({data, onClose, onSubmit, existingCategory}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (name.trim() && description.trim()) {
-            const category = {id: existingCategory === null ? data.length + 1 : existingCategory.id, name: name.trim(), description: description.trim()};
-            if (areEquals(category)){
-                alert("La categoría ya existe intentalo con otro nombre o edita la existente con el botón de editar");
+            const item = {id: existingItem === null ? data.length + 1 : existingItem.id, name: name.trim(), description: description.trim()};
+            if (areEquals(item)){
+                alert("El item ya existe intentalo con otro nombre o edita el existente con el botón de editar");
                 setName("");
+                setDescription("");
                 return;
             }
-            onSubmit(category);
+            onSubmit(item);
             setName("");
             setDescription("");
+            setIsModalOpen(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4">{existingCategory ? 'Editar categoría' : 'Agregar categoría'}</h2>
+                <h2 className="text-xl font-bold mb-4">{existingItem ? `Editar ${title.toLowerCase()}` : `Agregar ${title.toLowerCase()}`}</h2>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="Category-Name" className="block mb-2 text-sm font-medium text-gray-700">
-                        Nombre de la categoría</label>
+                        Nombre {title != undefined ? title === "Categoría" || title === "Técnica" ? "de la" : "del" : ""} {title === undefined ? "" : title.toLowerCase()}</label>
                     <input
                         type="text"
                         value={name}
@@ -56,7 +62,7 @@ const ModalCategories = ({data, onClose, onSubmit, existingCategory}) => {
                         required
                     />
                     <label htmlFor="Category-Description" className="block mb-2 text-sm font-medium text-gray-700">
-                        Descripción de la categoría</label>
+                        Descripción {title != undefined ? title === "Categoría" || title === "Técnica" ? "de la" : "del" : ""} {title === undefined ? "" : title.toLowerCase()}</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -72,7 +78,10 @@ const ModalCategories = ({data, onClose, onSubmit, existingCategory}) => {
                     </button>
                 </form>
                 <button
-                    onClick={onClose}
+                    onClick={() => {
+                        onClose();
+                        setIsModalOpen(false);
+                    }}
                     className="mt-4 text-red-500 hover:underline"
                 >
                     Cancelar
@@ -83,4 +92,4 @@ const ModalCategories = ({data, onClose, onSubmit, existingCategory}) => {
     
 }
 
-export default ModalCategories;
+export default ModalItems;

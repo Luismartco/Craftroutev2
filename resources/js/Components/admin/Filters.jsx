@@ -7,7 +7,7 @@ const Filters = ({label, options}) => {
             <select className="border border-gray-300 rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]">
                 <option value="">{label}</option>
                 {options.map((option) => (
-                    <option value={option}>{option}</option>
+                    <option key={option} value={option}>{option}</option>
                 ))}
             </select>
         </div>
