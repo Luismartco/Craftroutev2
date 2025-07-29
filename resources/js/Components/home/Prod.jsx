@@ -181,7 +181,9 @@ function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, 
                 <div className="font-semibold text-lg mb-2">{p.nombre}</div>
                 <div className="flex items-center">
                   <img
-                    src={p.imagenes ? p.imagenes[0] : ''}
+                    src={p.imagenes && p.imagenes.length > 0 
+                      ? (p.imagenes[0].ruta_imagen ? `/storage/${p.imagenes[0].ruta_imagen}` : p.imagenes[0])
+                      : ''}
                     alt={p.nombre}
                     className="w-20 h-20 object-contain rounded mr-4"
                   />
@@ -362,7 +364,26 @@ const ProductGallery = ({ productos = [], user }) => {
   const total = cart.reduce((sum, p) => sum + p.precio * p.quantity, 0);
 
   const goToCheckout = () => {
-    alert('Ir al checkout');
+    // Guardar el carrito en localStorage
+    const cartData = cart.map(item => {
+      let imagenUrl = '';
+      if (item.imagenes && item.imagenes.length > 0) {
+        imagenUrl = item.imagenes[0].ruta_imagen ? `/storage/${item.imagenes[0].ruta_imagen}` : '';
+      }
+      
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        nombre: item.nombre,
+        precio: item.precio,
+        imagenes: [imagenUrl] // Guardar la URL procesada
+      };
+    });
+    
+    localStorage.setItem('cart_data', JSON.stringify(cartData));
+    
+    // Redirigir al checkout
+    window.location.href = '/checkout';
   };
   // --- FIN FUNCIONES CARRITO ---
 
@@ -607,7 +628,9 @@ export function useCartModal() {
                   <div className="font-semibold text-lg mb-2">{p.nombre}</div>
                   <div className="flex items-center">
                     <img
-                      src={p.imagenes ? p.imagenes[0] : ''}
+                      src={p.imagenes && p.imagenes.length > 0 
+                        ? (p.imagenes[0].ruta_imagen ? `/storage/${p.imagenes[0].ruta_imagen}` : p.imagenes[0])
+                        : ''}
                       alt={p.nombre}
                       className="w-20 h-20 object-contain rounded mr-4"
                     />
@@ -660,7 +683,28 @@ export function useCartModal() {
             </div>
             <button
               className="w-full bg-[#4B3A3A] text-white py-3 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold"
-              onClick={() => alert('Ir al checkout')}
+              onClick={() => {
+                // Guardar el carrito en localStorage
+                const cartData = cart.map(item => {
+                  let imagenUrl = '';
+                  if (item.imagenes && item.imagenes.length > 0) {
+                    imagenUrl = item.imagenes[0].ruta_imagen ? `/storage/${item.imagenes[0].ruta_imagen}` : '';
+                  }
+                  
+                  return {
+                    id: item.id,
+                    quantity: item.quantity,
+                    nombre: item.nombre,
+                    precio: item.precio,
+                    imagenes: [imagenUrl] // Guardar la URL procesada
+                  };
+                });
+                
+                localStorage.setItem('cart_data', JSON.stringify(cartData));
+                
+                // Redirigir al checkout
+                window.location.href = '/checkout';
+              }}
             >
               Ir al checkout
             </button>
