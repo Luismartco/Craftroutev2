@@ -17,7 +17,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'carlos@cr.com',
                 'tienda' => [
-                    'nombre' => 'Artesanías Carlos',
+                    'nombre' => 'Artesanías Taller Ancestral',
                     'barrio' => 'Centro',
                     'direccion' => 'Cra 45 #12-34',
                     'telefono' => '3001234567',
@@ -30,7 +30,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'ana@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Ana',
+                    'nombre' => 'Manos de tradición',
                     'barrio' => 'San José',
                     'direccion' => 'Calle 20 #8-50',
                     'telefono' => '3109876543',
@@ -43,7 +43,7 @@ class TiendasSeeder extends Seeder
                  [
                 'email' => 'juan@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Juan',
+                    'nombre' => 'Herencia Artesanal',
                     'barrio' => 'Calle Real',
                     'direccion' => 'Carrera 6 #5-40',
                     'telefono' => '3134573543',
@@ -57,7 +57,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'patricia@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Patricia',
+                    'nombre' => 'Raices de Arte',
                     'barrio' => 'El Oasis',
                     'direccion' => 'Carrera 8 #17-22',
                     'telefono' => '3144214543',
@@ -70,7 +70,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'fernando@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Fernando',
+                    'nombre' => 'Tradición Viva',
                     'barrio' => 'Fatima',
                     'direccion' => 'Calle 19 #6-80',
                     'telefono' => '3144214543',
@@ -83,7 +83,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'diana@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Diana',
+                    'nombre' => 'Hilos de luna',
                     'barrio' => 'Nueve de Marzo',
                     'direccion' => 'Carrera 5 #21-34',
                     'telefono' => '3146789012',
@@ -96,7 +96,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'andres@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Andres',
+                    'nombre' => 'Tejiendo sueños',
                     'barrio' => 'Villa Marta',
                     'direccion' => 'Calle 22 #7-18',
                     'telefono' => '3157890123',
@@ -109,7 +109,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'sandra@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Sandra',
+                    'nombre' => 'Susurros de paja',
                     'barrio' => 'Las palmas',
                     'direccion' => 'Carrera 9 #19-15',
                     'telefono' => '3168901234',
@@ -122,7 +122,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'javier@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Javier',
+                    'nombre' => 'Alma tejida',
                     'barrio' => 'San José',
                     'direccion' => 'Calle 21 #9-70',
                     'telefono' => '3179012345',
@@ -135,7 +135,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'lina@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Lina',
+                    'nombre' => 'Fique y tradición',
                     'barrio' => 'Las acacias',
                     'direccion' => 'Carrera 7 #6-35',
                     'telefono' => '3180123456',
@@ -149,7 +149,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'oscar@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Oscar',
+                    'nombre' => 'Taller del Espíritu Creador',
                     'barrio' => 'Villa Marta',
                     'direccion' => 'Calle 23 #8-10',
                     'telefono' => '3191234567',
@@ -163,7 +163,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'tatiana@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Tatiana',
+                    'nombre' => 'Bendición Artesanal',
                     'barrio' => 'La Parroquia',
                     'direccion' => 'Calle 20 #8-52',
                     'telefono' => '3202345678',
@@ -177,7 +177,7 @@ class TiendasSeeder extends Seeder
              [
                 'email' => 'hector@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Hector',
+                    'nombre' => 'Taller del Sombrero Vueltiao',
                     'barrio' => 'La Cruz',
                     'direccion' => 'Carrera 8 #18-11',
                     'telefono' => '3213456789',
@@ -190,7 +190,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'yolanda@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Yolanda',
+                    'nombre' => 'Matices Caribeños',
                     'barrio' => 'Alta Cruz',
                     'direccion' => 'Calle 19 #7-68',
                     'telefono' => '3224567890',
@@ -203,7 +203,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'miguel@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Miguel',
+                    'nombre' => 'Legado de Generaciones',
                     'barrio' => 'Rincon',
                     'direccion' => 'Carrera 5 #22-10',
                     'telefono' => '3235678901',
@@ -216,7 +216,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'paola@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Paola',
+                    'nombre' => 'Taller Colonial',
                     'barrio' => 'Chambacú',
                     'direccion' => 'Carrera 6 #4-55',
                     'telefono' => '3246789012',
@@ -229,7 +229,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'ricardo@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Ricardo',
+                    'nombre' => 'Memoria Tejida',
                     'barrio' => 'Calle baja',
                     'direccion' => 'Calle 22 #6-23',
                     'telefono' => '3257890123',
@@ -242,7 +242,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'claudia@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Claudia',
+                    'nombre' => 'Manos de Familia',
                     'barrio' => 'San Francisco',
                     'direccion' => 'Carrera 9 #20-03',
                     'telefono' => '3268901234',
@@ -255,7 +255,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'pedro@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Pedro',
+                    'nombre' => 'Taller de los Abuelos',
                     'barrio' => 'Candelaria',
                     'direccion' => 'Calle 21 #8-44',
                     'telefono' => '3179012345',
@@ -268,7 +268,7 @@ class TiendasSeeder extends Seeder
             [
                 'email' => 'luisa@cr.com',
                 'tienda' => [
-                    'nombre' => 'Creaciones Luisa',
+                    'nombre' => 'El Rincón de la Abuela',
                     'barrio' => 'Los Olivos',
                     'direccion' => 'Carrera 7 #17-90',
                     'telefono' => '3110123456',
