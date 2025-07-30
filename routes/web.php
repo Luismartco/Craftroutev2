@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\ArtesanoDashboardController;
 use App\Http\Controllers\Dashboard\ClienteDashboardController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CartController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -88,6 +90,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
     Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
+
+// Rutas de checkout (accesibles para todos)
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success/{pedido_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// Rutas del carrito (accesibles para todos)
+Route::post('/api/cart/store', [CartController::class, 'store'])->name('cart.store');
+Route::get('/api/cart/get', [CartController::class, 'get'])->name('cart.get');
+Route::delete('/api/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

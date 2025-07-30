@@ -207,7 +207,7 @@ public function storeProducto(Request $request)
         ]);
     }
 
-    return redirect()->route('dashboard.artesano.gestionar-tienda')
+    return redirect()->route('dashboard.artesano.index')
         ->with('success', 'Producto creado exitosamente');
 }
 
@@ -387,7 +387,7 @@ public function storeProducto(Request $request)
         // Eliminar el producto (y las imágenes por "onDelete('cascade')")
         $producto->delete();
         
-        return redirect()->route('dashboard.artesano.gestionar-tienda')
+        return redirect()->route('dashboard.artesano.index')
             ->with('success', 'Producto eliminado exitosamente');
     }
 
