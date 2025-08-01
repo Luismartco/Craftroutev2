@@ -32,29 +32,25 @@ const Navbar = ({ auth = {} }) => {
                 >
                     Inicio
                 </Link>
-                <Link
-                    href="/blog"
-                    className="mx-4 text-white p-2 no-underline rounded-md transition-colors duration-300 
-                            hover:bg-[#4B3A3A] active:bg-[#614545]"
-                >
-                    Blog
-                </Link>
+
 
                 {/* Icono del carrito */}
-                <button
-                    onClick={() => setShowCart(true)}
-                    className="mx-4 text-white p-3 no-underline rounded-md transition-colors duration-300 
-                            hover:bg-[#4B3A3A] active:bg-[#614545] relative"
-                >
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    {cartItemCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            {cartItemCount}
-                        </span>
-                    )}
-                </button>
+                {(!auth.user || auth.user.role === 'customer') && (
+                    <button
+                        onClick={() => setShowCart(true)}
+                        className="mx-4 text-white p-3 no-underline rounded-md transition-colors duration-300 
+                                hover:bg-[#4B3A3A] active:bg-[#614545] relative"
+                    >
+                        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        {cartItemCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                {cartItemCount}
+                            </span>
+                        )}
+                    </button>
+                )}
 
                 {/* Validación para evitar errores si auth es undefined */}
                 {auth.user ? (
