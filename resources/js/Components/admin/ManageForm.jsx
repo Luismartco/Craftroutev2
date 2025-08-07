@@ -64,7 +64,7 @@ const ManageForm = ({data, title}) => {
                             onClose={() => setModalOpen(false)}
                             onSubmit={handleSubmitItem}
                             existingItem={selectedItem}
-                            title={title != undefined ? title.toLowerCase() === "materiales" ? title.replace("es", ) : title.replace("s", "") : ""}
+                            title={title != undefined ? title.toLowerCase() === "materiales" ? title.replace("es", "" ) : title.replace("s", "") : ""}
                         />
                     )
                 }
