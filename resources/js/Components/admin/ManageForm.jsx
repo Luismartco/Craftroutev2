@@ -3,6 +3,7 @@ import CardItems from "./CardItems";
 import ModalItems from "./ModalItems";
 import Agree from "./Agree";
 import { ModalContext } from "./ModalContext";
+import axios from 'axios';
 
 const ManageForm = ({data, title}) => {
 
@@ -32,20 +33,78 @@ const ManageForm = ({data, title}) => {
         setIsModalOpen(true);
     }
 
-    const handleSubmitItem = (item) => {
-        if (selectedItem) {
-            setList(prev => 
-                prev.map((itm) => (itm.id === item.id ? item : itm))
-        );
-        } else {
-            setList((prev) => [item,...prev]);    
+    // Función para obtener la URL de la API según el título
+    const getApiUrl = () => {
+        const baseUrl = '/api';
+        switch(title.toLowerCase()) {
+            case 'categorías':
+                return `${baseUrl}/categorias`;
+            case 'materiales':
+                return `${baseUrl}/materiales`;
+            case 'técnicas':
+                return `${baseUrl}/tecnicas`;
+            default:
+                return `${baseUrl}/categorias`;
         }
-        setModalOpen(false);
     };
 
-    const handleDelete = (id) => {
-        setList(prev => prev.filter(item => item.id !== id));
-        setDeleteModalOpen(false);
+    const handleSubmitItem = async (item) => {
+        try {
+            const apiUrl = getApiUrl();
+            const payload = {
+                nombre: item.name,
+                descripcion: item.description
+            };
+
+            if (selectedItem) {
+                // Actualizar elemento existente
+                const response = await axios.put(`${apiUrl}/${item.id}`, payload);
+                if (response.data.success) {
+                    setList(prev => 
+                        prev.map((itm) => (itm.id === item.id ? item : itm))
+                    );
+                    alert('Elemento actualizado exitosamente');
+                }
+            } else {
+                // Crear nuevo elemento
+                const response = await axios.post(apiUrl, payload);
+                if (response.data.success) {
+                    const newItem = {
+                        id: response.data.data.id,
+                        name: response.data.data.nombre,
+                        description: response.data.data.descripcion
+                    };
+                    setList((prev) => [newItem, ...prev]);
+                    alert('Elemento creado exitosamente');
+                }
+            }
+            setModalOpen(false);
+        } catch (error) {
+            console.error('Error al guardar:', error);
+            if (error.response?.data?.errors) {
+                const errors = Object.values(error.response.data.errors).flat();
+                alert('Error de validación: ' + errors.join(', '));
+            } else {
+                alert('Error al guardar el elemento: ' + (error.response?.data?.message || error.message));
+            }
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const apiUrl = getApiUrl();
+            const response = await axios.delete(`${apiUrl}/${id}`);
+            
+            if (response.data.success) {
+                setList(prev => prev.filter(item => item.id !== id));
+                alert('Elemento eliminado exitosamente');
+            }
+            setDeleteModalOpen(false);
+        } catch (error) {
+            console.error('Error al eliminar:', error);
+            alert('Error al eliminar el elemento: ' + (error.response?.data?.message || error.message));
+            setDeleteModalOpen(false);
+        }
     }
 
     return (
@@ -64,7 +123,7 @@ const ManageForm = ({data, title}) => {
                             onClose={() => setModalOpen(false)}
                             onSubmit={handleSubmitItem}
                             existingItem={selectedItem}
-                            title={title != undefined ? title.toLowerCase() === "materiales" ? title.replace("es", ) : title.replace("s", "") : ""}
+                            title={title != undefined ? title.toLowerCase() === "materiales" ? title.replace("es", "") : title.replace("s", "") : ""}
                         />
                     )
                 }
