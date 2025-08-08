@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Categoria extends Model
+class Material extends Model
 {
     use HasFactory;
+
+    protected $table = 'materiales';
 
     protected $fillable = [
         'nombre',
@@ -17,6 +19,6 @@ class Categoria extends Model
 
     public function productos(): HasMany
     {
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class, 'materia_prima', 'nombre');
     }
-} 
+}
