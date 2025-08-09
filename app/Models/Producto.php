@@ -16,6 +16,7 @@ class Producto extends Model
         'precio',
         'cantidad_disponible',
         'categoria',
+        'categoria_id',
         'municipio_venta',
         'tecnica_artesanal',
         'materia_prima',

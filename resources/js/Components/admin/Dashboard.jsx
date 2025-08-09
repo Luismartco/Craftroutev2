@@ -27,7 +27,7 @@ const Dashboard = ({stats, chartData, products}) => {
             </div>
             {/* Gráficos */}
             {chartData === undefined ?
-             <div className='text-center text-lg font-bold'>No hay gráficos para mostrar</div>
+            <div className='text-center text-lg font-bold'>No hay gráficos para mostrar</div>
             :
             <div className='flex justify-center flex-wrap gap-2 w-full min-w-0'>
                 <div className='flex-1 min-w-[250px] max-w-full'>
