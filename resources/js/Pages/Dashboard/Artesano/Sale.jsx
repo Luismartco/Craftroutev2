@@ -3,8 +3,10 @@ import Basket from '../../../Components/artisan/Basket';
 import PaymentMethod from '@/Components/artisan/PaymentMethod';
 import { ButtonNextStep } from '@/Components/artisan/ButtonNextStep';
 import { FormsPaymentMethod } from '@/Components/artisan/FormsPaymentMethod';
+import ConfirmSale from '@/Components/artisan/ConfirmSale';
 
 //Importaciones de iconos
+import closeIcon from '../../../../media/svg/close-icon.svg'
 import cash from '../../../../media/svg/cash.svg'
 import card from '../../../../media/svg/card.svg'
 import bank from '../../../../media/svg/bank.svg'
@@ -28,16 +30,24 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
   const [salesDetails, setSalesDetails] = useState(false);
   //Estado para saber que método de pago está seleccionado
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  // Estado para mostrar u ocultar el botón de continuar en la modal de venta
   const [showButtonPreviousStep, setshowButtonPreviousStep] = useState(true);
 
   const [saleData, setSaleData] = useState({});
   const [showFormsPaymentMethod, setShowFormsPaymentMethod] = useState(false);
 
-  //Estado para el campo de del nombre del cliente 
+  //Estado para el campo del nombre del cliente 
   const [clientName, setClientName] = useState('');
 
+  //Estado para mostrar la modal de confirmación de venta
+  const [showConfirmSale, setShowConfirmSale] = useState(false);
+
+  // Función para mostrar el siguiente paso, que es el formulario de detalles de la venta 
   const showNextStep = () => {
-    if (products.length === 0) return alert('no hay productos en la canasta, agreguelos');
+    // Si no hay productos en la canasta, no se prosigue al siguiente paso
+    if (products.length === 0) return alert('no hay productos en la canasta, agregue algunos productos para continuar');
+    // De lo contario, se cambia el estado de salesDetails a true, para mostrar el formulario de detalles de la venta
+    // y se oculta el botón de continuar
     setSalesDetails(true);
     setshowButtonPreviousStep(false);
   };
@@ -47,11 +57,15 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
     setSelectedPaymentMethod(methodTitle);
   };
 
+
+//Esta función se encarga de actualizar el estado del nombre del cliente cuando el usuario escribe en el input.
   const handleChange = (e) => {
     const {value} = e.target; 
     setClientName(value);
   };
 
+  //Función para manejar el envío del formulario de detalles de la venta
+  //Esta función se encarga de validar que se haya seleccionado un método de pago y que el nombre del cliente no esté vacío.
   const handleForm = (e) => {
     e.preventDefault();
     // Validar que se haya seleccionado un método de pago
@@ -67,13 +81,27 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
       paymentMethod: selectedPaymentMethod,
       totalPrice: totalPrice,
     };
-
+    // Se actualiza el estado de saleData con los datos de la venta
     setSaleData(saleData);
     setShowFormsPaymentMethod(true);
   };
 
+  //Función para cerrar el form de pago según el método de pago seleccionado
   const onCloseFormPaymentMethod = () => {
     setShowFormsPaymentMethod(false);
+  }
+
+  //Función para hacer la venta, básicamente cierra la modal del form de pago, muestra la modal de confirmar venta, y limpia la canasta
+  const onMakeSale = () => {
+    setShowFormsPaymentMethod(false);
+    setShowConfirmSale(true);
+    onClearBasket();
+  }
+
+  // Función para mostrar la modal de confirmación de venta, que se encarga de cerrar la modal de confirmación y la modal de venta
+  const onShowConfirmSale = () => {
+    setShowConfirmSale(false);
+    onClose();
   }
 
 
@@ -90,10 +118,12 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
   return (
    <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-3'>
-    <div className='bg-white rounded-lg p-4 w-full max-w-5xl '>
+    <div className={`flex flex-col bg-white rounded-lg p-4 w-full max-w-5xl ${salesDetails ? 'h-full' : ''} md:h-full lg:h-full xl:h-full 2xl:h-auto overflow-auto`}>
         <div className='flex items-center justify-between'>
           <h1>Venta</h1>
-          <button className='underline font-bold hover:text-red-500' onClick={onClose}>Cerrar</button>
+          <button className='p-2' onClick={onClose}>
+            <img src={closeIcon} alt='cerrar' className='w-8 h-8 hover:cursor-pointer' />
+          </button>
         </div>
         
         <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
@@ -133,10 +163,11 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
             </div>
             <p className='mt-3'>Selecciona el método de pago*</p>
             <div className='grid grid-cols-2 md:grid-cols-3 gap-2 mx-auto mb-16'>
+              {/* Se renderiza cada método de pago */}
                 <PaymentMethod 
                   icon={cash} 
                   title='Efectivo' 
-                  isSelected={selectedPaymentMethod === 'Efectivo'}//Esto devuelve true o false, es una comparación
+                  isSelected={selectedPaymentMethod === 'Efectivo'}//Esto es una comparación, inicialmente, el estado es null, por lo que no hay ningún método de pago seleccionado, si se hace clic sobre algún método de pago, se efectua la función handlePaymentMethodSelect, que cambia el estado de selectedPaymentMethod al método de pago seleccionado, sencillo, si selecciono efectivo, el estado cambia a Efectivo, y se realiza la comparación: selectedPaymentMethod -> ("Efectivo") === 'Efectivo', entonces devuelve true, y se aplica el estilo definido para eso. 
                   onSelect={() => handlePaymentMethodSelect('Efectivo')}
                 />
                 <PaymentMethod 
@@ -171,7 +202,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
                 />
             </div>
             <div className="flex absolute left-0 bottom-0 p-2 w-full bg-white">
-            {/* Botón de continuar */}
+            {/* Botón de crear venta */}
             <ButtonNextStep totalQuantity={totalQuantity} totalPrice={totalPrice} title='Crear venta'/>
           </div>
           </form>
@@ -179,11 +210,16 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
         </div>
     </div>
 
-    {/* Se muestra la modal del form según el método de pago seleccionado */}
+    {/* Se muestra la modal del form de pago, según el método de pago seleccionado */}
 
     {showFormsPaymentMethod && (
-      <FormsPaymentMethod formData={saleData} onClose={onCloseFormPaymentMethod} />
+      <FormsPaymentMethod formData={saleData} onClose={onCloseFormPaymentMethod} showConfirmSale={showConfirmSale} onClick={onMakeSale} />
     )}
+
+    {/*Esta es la modal de confirmación de venta, que se muestra al hacer clic en el botón de crear venta */}
+    {
+      showConfirmSale && <div><ConfirmSale onClose={onShowConfirmSale} /></div>
+    }
 
    </div>
   )

@@ -1,6 +1,9 @@
 import React from 'react'
 import { FormatCurrency } from '@/utils/FormatCurrency'
 
+//Este componente se encarga de renderizar el botón de siguiente paso, que se utiliza en la modal de venta.
+// Recibe cuatro props: totalQuantity, que es la cantidad total de productos en la venta, totalPrice, que es el precio total de la venta, title, que es el título o nombre del botón y onClick, que es una función que viene desde el padre, que se encarga de manejar el evento de clic en el botón.
+
 export const ButtonNextStep = ({totalQuantity, totalPrice, title, onClick }) => {
   return (
     <button onClick={onClick} className="flex items-center w-full px-2 py-2 bg-[#1a2732] text-white rounded-xl hover:bg-[#232f3e] hover:translate-x-1 transition-all duration-300" style={{ minHeight: "48px" }}
