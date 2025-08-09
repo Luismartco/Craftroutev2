@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useRef } from 'react';
 import Maps from '@/Components/home/Maps';
+import Sale from './Sale';
 
 export default function Index({ stats, user, tienda }) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -104,6 +105,44 @@ const location = {
     lng: parseFloat(user.longitude),
     name: user.residence_municipality
 }
+
+// Acá estará parte de la lógica para la venta
+//Estado para la canasta de productos, este es un arreglo de objetos, en el cual están los productos seleccionados para la venta.
+const [selectedProducts, setSelectedProducts] = useState([]);
+//Estado para mostrar el modal de venta, este es un booleano, que se usa para mostrar o no el modal de venta.
+const [showSaleModal, setShowSaleModal] = useState(false);
+
+//Función para agregar un producto a la canasta, esta función se efectua cuando se hace click en el producto, y se agrega al arreglo de productos seleccionados.
+const addProduct = (product) => {
+    //Si el producto que se quiere agregar ya está en la canasta, se muestra el modal de venta.
+    if (selectedProducts.find(p => p.id === product.id)){
+        setShowSaleModal(true);
+    //Si el producto que se va a agregar no está en la canasta, se agrega al arreglo de productos seleccionados, y se muestra el modal de venta.
+    } else {
+        setSelectedProducts(prev => [...prev, product]);
+        product.cantidad = 1;
+        product.subtotal = product.precio;
+        setShowSaleModal(true);
+    }
+} 
+
+
+//Función para eliminar un producto de la canasta, se efectua al dar click en el botón de eliminar en la canasta. 
+const handleDeleteProduct = (productId) => {
+    //Lo que hace, es básicamente filtrar el arreglo de productos seleccionado, y deja los productos que el id sea diferente al id del producto que se desea eliminar.
+    setSelectedProducts(prev => prev.filter(product => product.id !== productId));
+}
+
+//Función para vaciar la canasta, se acciona al dar click en el botón de vaciar la canasta.
+const handleClearBasket = () => {
+    setSelectedProducts([]);
+}
+
+//Función para cambiar la cantidad de un producto en la canasta y el subtotal, se efecua mediante los botones de agregar o quitar cantidad.
+const handleQuantityChange = (productId, quantity, subtotal) => {
+    setSelectedProducts(prev => prev.map(product => product.id === productId ? {...product, cantidad: quantity, subtotal: subtotal} : product));
+}
+
 
     return (
         <AuthenticatedLayout>
@@ -294,15 +333,27 @@ const location = {
                             <div className="bg-white rounded-lg shadow p-6 w-full max-w-7xl mx-auto">
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-lg font-semibold">Mis Productos</h2>
-                                    <Link
-                                        href={route('dashboard.artesano.create-producto')}
-                                        className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base"
-                                    >
-                                        Agregar Producto
-                                    </Link>
+                                    <div className="flex items-center space-x-4">
+                                        <Link
+                                            href={route('dashboard.artesano.create-producto')}
+                                            className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base"
+                                        >
+                                            Agregar Producto
+                                        </Link>
+                                        {/* Botón para mostrar el modal de venta */}
+                                        <button onClick={() => setShowSaleModal(true)} className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base">
+                                            Vender
+                                        </button>
+                                        
+                                    </div>
                                 </div>
+                                {/* Condición para mostrar la modal de venta */}
+                                {showSaleModal && (
+                                    //Sale es un componente, que es basicamente la modal de ventas, este recibe 5 props, como se ve acontinuación. 
+                                     <Sale onClose={() => setShowSaleModal(false)} products={selectedProducts} onDeleteProduct={handleDeleteProduct} onClearBasket={handleClearBasket} onQuantityChange={handleQuantityChange} />
+                                )}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 w-full">
+                                <div  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 w-full">
                                     {stats.productos.map((producto) => {
                                         // Depuración en consola
                                         console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
@@ -314,9 +365,18 @@ const location = {
                                         const currentImg = carouselIndexes[producto.id] || 0;
 
                                         return (
-                                            <div key={producto.id} className="bg-white border rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow flex flex-col md:flex-row w-full">
+                                            <div key={producto.id} onClick={() => addProduct(producto) } className="relative bg-white border rounded-lg overflow-hidden shadow hover:cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-300  flex flex-col md:flex-row w-full">
+                                                {/* Icono de cantidad seleccionada del producto */}
+                                                {/* Si el producto que está siendo renderizado está en la canasta (selectedProducts), siginifica que fue seleccionado, por ende se muestra el icono de cantidad, de lo contrario no se muestra */}
+                                                { selectedProducts.find(p => p.id === producto.id) && <div className='absolute top-2 right-2 bg-gray-200 text-gray-800 px-1 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200 w-8 h-8 flex justify-center'>
+                                                    <p className='text-sm'>{
+                                                        //Con esta línea de código se obtiene la cantidad seleccionad del producto. 
+                                                        //Básicamente lo que hace es que mediante la función find se busca el producto en la canasta, si ese producto que está siendo renderizado actualmente se encuentra en la canasta, se obtiene la cantidad seleccionada de ese producto, de lo contrario, no se obtiene nada.
+                                                        selectedProducts.find(p => p.id === producto.id)?.cantidad || ''
+                                                    }</p>
+                                                </div> }
                                                 {/* Carrusel de imágenes */}
-                                                <div className="relative h-48 md:h-auto md:w-48 w-full overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                                                <div className="h-48 md:h-auto md:w-48 w-full overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
                                                     {imagenes.length > 0 && (
                                                         <>
                                                             <img

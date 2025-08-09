@@ -158,7 +158,7 @@ const productos = [
 // CartModal como componente hijo
 function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, goToCheckout }) {
   return show ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
         <button
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
@@ -535,12 +535,6 @@ const ProductGallery = ({ productos = [], user }) => {
                   >
                     Ver ruta
                   </button>
-                  <button
-                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
-                    className="flex-1 min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
-                  >
-                    Agregar al carrito
-                  </button> 
                {/*<button
                     onClick={() => handleBuy(selected)}
                     className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
