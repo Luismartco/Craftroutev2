@@ -27,7 +27,7 @@ const ConfirmSale = ({onClose}) => {
                                 <path d="M8 12l3 3 5-5" stroke="green" strokeWidth="2.5" fill="none" />
                             </svg>
                             
-                <p className='text-lg font-bold'>¡Create un venta!</p>
+                <p className='text-lg font-bold'>¡Create una venta!</p>
             </div>
             <div className='flex flex-col bg-[#f4f5f7] p-2 rounded-xl gap-2 '>
                 <div>
