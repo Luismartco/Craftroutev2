@@ -331,12 +331,12 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
 
                             {/* Productos */}
                             <div className="bg-white rounded-lg shadow p-6 w-full max-w-7xl mx-auto">
-                                <div className="flex justify-between items-center mb-6">
+                                <div className="flex flex-wrap justify-between items-center mb-6">
                                     <h2 className="text-lg font-semibold">Mis Productos</h2>
-                                    <div className="flex items-center space-x-4">
+                                    <div className="flex items-center gap-2">
                                         <Link
                                             href={route('dashboard.artesano.create-producto')}
-                                            className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base"
+                                            className="inline-flex items-center p-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base"
                                         >
                                             Agregar Producto
                                         </Link>
