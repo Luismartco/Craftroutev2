@@ -118,7 +118,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
   return (
    <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-3'>
-    <div className={`flex flex-col bg-white rounded-lg p-4 w-full max-w-5xl ${salesDetails ? 'h-full' : ''} md:h-full lg:h-full xl:h-full 2xl:h-auto overflow-auto`}>
+    <div className={`flex flex-col bg-white rounded-lg p-4 w-full max-h-full ${salesDetails ? 'max-w-5xl' : 'max-w-2xl'} overflow-auto`}>
         <div className='flex items-center justify-between'>
           <h1>Venta</h1>
           <button className='p-2' onClick={onClose}>
@@ -126,7 +126,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
           </button>
         </div>
         
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+        <div className={`grid grid-cols-1 ${!salesDetails ? 'md:grid-cols-1' : 'md:grid-cols-2'} gap-2 overflow-y-scroll`}>
           {/*Listado de productos*/}
         <div className='relative flex flex-col w-full border-2 border-gray-300 p-2 shadow-md shadow-gray-300'>
           <div className='flex items-center justify-between'>
