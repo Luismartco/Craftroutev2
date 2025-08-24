@@ -1,9 +1,6 @@
-import React, {useContext} from 'react';
-import { ModalContext } from './ModalContext';
+import React from 'react';
 
 const Agree = ({onClose, onDelete, item}) => {
-
-    const {setIsModalOpen} = useContext(ModalContext);
 
     return (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -13,12 +10,8 @@ const Agree = ({onClose, onDelete, item}) => {
                 <div className="flex justify-end mt-4">
                 <button onClick={() => {
                     onDelete(item.id);
-                    setIsModalOpen(false);
                 }} className="bg-[#3C2F2F] text-white px-4 py-2 rounded-lg mr-2 transform hover:scale-105 transition duration-300 ease-in-out hover:bg-[#4B3A3A]">Eliminar</button>
-                <button onClick={() => {
-                    onClose();
-                    setIsModalOpen(false);
-                }} className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transform hover:scale-105 transition duration-300 ease-in-out hover:bg-gray-200">Cancelar</button>
+                <button onClick={onClose} className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transform hover:scale-105 transition duration-300 ease-in-out hover:bg-gray-200">Cancelar</button>
                 </div>
             </div>
         </div>

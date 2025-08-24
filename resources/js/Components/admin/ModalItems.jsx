@@ -1,9 +1,6 @@
-import React, {useState, useEffect, useContext} from "react";
-import { ModalContext } from "./ModalContext";
+import React, {useState, useEffect} from "react";
 
 const ModalItems = ({data, onClose, onSubmit, existingItem, title}) => {
-
-    const {setIsModalOpen} = useContext(ModalContext);
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -42,7 +39,6 @@ const ModalItems = ({data, onClose, onSubmit, existingItem, title}) => {
             onSubmit(item);
             setName("");
             setDescription("");
-            setIsModalOpen(false);
         }
     };
 
@@ -78,10 +74,7 @@ const ModalItems = ({data, onClose, onSubmit, existingItem, title}) => {
                     </button>
                 </form>
                 <button
-                    onClick={() => {
-                        onClose();
-                        setIsModalOpen(false);
-                    }}
+                    onClick={onClose}
                     className="mt-4 text-red-500 hover:underline"
                 >
                     Cancelar
