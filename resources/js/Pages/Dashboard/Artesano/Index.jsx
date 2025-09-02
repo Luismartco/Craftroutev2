@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { useRef } from 'react';
 import Maps from '@/Components/home/Maps';
 import Sale from './Sale';
+import { FormatCurrency } from '@/utils/FormatCurrency';
 
 export default function Index({ stats, user, tienda }) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -149,10 +150,10 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
             <div className="min-h-screen bg-gray-100">
                 {/* Mensaje de éxito */}
                 {showSuccessMessage && (
-                    <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+                    <div className="fixed z-50 p-4 border border-green-200 rounded-lg shadow-lg top-4 right-4 bg-green-50">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <svg className="w-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                             </div>
@@ -166,23 +167,23 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                 )}
 
                 {/* Contenido principal */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
                         {/* Columna izquierda - Información personal y tienda */}
                         <div className="lg:col-span-1">
                             {/* Información del perfil */}
-                            <div className="bg-white rounded-lg shadow p-10 mb-10 w-full max-w-full mx-auto">
+                            <div className="w-full max-w-full p-10 mx-auto mb-10 bg-white rounded-lg shadow">
                                 <div className="flex items-center space-x-4">
                                     <div className="flex-shrink-0">
-                                        <div className="h-20 w-20 rounded-full bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-gray-100 relative cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                                        <div className="relative w-20 h-20 overflow-hidden bg-white border-4 border-white rounded-full shadow-lg cursor-pointer ring-2 ring-gray-100" onClick={() => fileInputRef.current.click()}>
                                             {profilePhoto ? (
                                                 <img
                                                     src={profilePhoto.startsWith('http') ? profilePhoto : `/storage/${profilePhoto}`}
                                                     alt="Foto de perfil"
-                                                    className="h-full w-full object-cover"
+                                                    className="object-cover w-full h-full"
                                                 />
                                             ) : (
-                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex items-center justify-center">
+                                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
                                                 <span className="text-2xl font-medium text-gray-600">
                                                     {user.name.charAt(0)}{user.last_name.charAt(0)}
                                                 </span>
@@ -195,8 +196,8 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                 ref={fileInputRef}
                                                 onChange={handlePhotoChange}
                                             />
-                                            <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md">
-                                                <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full shadow-md">
+                                                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3zm0 0v3h3" />
                                                 </svg>
                                             </div>
@@ -212,7 +213,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                             </span>
                                         </div>
                                         <div className="flex items-center mt-2">
-                                            <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
@@ -226,8 +227,8 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                             </div>
 
                             {/* Sección de Tienda */}
-                            <div className="bg-white rounded-lg shadow p-10 mb-10 w-full max-w-full mx-auto">
-                                <div className="flex justify-between items-center mb-4">
+                            <div className="w-full max-w-full p-10 mx-auto mb-10 bg-white rounded-lg shadow">
+                                <div className="flex items-center justify-between mb-4">
                                     {!tienda ? (
                                         <Link
                                             href={route('dashboard.artesano.create-tienda')}
@@ -248,12 +249,12 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                     <div className="space-y-4">
                                         <div className="flex items-center space-x-4">
                                             <div className="flex-shrink-0">
-                                                <div className="h-16 w-16 rounded-full bg-white border-2 border-gray-200 overflow-hidden flex items-center justify-center relative">
+                                                <div className="relative flex items-center justify-center w-16 h-16 overflow-hidden bg-white border-2 border-gray-200 rounded-full">
                                                     {tienda.foto_perfil ? (
                                                         <img
                                                             src={tienda.foto_perfil.startsWith('http') ? tienda.foto_perfil : `/storage/${tienda.foto_perfil}`}
                                                             alt={tienda.nombre}
-                                                            className="h-full w-full object-cover"
+                                                            className="object-cover w-full h-full"
                                                         />
                                                     ) : (
                                                         <span className="text-xl font-medium text-gray-600">
@@ -267,7 +268,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                 <p className="text-sm text-gray-500">{tienda.municipio_venta}</p>
                                             </div>
                                         </div>
-                                        <div className="border-t border-gray-200 pt-4">
+                                        <div className="pt-4 border-t border-gray-200">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <p className="text-sm text-gray-500">Barrio</p>
@@ -283,8 +284,8 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                 )}
                             </div>
 
-                            <div className="bg-white rounded-lg shadow p-10 w-full max-w-full mx-auto">
-                                <h3 className="text-lg font-semibold mb-4">Información de Contacto:</h3>
+                            <div className="w-full max-w-full p-10 mx-auto bg-white rounded-lg shadow">
+                                <h3 className="mb-4 text-lg font-semibold">Información de Contacto:</h3>
                                 <div className="space-y-4">
                                     <div>
                                         <p className="text-sm text-gray-500">Teléfono</p>
@@ -299,9 +300,9 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
 
                             {/* Mapa */}
                             {user.latitude && user.longitude && (
-                                <div className="mt-10 bg-white rounded-lg shadow p-10 w-full max-w-full mx-auto">
-                                    <h2 className="text-lg font-semibold mb-4">Ubicación</h2>
-                                    <div className="h-64 w-full rounded-lg overflow-hidden">
+                                <div className="w-full max-w-full p-10 mx-auto mt-10 bg-white rounded-lg shadow">
+                                    <h2 className="mb-4 text-lg font-semibold">Ubicación</h2>
+                                    <div className="w-full h-64 overflow-hidden rounded-lg">
                                         <Maps position={location} />
                                     </div>
                                 </div>
@@ -311,18 +312,18 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                         {/* Columna derecha - Estadísticas y productos */}
                         <div className="lg:col-span-3">
                             {/* Estadísticas */}
-                            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                                <h2 className="text-lg font-semibold mb-4">Actividad</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                            <div className="p-6 mb-6 bg-white rounded-lg shadow">
+                                <h2 className="mb-4 text-lg font-semibold">Actividad</h2>
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                    <div className="flex flex-col items-center p-4 rounded-lg bg-gray-50">
                                         <p className="text-sm text-gray-500">Total Productos</p>
                                         <p className="text-2xl font-bold text-indigo-600">{stats.total_productos}</p>
                                     </div>
-                                    <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                                    <div className="flex flex-col items-center p-4 rounded-lg bg-gray-50">
                                         <p className="text-sm text-gray-500">Total Ventas</p>
                                         <p className="text-2xl font-bold text-indigo-600">{stats.total_ventas}</p>
                                     </div>
-                                    <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                                    <div className="flex flex-col items-center p-4 rounded-lg bg-gray-50">
                                         <p className="text-sm text-gray-500">Total Pedidos</p>
                                         <p className="text-2xl font-bold text-indigo-600">{stats.total_pedidos}</p>
                                     </div>
@@ -330,18 +331,18 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                             </div>
 
                             {/* Productos */}
-                            <div className="bg-white rounded-lg shadow p-6 w-full max-w-7xl mx-auto">
-                                <div className="flex flex-wrap justify-between items-center mb-6">
+                            <div className="w-full p-6 mx-auto bg-white rounded-lg shadow max-w-7xl">
+                                <div className="flex flex-wrap items-center justify-between mb-6">
                                     <h2 className="text-lg font-semibold">Mis Productos</h2>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 ">
                                         <Link
                                             href={route('dashboard.artesano.create-producto')}
-                                            className="inline-flex items-center p-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base"
+                                            className="inline-flex items-center p-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-md md:text-base"
                                         >
                                             Agregar Producto
                                         </Link>
                                         {/* Botón para mostrar el modal de venta */}
-                                        <button onClick={() => setShowSaleModal(true)} className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base">
+                                        <button onClick={() => setShowSaleModal(true)} className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-md md:text-base">
                                             Vender
                                         </button>
                                         
@@ -353,7 +354,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                      <Sale onClose={() => setShowSaleModal(false)} products={selectedProducts} onDeleteProduct={handleDeleteProduct} onClearBasket={handleClearBasket} onQuantityChange={handleQuantityChange} />
                                 )}
 
-                                <div  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 w-full">
+                                <div  className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
                                     {stats.productos.map((producto) => {
                                         // Depuración en consola
                                         console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
@@ -365,10 +366,10 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                         const currentImg = carouselIndexes[producto.id] || 0;
 
                                         return (
-                                            <div key={producto.id} onClick={() => addProduct(producto) } className="relative bg-white border rounded-lg overflow-hidden shadow hover:cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-300  flex flex-col md:flex-row w-full">
+                                            <div key={producto.id} className="relative flex-col w-full overflow-auto transition-all duration-300 bg-white border rounded-lg shadow over overflow- hover:cursor-pointer hover:-translate-y-1 hover:shadow-md md:flex-row">
                                                 {/* Icono de cantidad seleccionada del producto */}
                                                 {/* Si el producto que está siendo renderizado está en la canasta (selectedProducts), siginifica que fue seleccionado, por ende se muestra el icono de cantidad, de lo contrario no se muestra */}
-                                                { selectedProducts.find(p => p.id === producto.id) && <div className='absolute top-2 right-2 bg-gray-200 text-gray-800 px-1 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200 w-8 h-8 flex justify-center'>
+                                                { selectedProducts.find(p => p.id === producto.id) && <div className='absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300'>
                                                     <p className='text-sm'>{
                                                         //Con esta línea de código se obtiene la cantidad seleccionad del producto. 
                                                         //Básicamente lo que hace es que mediante la función find se busca el producto en la canasta, si ese producto que está siendo renderizado actualmente se encuentra en la canasta, se obtiene la cantidad seleccionada de ese producto, de lo contrario, no se obtiene nada.
@@ -376,13 +377,13 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                     }</p>
                                                 </div> }
                                                 {/* Carrusel de imágenes */}
-                                                <div className="h-48 md:h-auto md:w-48 w-full overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                                                <div className="flex items-center justify-center w-full h-48 bg-gray-100 hoverflow-hiddecoration-purple-50">
                                                     {imagenes.length > 0 && (
                                                         <>
                                                             <img
                                                                 src={getImageUrl(imagenes[currentImg]?.ruta_imagen)}
                                                                 alt={producto.nombre}
-                                                                className="h-full w-full object-contain"
+                                                                className="object-contain w-full h-full"
                                                                 onError={handleImageError}
                                                             />
                                                             {imagenes.length > 1 && (
@@ -401,7 +402,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                                     >
                                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                                                     </button>
-                                                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                                                    <div className="absolute flex gap-1 -translate-x-1/2 bottom-2 left-1/2">
                                                                         {imagenes.map((_, idx) => (
                                                                             <span
                                                                                 key={idx}
@@ -415,11 +416,11 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                     )}
                                                 </div>
                                                 
-                                                <div className="p-4 flex-1 flex flex-col justify-between">
+                                                <div className="relative flex flex-col justify-between p-4">
                                                     <div>
                                                         <h4 className="text-lg font-medium text-gray-900">{producto.nombre}</h4>
                                                         <p className="mt-1 text-sm text-gray-500 line-clamp-2">{producto.descripcion}</p>
-                                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                                        <div className="grid grid-cols-2 mt-4 sm:grid-cols-2 gap-x-4 gap-y-2">
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Precio:</span> ${producto.precio.toLocaleString()}
                                                             </p>
@@ -444,10 +445,10 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="mt-4 flex space-x-2">
+                                                    <div className="flex flex-wrap gap-2 mt-2">
                                                         <Link
                                                             href={route('dashboard.artesano.edit-producto', producto.id)}
-                                                            className="inline-flex items-center px-3 py-1.5 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                                                            className="flex items-center justify-center flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-gray-800 border border-transparent rounded-md hover:bg-gray-700"
                                                         >
                                                             Editar
                                                         </Link>
@@ -457,9 +458,12 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                                     router.delete(route('dashboard.artesano.delete-producto', producto.id));
                                                                 }
                                                             }}
-                                                            className="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"
+                                                            className="flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-red-600 border border-transparent rounded-md hover:bg-red-700"
                                                         >
                                                             Eliminar
+                                                        </button>
+                                                        <button onClick={() => addProduct(producto) } className="w-full p-2 text-xs font-semibold tracking-widest text-white uppercase bg-green-600 border border-transparent rounded-md buttom-0 hover:bg-green-700 lg:w-auto">
+                                                            Agregar a la canasta
                                                         </button>
                                                     </div>
                                                 </div>
