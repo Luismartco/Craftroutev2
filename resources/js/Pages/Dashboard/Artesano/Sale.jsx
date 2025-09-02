@@ -4,6 +4,7 @@ import PaymentMethod from '@/Components/artisan/PaymentMethod';
 import { ButtonNextStep } from '@/Components/artisan/ButtonNextStep';
 import { FormsPaymentMethod } from '@/Components/artisan/FormsPaymentMethod';
 import ConfirmSale from '@/Components/artisan/ConfirmSale';
+import AlertMessage from '@/Components/AlertMessage';
 
 //Importaciones de iconos
 import closeIcon from '../../../../media/svg/close-icon.svg'
@@ -42,6 +43,9 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
   //Estado para mostrar la modal de confirmación de venta
   const [showConfirmSale, setShowConfirmSale] = useState(false);
 
+  //Estado para mostrar el mensaje de alerta
+  const [showAlertMessage, setShowAlertMessage] = useState(false);
+
   // Función para mostrar el siguiente paso, que es el formulario de detalles de la venta 
   const showNextStep = () => {
     // Si no hay productos en la canasta, no se prosigue al siguiente paso
@@ -70,7 +74,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
     e.preventDefault();
     // Validar que se haya seleccionado un método de pago
     if (!selectedPaymentMethod || clientName === '' ) {
-      alert('Por favor digite el nombre o seleccione un método de pago');
+      setShowAlertMessage(true);
       return;
     }
 
@@ -117,7 +121,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
 
   return (
-   <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-3'>
+   <div className='fixed inset-0 z-50 flex items-center justify-center p-3 bg-black bg-opacity-50'>
     <div className={`flex flex-col bg-white rounded-lg p-4 w-full max-h-full ${salesDetails ? 'max-w-5xl' : 'max-w-2xl'} overflow-auto`}>
         <div className='flex items-center justify-between'>
           <h1>Venta</h1>
@@ -128,17 +132,17 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
         
         <div className={`grid grid-cols-1 ${!salesDetails ? 'md:grid-cols-1' : 'md:grid-cols-2'} gap-2 overflow-y-scroll`}>
           {/*Listado de productos*/}
-        <div className='relative flex flex-col w-full border-2 border-gray-300 p-2 shadow-md shadow-gray-300'>
+        <div className='relative flex flex-col w-full p-2 border-2 border-gray-300 shadow-md shadow-gray-300'>
           <div className='flex items-center justify-between'>
             <p className='font-bold'>Productos</p> 
-            <p className='underline font-bold hover:text-gray-600 hover:cursor-pointer transition-all duration-300' onClick={onClearBasket}>Vaciar canasta</p>
+            <p className='font-bold underline transition-all duration-300 hover:text-gray-600 hover:cursor-pointer' onClick={onClearBasket}>Vaciar canasta</p>
           </div>
           <div className='mb-5'>
           { products.length > 0 ? products.map((product) => {
             return <Basket key={product.id} product={product} onDeleteProduct={onDeleteProduct} onQuantityChange={onQuantityChange} />
           }) : <p className='text-center text-gray-500'>No hay productos en la canasta</p>}
           </div>
-          <div className="flex absolute left-0 bottom-0 p-2 w-full bg-white">
+          <div className="absolute bottom-0 left-0 flex w-full p-2 bg-white">
             {/* Botón de continuar */}
             {showButtonPreviousStep && (
               <ButtonNextStep totalQuantity={totalQuantity} totalPrice={totalPrice} title='Continuar' onClick={showNextStep} />
@@ -148,21 +152,21 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
         {/* Detalles de la venta */}
         {/* Si en la canasta hay productos y el estado de salesDetails es true, se muestra el detalle de la venta, de lo contrario no */}
         {(products.length > 0 && salesDetails ) && 
-          <form onSubmit={handleForm} className=' relative flex flex-col w-full border-2 border-gray-300 p-2 shadow-md shadow-gray-300'>
+          <form onSubmit={handleForm} className='relative flex flex-col w-full p-2 border-2 border-gray-300 shadow-md shadow-gray-300'>
             <div className='flex flex-col gap-2'>
                 <label className='font-bold'>Fecha de la venta *</label>
-                <input type='date' disabled value={new Date().toISOString().split('T')[0]} className='border-2 border-gray-200 rounded-xl p-2'></input>
+                <input type='date' disabled value={new Date().toISOString().split('T')[0]} className='p-2 border-2 border-gray-200 rounded-xl'></input>
                 <label className='font-bold'>Cliente</label>
                 <input 
                   type='text' 
                   placeholder='Digite el nombre del cliente' 
-                  className='border-2 border-gray-200 rounded-xl p-2'
+                  className='p-2 border-2 border-gray-200 rounded-xl'
                   value={clientName}
                   onChange={handleChange}
                 />
             </div>
             <p className='mt-3'>Selecciona el método de pago*</p>
-            <div className='grid grid-cols-2 md:grid-cols-3 gap-2 mx-auto mb-16'>
+            <div className='grid grid-cols-2 gap-2 mx-auto mb-16 md:grid-cols-3'>
               {/* Se renderiza cada método de pago */}
                 <PaymentMethod 
                   icon={cash} 
@@ -201,7 +205,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
                   onSelect={() => handlePaymentMethodSelect('Daviplata')}
                 />
             </div>
-            <div className="flex absolute left-0 bottom-0 p-2 w-full bg-white">
+            <div className="absolute bottom-0 left-0 flex w-full p-2 bg-white">
             {/* Botón de crear venta */}
             <ButtonNextStep totalQuantity={totalQuantity} totalPrice={totalPrice} title='Crear venta'/>
           </div>
@@ -213,10 +217,19 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
     {/* Se muestra la modal del form de pago, según el método de pago seleccionado */}
 
     {showFormsPaymentMethod && (
-      <FormsPaymentMethod formData={saleData} onClose={onCloseFormPaymentMethod} showConfirmSale={showConfirmSale} onClick={onMakeSale} />
+      <FormsPaymentMethod formData={saleData} onClose={onCloseFormPaymentMethod} onClick={onMakeSale} />
     )}
 
-    {/*Esta es la modal de confirmación de venta, que se muestra al hacer clic en el botón de crear venta */}
+    {/* Se muestra la modal de alertMessage para mostrar un mensaje de alerta si no se rellena bien el formulario */}
+
+    { showAlertMessage && (
+      <AlertMessage 
+        message='Por favor, seleccione un método de pago o complete el nombre del cliente.' 
+        onClose={() => {setShowAlertMessage(false)}}
+      />
+    )}
+
+    {/*Esta es la modal de confirmación de venta, que se muestra al hacer clic en el botón de confirmar de los forms de métodos de pago */}
     {
       showConfirmSale && <div><ConfirmSale onClose={onShowConfirmSale} /></div>
     }
