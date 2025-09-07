@@ -117,6 +117,13 @@ Route::post('/api/cart/store', [CartController::class, 'store'])->name('cart.sto
 Route::get('/api/cart/get', [CartController::class, 'get'])->name('cart.get');
 Route::delete('/api/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
+// Ruta para renovar token CSRF
+Route::get('/api/csrf-token', function () {
+    return response()->json([
+        'csrf_token' => csrf_token()
+    ]);
+})->name('csrf.token');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
