@@ -22,23 +22,20 @@ export const FormsPaymentMethod = ({formData, onClose, onClick}) => {
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50'>
         <div className='flex-wrap w-full max-w-xl p-4 bg-white rounded-lg'>
             <div className='flex justify-between'>
-                <p className='text-lg font-bold'>{formData.paymentMethod === 'Efectivo' ? 'Calcula el cambio de tu venta' : ''}</p>
+                <p className='text-2xl font-bold'>{formData.paymentMethod === 'Efectivo' ? 'Calcula el cambio de tu venta' : 'Mensaje'}</p>
                 <img src={closeIcon} alt='cerrar' className='w-8 h-8 hover:cursor-pointer' onClick={onClose} />
             </div>
             {/* Dependiendo del método de pago, se muestra el formulario correspondiente en una modal  */}
         {
-            formData.paymentMethod === "Efectivo" && (
+            formData.paymentMethod === "Efectivo" ? (
                 <Cash formData={formData} onClick={onClick} showAlertMessage={showAlertMessageFunction} />
+            ) : (
+                <div>
+                    <p className='text-lg font-base'>Hola, soy un método de pago, pero no estoy disponible aún 😁</p>
+                </div>
             )
         } 
 
-        {
-            formData.paymentMethod === "Tarjeta" && (
-                <div>
-                    <p className='text-lg font-bold'>Hola, soy el método de pago: Tarjeta</p>
-                </div>
-            )
-        }
 
         {/* Debido a que no tengo las views para cada caso del método de pago, pues no están  */}
         </div>

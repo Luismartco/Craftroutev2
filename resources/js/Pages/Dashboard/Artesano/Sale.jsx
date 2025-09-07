@@ -48,10 +48,7 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
   // Función para mostrar el siguiente paso, que es el formulario de detalles de la venta 
   const showNextStep = () => {
-    // Si no hay productos en la canasta, no se prosigue al siguiente paso
-    if (products.length === 0) return alert('no hay productos en la canasta, agregue algunos productos para continuar');
-    // De lo contario, se cambia el estado de salesDetails a true, para mostrar el formulario de detalles de la venta
-    // y se oculta el botón de continuar
+    //Se cambia el estado de salesDetails a true, para mostrar el formulario de detalles de la venta y se oculta el botón de continuar
     setSalesDetails(true);
     setshowButtonPreviousStep(false);
   };
@@ -144,9 +141,10 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
           </div>
           <div className="absolute bottom-0 left-0 flex w-full p-2 bg-white">
             {/* Botón de continuar */}
-            {showButtonPreviousStep && (
+            {/* Si hay productos en la canasta y el estado de showButtonPreviousStep es true, se muestra el botón de continuar */}
+            {products.length > 0 && showButtonPreviousStep ? (
               <ButtonNextStep totalQuantity={totalQuantity} totalPrice={totalPrice} title='Continuar' onClick={showNextStep} />
-            ) }
+            ) : '' }
           </div>
         </div>
         {/* Detalles de la venta */}
