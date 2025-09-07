@@ -123,7 +123,6 @@ const addProduct = (product) => {
         setSelectedProducts(prev => [...prev, product]);
         product.cantidad = 1;
         product.subtotal = product.precio;
-        setShowSaleModal(true);
     }
 } 
 
