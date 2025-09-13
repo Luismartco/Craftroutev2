@@ -6,9 +6,7 @@ use App\Http\Controllers\Dashboard\ArtesanoDashboardController;
 use App\Http\Controllers\Dashboard\ClienteDashboardController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\MaterialController;
-use App\Http\Controllers\TecnicaController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,36 +51,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::prefix('dashboard/admin')->name('dashboard.admin.')->group(function () {
             Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
-            Route::get('/categories', function() {
-                return Inertia::render('Dashboard/Admin/Categories');
-            })->name('view-state');
-            Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
-            Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
-        });
+                    Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
+        Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+        
+        // Rutas para categorías
+        Route::get('/categorias', function() { return redirect()->route('dashboard.admin.index'); })->name('categorias.index');
+        Route::post('/categorias', [AdminDashboardController::class, 'storeCategoria'])->name('categorias.store');
+        Route::put('/categorias/{id}', [AdminDashboardController::class, 'updateCategoria'])->name('categorias.update');
+        Route::delete('/categorias/{id}', [AdminDashboardController::class, 'destroyCategoria'])->name('categorias.destroy');
 
-        // Rutas API para categorías, materiales y técnicas (solo admin)
-        Route::prefix('api')->name('api.')->group(function () {
-            // Rutas para categorías
-            Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-            Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
-            Route::get('/categorias/{id}', [CategoriaController::class, 'show'])->name('categorias.show');
-            Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
-            Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+        // Rutas para materiales
+        Route::get('/materiales', function() { return redirect()->route('dashboard.admin.index'); })->name('materiales.index');
+        Route::post('/materiales', [AdminDashboardController::class, 'storeMaterial'])->name('materiales.store');
+        Route::put('/materiales/{id}', [AdminDashboardController::class, 'updateMaterial'])->name('materiales.update');
+        Route::delete('/materiales/{id}', [AdminDashboardController::class, 'destroyMaterial'])->name('materiales.destroy');
 
-            // Rutas para materiales
-            Route::get('/materiales', [MaterialController::class, 'index'])->name('materiales.index');
-            Route::post('/materiales', [MaterialController::class, 'store'])->name('materiales.store');
-            Route::get('/materiales/{id}', [MaterialController::class, 'show'])->name('materiales.show');
-            Route::put('/materiales/{id}', [MaterialController::class, 'update'])->name('materiales.update');
-            Route::delete('/materiales/{id}', [MaterialController::class, 'destroy'])->name('materiales.destroy');
-
-            // Rutas para técnicas
-            Route::get('/tecnicas', [TecnicaController::class, 'index'])->name('tecnicas.index');
-            Route::post('/tecnicas', [TecnicaController::class, 'store'])->name('tecnicas.store');
-            Route::get('/tecnicas/{id}', [TecnicaController::class, 'show'])->name('tecnicas.show');
-            Route::put('/tecnicas/{id}', [TecnicaController::class, 'update'])->name('tecnicas.update');
-            Route::delete('/tecnicas/{id}', [TecnicaController::class, 'destroy'])->name('tecnicas.destroy');
-        });
+        // Rutas para técnicas
+        Route::get('/tecnicas', function() { return redirect()->route('dashboard.admin.index'); })->name('tecnicas.index');
+        Route::post('/tecnicas', [AdminDashboardController::class, 'storeTecnica'])->name('tecnicas.store');
+        Route::put('/tecnicas/{id}', [AdminDashboardController::class, 'updateTecnica'])->name('tecnicas.update');
+        Route::delete('/tecnicas/{id}', [AdminDashboardController::class, 'destroyTecnica'])->name('tecnicas.destroy');
+    });
     });
 
     // Rutas del artesano
@@ -127,6 +116,13 @@ Route::get('/checkout/success/{pedido_id}', [CheckoutController::class, 'success
 Route::post('/api/cart/store', [CartController::class, 'store'])->name('cart.store');
 Route::get('/api/cart/get', [CartController::class, 'get'])->name('cart.get');
 Route::delete('/api/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
+// Ruta para renovar token CSRF
+Route::get('/api/csrf-token', function () {
+    return response()->json([
+        'csrf_token' => csrf_token()
+    ]);
+})->name('csrf.token');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
