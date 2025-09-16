@@ -129,7 +129,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/blog', function () {
-    return Inertia::render('Blog');
-})->name('blog');
+    abort(404);
+});
+
+Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 require __DIR__.'/auth.php';
