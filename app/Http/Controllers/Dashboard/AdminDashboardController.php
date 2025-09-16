@@ -9,6 +9,8 @@ use Inertia\Response;
 use App\Models\Categoria;
 use App\Models\Material;
 use App\Models\Tecnica;
+use App\Models\User;
+use App\Models\Activity;
 
 class AdminDashboardController extends Controller
 {
@@ -16,48 +18,27 @@ class AdminDashboardController extends Controller
     {
         return Inertia::render('Dashboard/Admin/Index', [
             'stats' => [
-                'total_users' => \App\Models\User::count(),
-                'total_artesanos' => \App\Models\User::where('role', 'artesano')->count(),
-                'total_clientes' => \App\Models\User::where('role', 'cliente')->count(),
+                'total_users' => User::count(),
+                'total_artesanos' => User::where('role', 'artesano')->count(),
+                'total_clientes' => User::where('role', 'cliente')->count(),
             ],
-            'recent_activities' => \App\Models\Activity::latest()->take(5)->get(),
-            'categories' => Categoria::orderBy('nombre')->get()->map(function($categoria) {
-                return [
-                    'id' => $categoria->id,
-                    'name' => $categoria->nombre,
-                    'description' => $categoria->descripcion
-                ];
-            }),
-            'materials' => Material::orderBy('nombre')->get()->map(function($material) {
-                return [
-                    'id' => $material->id,
-                    'name' => $material->nombre,
-                    'description' => $material->descripcion
-                ];
-            }),
-            'techniques' => Tecnica::orderBy('nombre')->get()->map(function($tecnica) {
-                return [
-                    'id' => $tecnica->id,
-                    'name' => $tecnica->nombre,
-                    'description' => $tecnica->descripcion
-                ];
-            }),
+            'recent_activities' => Activity::latest()->take(5)->get(),
         ]);
     }
 
-    public function manageUsers()
+    public function manageUsers(): Response
     {
         return Inertia::render('Dashboard/Admin/ManageUsers', [
-            'users' => \App\Models\User::with('profile')->paginate(10),
+            'users' => User::with('profile')->paginate(10),
         ]);
     }
 
-    public function manageArtesanos()
+    public function manageArtesanos(): Response
     {
         return Inertia::render('Dashboard/Admin/ManageArtesanos', [
-            'artesanos' => \App\Models\User::where('role', 'artesano')
+            'artesanos' => User::where('role', 'artesano')
                 ->with('profile')
                 ->paginate(10),
         ]);
     }
-} 
+}

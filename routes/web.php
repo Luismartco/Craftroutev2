@@ -52,13 +52,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas del administrador
     Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::prefix('dashboard/admin')->name('dashboard.admin.')->group(function () {
-            Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
-            Route::get('/categories', function() {
-                return Inertia::render('Dashboard/Admin/Categories');
-            })->name('view-state');
-            Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
-            Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
-        });
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
+        Route::get('/categories', [AdminDashboardController::class, 'categories'])->name('categories');
+        Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
+        Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+    });
+
 
         // Rutas API para categorías, materiales y técnicas (solo admin)
         Route::prefix('api')->name('api.')->group(function () {
@@ -108,14 +107,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':customer'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
-            Route::get('/recomendaciones', function () {
-                return Inertia::render('Dashboard/Cliente/Recomendaciones');
-            })->name('recomendaciones');
+            Route::get('/recomendaciones', [\App\Http\Controllers\Dashboard\Cliente\RecomendacionesController::class, 'index'])->name('recomendaciones');
         });
+        Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
+        Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
     });
-
-    Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
-    Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
 
 // Rutas de checkout (accesibles para todos)
