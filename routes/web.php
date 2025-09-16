@@ -97,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':customer'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
-            Route::get('/recomendaciones', [\App\Http\Controllers\Dashboard\Cliente\RecomendacionesController::class, 'index'])->name('recomendaciones');
+            Route::get('/recomendaciones', [UserPreferenceController::class, 'show'])->name('recomendaciones');
         });
         Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
         Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
