@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\UserPreferenceController;
+use App\Http\Controllers\RecommendationController;
 
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
@@ -98,6 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
             Route::get('/recomendaciones', [UserPreferenceController::class, 'show'])->name('recomendaciones');
+            Route::get('/recomendaciones-ia', [UserPreferenceController::class, 'recommendationsPage'])->name('recomendaciones-ia');
         });
         Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
         Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
@@ -133,5 +135,14 @@ Route::get('/blog', function () {
 });
 
 Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
+// API interna para resolver detalles por IDs (accesible para clientes autenticados)
+Route::middleware(['auth', CheckRole::class . ':customer'])->group(function () {
+    Route::get('/api/recommendations/productos', [RecommendationController::class, 'productosByIds']);
+    Route::get('/api/recommendations/tiendas', [RecommendationController::class, 'tiendasByIds']);
+    Route::get('/api/recommendations/proxy/productos', [RecommendationController::class, 'proxyProductos']);
+    Route::get('/api/recommendations/proxy/tiendas', [RecommendationController::class, 'proxyTiendas']);
+    Route::get('/api/recommendations/has-preferences', [RecommendationController::class, 'hasPreferences']);
+});
 
 require __DIR__.'/auth.php';

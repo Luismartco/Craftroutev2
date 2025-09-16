@@ -45,6 +45,21 @@ class UserPreferenceController extends Controller
         ]);
     }
 
+    public function recommendationsPage()
+    {
+        $user = Auth::user();
+        $hasCompleted = false;
+
+        if ($user) {
+            $pref = UserPreference::where('user_id', $user->id)->first();
+            $hasCompleted = $pref?->has_completed_preferences ?? false;
+        }
+
+        return Inertia::render('Dashboard/Cliente/RecomendacionesIA', [
+            'hasCompletedPreferences' => $hasCompleted,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
