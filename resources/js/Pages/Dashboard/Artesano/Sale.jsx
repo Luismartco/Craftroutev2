@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef, use} from 'react'
+import { toIntAmount } from '@/utils/money'
 import Basket from '../../../Components/artisan/Basket';
 import PaymentMethod from '@/Components/artisan/PaymentMethod';
 import { ButtonNextStep } from '@/Components/artisan/ButtonNextStep';
@@ -41,6 +42,8 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
   //Estado para mostrar la modal de confirmación de venta
   const [showConfirmSale, setShowConfirmSale] = useState(false);
+  // Snapshot de la venta al confirmar, para no depender de products tras limpiar la canasta
+  const [saleSnapshot, setSaleSnapshot] = useState({ productoId: null, quantity: 0, total: 0 });
 
   // Función para mostrar el siguiente paso, que es el formulario de detalles de la venta 
   const showNextStep = () => {
@@ -93,6 +96,18 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
   //Función para hacer la venta, básicamente cierra la modal del form de pago, muestra la modal de confirmar venta, y limpia la canasta
   const onMakeSale = () => {
+    // Si no hay productos, no continuar
+    if (!products || products.length === 0) {
+      alert('No hay productos en la canasta');
+      return;
+    }
+    // Tomar snapshot ANTES de limpiar la canasta
+    const firstProduct = products[0];
+    const productoId = firstProduct?.id ?? firstProduct?.producto_id ?? firstProduct?.product_id ?? null;
+    const qty = Number.isFinite(totalQuantity) && totalQuantity > 0 ? totalQuantity : (firstProduct?.cantidad ?? 1);
+    const totalInt = toIntAmount(totalPrice);
+    setSaleSnapshot({ productoId, quantity: qty, total: totalInt });
+
     setShowFormsPaymentMethod(false);
     setShowConfirmSale(true);
     onClearBasket();
@@ -218,7 +233,16 @@ const Sale = ({onClose, products, onDeleteProduct, onClearBasket, onQuantityChan
 
     {/*Esta es la modal de confirmación de venta, que se muestra al hacer clic en el botón de crear venta */}
     {
-      showConfirmSale && <div><ConfirmSale onClose={onShowConfirmSale} /></div>
+      showConfirmSale && (
+        <div>
+          <ConfirmSale
+            onClose={onShowConfirmSale}
+            productoId={saleSnapshot.productoId}
+            quantity={saleSnapshot.quantity}
+            total={saleSnapshot.total}
+          />
+        </div>
+      )
     }
 
    </div>

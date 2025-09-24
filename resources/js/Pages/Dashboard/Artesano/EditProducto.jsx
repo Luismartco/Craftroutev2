@@ -9,7 +9,7 @@ import TextArea from '@/Components/TextArea';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 
-export default function EditProducto({ producto }) {
+export default function EditProducto({ producto, categorias }) {
     // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
         if (!imagePath) return '';
@@ -41,7 +41,7 @@ export default function EditProducto({ producto }) {
         descripcion: producto?.descripcion || '',
         precio: producto?.precio?.toString() || '0',
         cantidad_disponible: producto?.cantidad_disponible?.toString() || '0',
-        categoria: producto?.categoria || 'tejido',
+        categoria_id: producto?.categoria_id || '',
         municipio_venta: producto?.municipio_venta || 'morroa',
         tecnica_artesanal: producto?.tecnica_artesanal || 'telar horizontal',
         materia_prima: producto?.materia_prima || 'paja',
@@ -227,21 +227,23 @@ export default function EditProducto({ producto }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="categoria" value="Categoría *" />
+                                        <InputLabel htmlFor="categoria_id" value="Categoría *" />
                                         <SelectInput
-                                            id="categoria"
-                                            name="categoria"
-                                            value={data.categoria}
+                                            id="categoria_id"
+                                            name="categoria_id"
+                                            value={data.categoria_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('categoria', e.target.value)}
+                                            onChange={(e) => setData('categoria_id', e.target.value)}
                                             required
                                         >
-                                            <option value="tejido">Tejido</option>
-                                            <option value="madera">Madera</option>
-                                            <option value="ceramica">Cerámica</option>
-                                            <option value="joyeria">Joyería</option>
+                                            <option value="">Seleccione una categoría</option>
+                                            {categorias.map((categoria) => (
+                                                <option key={categoria.id} value={categoria.id}>
+                                                    {categoria.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
-                                        <InputError message={errors.categoria} className="mt-2" />
+                                        <InputError message={errors.categoria_id} className="mt-2" />
                                     </div>
 
                                     <div>

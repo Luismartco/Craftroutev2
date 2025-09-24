@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import Accordion from '@/Components/Accordion';
 import CartProductItem from '@/Components/CartProductItem';
+import { toIntAmount } from '@/utils/money';
 
 export default function CheckoutIndex({ auth, cartProducts, subtotal, total, user }) {
     const [termsAccepted, setTermsAccepted] = useState(false);
@@ -22,6 +23,28 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
     const [selectedBank, setSelectedBank] = useState('');
     const [showUnavailableMessage, setShowUnavailableMessage] = useState(false);
     const [shippingCost, setShippingCost] = useState(20000); // Inicializar con el costo de contra entrega
+    // Modals: PSE, Nequi, Nequi Auth
+    const [showPseModal, setShowPseModal] = useState(false);
+    const [showNequiModal, setShowNequiModal] = useState(false);
+    const [showNequiAuthModal, setShowNequiAuthModal] = useState(false);
+    // Forms for modals
+    const [pseForm, setPseForm] = useState({
+        documentType: 'cc',
+        documentNumber: '',
+        personType: 'natural',
+        bank: 'bancolombia',
+        holderName: '',
+    });
+    const [nequiForm, setNequiForm] = useState({
+        documentType: 'cc',
+        personType: 'natural',
+        bank: 'nequi',
+    });
+    const [nequiAuthForm, setNequiAuthForm] = useState({
+        phone: '',
+        password: '',
+        notRobot: false,
+    });
 
     // Cargar datos del carrito desde localStorage si no hay datos del servidor
     useEffect(() => {
@@ -176,6 +199,10 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
             setShowUnavailableMessage(true);
         } else {
             setShowUnavailableMessage(false);
+        }
+        if (method === 'pse') {
+            // abrir modal PSE directamente al escoger PSE
+            setShowPseModal(true);
         }
     };
 
@@ -565,6 +592,8 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                                     onChange={(e) => {
                                                                         setSelectedBank(e.target.value);
                                                                         handlePaymentDataChange('bank', e.target.value);
+                                                                            // Abrir flujo de Nequi al seleccionar Nequi
+                                                                            setShowNequiModal(true);
                                                                     }}
                                                                     className="text-blue-600"
                                                                 />
@@ -578,14 +607,7 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                             </div>
                                         </Accordion>
                                         
-                                        <div className="mt-6">
-                                            <button
-                                                onClick={handleContinuePayment}
-                                                className="w-full bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold text-center"
-                                            >
-                                                Continuar y hacer el pago
-                                            </button>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             )}
@@ -679,6 +701,251 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                             </div>
                         </div>
                     </div>
+                    {/* Modals */}
+                    {showPseModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold">Datos de pago</h3>
+                                    <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowPseModal(false)}>✕</button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <InputLabel value="Tipo de documento" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={pseForm.documentType}
+                                            onChange={(e) => setPseForm({ ...pseForm, documentType: e.target.value })}
+                                        >
+                                            <option value="cc">Cédula de ciudadanía</option>
+                                            <option value="ce">Cédula de extranjería</option>
+                                            <option value="nit">NIT</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Número de documento" />
+                                        <TextInput
+                                            type="text"
+                                            className="mt-1 block w-full"
+                                            value={pseForm.documentNumber}
+                                            onChange={(e) => setPseForm({ ...pseForm, documentNumber: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Tipo de persona" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={pseForm.personType}
+                                            onChange={(e) => setPseForm({ ...pseForm, personType: e.target.value })}
+                                        >
+                                            <option value="natural">Persona natural</option>
+                                            <option value="juridica">Persona jurídica</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Banco" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={pseForm.bank}
+                                            onChange={(e) => setPseForm({ ...pseForm, bank: e.target.value })}
+                                        >
+                                            <option value="bancolombia">Bancolombia</option>
+                                            <option value="bbva">BBVA</option>
+                                            <option value="davivienda">Davivienda</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Nombre del titular" />
+                                        <TextInput
+                                            type="text"
+                                            className="mt-1 block w-full"
+                                            value={pseForm.holderName}
+                                            onChange={(e) => setPseForm({ ...pseForm, holderName: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                                        <span className="font-medium">Cantidad</span>
+                                        <span className="font-bold text-blue-600">${(currentTotal).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <button
+                                            className="flex-1 bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors"
+                                            onClick={() => {
+                                                // Simulación de envío
+                                                alert('Pago PSE simulado.');
+                                                setShowPseModal(false);
+                                            }}
+                                        >
+                                            Pagar
+                                        </button>
+                                        <button className="px-4 py-2 rounded-lg border" onClick={() => setShowPseModal(false)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showNequiModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold">Datos de pago (Nequi)</h3>
+                                    <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowNequiModal(false)}>✕</button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <InputLabel value="Tipo de documento" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={nequiForm.documentType}
+                                            onChange={(e) => setNequiForm({ ...nequiForm, documentType: e.target.value })}
+                                        >
+                                            <option value="cc">Cédula de ciudadanía</option>
+                                            <option value="ce">Cédula de extranjería</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Tipo de persona" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={nequiForm.personType}
+                                            onChange={(e) => setNequiForm({ ...nequiForm, personType: e.target.value })}
+                                        >
+                                            <option value="natural">Persona natural</option>
+                                            <option value="juridica">Persona jurídica</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Banco" />
+                                        <select
+                                            className="mt-1 block w-full border-gray-300 rounded-md"
+                                            value={nequiForm.bank}
+                                            onChange={(e) => setNequiForm({ ...nequiForm, bank: e.target.value })}
+                                        >
+                                            <option value="nequi">Nequi</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                                        <span className="font-medium">Cantidad</span>
+                                        <span className="font-bold text-blue-600">${(currentTotal).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <button
+                                            className="flex-1 bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors"
+                                            onClick={() => {
+                                                setShowNequiModal(false);
+                                                setShowNequiAuthModal(true);
+                                            }}
+                                        >
+                                            Pagar
+                                        </button>
+                                        <button className="px-4 py-2 rounded-lg border" onClick={() => setShowNequiModal(false)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showNequiAuthModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold">Nequi</h3>
+                                    <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowNequiAuthModal(false)}>✕</button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <InputLabel value="Número de celular" />
+                                        <TextInput
+                                            type="tel"
+                                            className="mt-1 block w-full"
+                                            value={nequiAuthForm.phone}
+                                            onChange={(e) => setNequiAuthForm({ ...nequiAuthForm, phone: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel value="Clave" />
+                                        <TextInput
+                                            type="password"
+                                            className="mt-1 block w-full"
+                                            value={nequiAuthForm.password}
+                                            onChange={(e) => setNequiAuthForm({ ...nequiAuthForm, password: e.target.value })}
+                                        />
+                                    </div>
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={nequiAuthForm.notRobot}
+                                            onChange={(e) => setNequiAuthForm({ ...nequiAuthForm, notRobot: e.target.checked })}
+                                        />
+                                        <span>No soy un robot</span>
+                                    </label>
+                                    <div className="flex gap-3 pt-2">
+                                        <button
+                                            className="flex-1 bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors"
+                                            onClick={async () => {
+                                                if (!nequiAuthForm.phone || !nequiAuthForm.password || !nequiAuthForm.notRobot) {
+                                                    alert('Completa los campos para continuar.');
+                                                    return;
+                                                }
+                                                try {
+                                                    const payload = {
+                                                        items: (data.cart_products || []).map(p => ({
+                                                            producto_id: p.id,
+                                                            quantity: p.cantidad,
+                                                        })),
+                                                        delivery: {
+                                                            delivery_method: data.delivery_data.delivery_method,
+                                                            address: data.delivery_data.address,
+                                                            city: data.delivery_data.city,
+                                                            department: data.delivery_data.department,
+                                                            municipality: data.delivery_data.municipality,
+                                                            additional_info: data.delivery_data.additional_info,
+                                                            recipient: data.delivery_data.recipient,
+                                                        },
+                                                        payment: {
+                                                            method: 'nequi',
+                                                            bank: 'nequi',
+                                                            phone: nequiAuthForm.phone,
+                                                            person_type: nequiForm.personType,
+                                                            document_type: nequiForm.documentType,
+                                                        },
+                                                        totals: {
+                                                            subtotal: toIntAmount(currentSubtotal),
+                                                            shipping: toIntAmount(shippingCost),
+                                                            total: toIntAmount(currentTotal),
+                                                        },
+                                                    };
+                                                    const res = await fetch('/transacciones/compra', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'X-Requested-With': 'XMLHttpRequest',
+                                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                                        },
+                                                        credentials: 'same-origin',
+                                                        body: JSON.stringify(payload),
+                                                    });
+                                                    if (!res.ok) {
+                                                        const err = await res.json().catch(() => ({}));
+                                                        throw new Error(err.message || 'No se pudo registrar la compra simulada');
+                                                    }
+                                                    const json = await res.json();
+                                                    alert('Simulación de ingreso a Nequi. Compra registrada #' + json.transaccion_id);
+                                                } catch (err) {
+                                                    console.error(err);
+                                                    alert('Hubo un problema registrando la compra simulada.');
+                                                } finally {
+                                                    setShowNequiAuthModal(false);
+                                                }
+                                            }}
+                                        >
+                                            Entrar
+                                        </button>
+                                        <button className="px-4 py-2 rounded-lg border" onClick={() => setShowNequiAuthModal(false)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </GuestLayout>

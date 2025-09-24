@@ -1,11 +1,61 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { toIntAmount } from '@/utils/money'
 import closeIcon from '../../../media/svg/close-icon.svg'
 
 
 //Este componente es la modal de confirmación de venta
 //Este recibe un prop el cual es onClose, que es una función que viene desde el padre (Sale.jsx) y se encarga de cerrar esta modal y la modal de venta. Para que el artesano pueda seguir vendiendo sin problemas.
 
-const ConfirmSale = ({onClose}) => {
+const ConfirmSale = ({ onClose, productoId, quantity, total }) => {
+  const [sending, setSending] = useState(false)
+  const sentRef = useRef(false)
+
+  useEffect(() => {
+    const canSend = productoId && quantity && total && !sentRef.current
+    if (!canSend) {
+      if (!sentRef.current) {
+        console.warn('ConfirmSale: faltan props para registrar venta', { productoId, quantity, total })
+      }
+      return
+    }
+    const send = async () => {
+      try {
+        setSending(true)
+        sentRef.current = true
+        const payload = {
+          producto_id: productoId,
+          quantity: quantity,
+          total: toIntAmount(total),
+        }
+        console.log('ConfirmSale: enviando venta simulada', payload)
+        const res = await fetch('/transacciones/venta', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify(payload)
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          console.error('ConfirmSale: error registrando venta', err)
+          alert('No se pudo registrar la venta simulada. Revisa consola.')
+          return
+        }
+        const json = await res.json().catch(() => ({}))
+        console.log('ConfirmSale: venta registrada', json)
+        alert('Venta simulada registrada #' + (json.transaccion_id ?? ''))
+      } catch (e) {
+        console.error('ConfirmSale: excepción registrando venta', e)
+        alert('Ocurrió un error registrando la venta simulada. Revisa consola.')
+      } finally {
+        setSending(false)
+      }
+    }
+    send()
+  }, [productoId, quantity, total])
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4'>
         <div className='bg-white p-4 rounded-lg w-full max-w-md flex flex-col gap-4'>
@@ -79,7 +129,7 @@ const ConfirmSale = ({onClose}) => {
                     </button>
                 </div>
             </div>
-             <button onClick={onClose}  className='p-2 w-full rounded-lg bg-[#1a2632] text-white hover:bg-[#232f3e] '>Seguir vendiendo</button>
+             <button onClick={onClose} disabled={sending} className='p-2 w-full rounded-lg bg-[#1a2632] text-white hover:bg-[#232f3e] disabled:opacity-60'>Seguir vendiendo</button>
         </div>
     </div>
   )

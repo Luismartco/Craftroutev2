@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TransaccionController;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\UserPreferenceController;
@@ -53,6 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
                     Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
         Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+        Route::get('/filtered-data', [AdminDashboardController::class, 'getFilteredData'])->name('filtered-data');
         
         // Rutas para categorías
         Route::get('/categorias', function() { return redirect()->route('dashboard.admin.index'); })->name('categorias.index');
@@ -129,6 +131,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+});
+
+// Transacciones simuladas
+Route::middleware(['auth'])->group(function () {
+    Route::post('/transacciones/compra', [TransaccionController::class, 'storeCompra'])->name('transacciones.compra');
+    Route::post('/transacciones/venta', [TransaccionController::class, 'storeVenta'])->name('transacciones.venta');
 });
 
 Route::get('/blog', function () {

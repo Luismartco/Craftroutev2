@@ -15,7 +15,6 @@ class Producto extends Model
         'descripcion',
         'precio',
         'cantidad_disponible',
-        'categoria',
         'categoria_id',
         'municipio_venta',
         'tecnica_artesanal',

@@ -428,7 +428,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Categoría:</span>{' '}
-                                                                <span className="capitalize">{producto.categoria}</span>
+                                                                <span className="capitalize">{producto.categoria?.nombre || 'Sin categoría'}</span>
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Técnica:</span>{' '}

@@ -10,7 +10,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import axios from 'axios';
 
-export default function CreateProducto() {
+export default function CreateProducto({ categorias }) {
     const [previewImages, setPreviewImages] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,7 +19,7 @@ export default function CreateProducto() {
         descripcion: '',
         precio: '',
         cantidad_disponible: '',
-        categoria: '',
+        categoria_id: '',
         municipio_venta: '',
         tecnica_artesanal: '',
         materia_prima: '',
@@ -158,22 +158,23 @@ export default function CreateProducto() {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="categoria" value="Categoría" />
+                                        <InputLabel htmlFor="categoria_id" value="Categoría" />
                                         <SelectInput
-                                            id="categoria"
-                                            name="categoria"
-                                            value={data.categoria}
+                                            id="categoria_id"
+                                            name="categoria_id"
+                                            value={data.categoria_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('categoria', e.target.value)}
+                                            onChange={(e) => setData('categoria_id', e.target.value)}
                                             required
                                         >
                                             <option value="">Seleccione una categoría</option>
-                                            <option value="tejido">Tejido</option>
-                                            <option value="madera">Madera</option>
-                                            <option value="ceramica">Cerámica</option>
-                                            <option value="joyeria">Joyería</option>
+                                            {categorias.map((categoria) => (
+                                                <option key={categoria.id} value={categoria.id}>
+                                                    {categoria.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
-                                        <InputError message={errors.categoria} className="mt-2" />
+                                        <InputError message={errors.categoria_id} className="mt-2" />
                                     </div>
 
                                     <div>

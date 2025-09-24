@@ -21,8 +21,8 @@ class ArtesanoDashboardController extends Controller
         $user = auth()->user();
         $tienda = $user->tienda;
         
-        // Cargar productos con sus imágenes
-        $productos = Producto::with(['imagenes'])
+        // Cargar productos con sus imágenes y categoría
+        $productos = Producto::with(['imagenes', 'categoria'])
                     ->where('user_id', $user->id)
                     ->get();
 
@@ -51,7 +51,12 @@ class ArtesanoDashboardController extends Controller
 
     public function createProducto()
     {
-        return Inertia::render('Dashboard/Artesano/CreateProducto');
+        // Cargar categorías reales de la base de datos
+        $categorias = \App\Models\Categoria::orderBy('nombre')->get();
+        
+        return Inertia::render('Dashboard/Artesano/CreateProducto', [
+            'categorias' => $categorias
+        ]);
     }
 
     public function pedidos()
@@ -106,7 +111,7 @@ class ArtesanoDashboardController extends Controller
     {
         $user = auth()->user();
         $tienda = Tienda::where('user_id', $user->id)->first();
-        $productos = Producto::where('user_id', $user->id)->get();
+        $productos = Producto::with(['categoria'])->where('user_id', $user->id)->get();
 
         return Inertia::render('Dashboard/Artesano/GestionarTienda', [
             'tienda' => $tienda,
@@ -178,7 +183,7 @@ public function storeProducto(Request $request)
         'descripcion' => 'required|string',
         'precio' => 'required|numeric|min:0',
         'cantidad_disponible' => 'required|integer|min:0',
-        'categoria' => 'required|string|in:tejido,madera,ceramica,joyeria',
+        'categoria_id' => 'required|exists:categorias,id',
         'municipio_venta' => 'required|string|in:morroa,sampues',
         'tecnica_artesanal' => 'required|string|in:telar horizontal,bordado,cosido',
         'materia_prima' => 'required|string|in:paja,algodon,fique,ceramica,hilos,canamos',
@@ -190,6 +195,12 @@ public function storeProducto(Request $request)
         'imagenes' => 'required|array|min:1|max:5',
         'imagenes.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
     ]);
+
+    // Validar que la categoría existe
+    $categoria = \App\Models\Categoria::find($validatedData['categoria_id']);
+    if (!$categoria) {
+        return back()->withErrors(['categoria_id' => 'La categoría seleccionada no existe']);
+    }
 
     // Crear el producto con los datos validados
     $producto = auth()->user()->productos()->create($validatedData);
@@ -215,7 +226,7 @@ public function storeProducto(Request $request)
     {
         $producto = Producto::with(['imagenes' => function($query) {
             $query->orderBy('es_principal', 'desc');
-        }])
+        }, 'categoria'])
         ->where('id', $id)
         ->where('user_id', auth()->id())
         ->firstOrFail();
@@ -229,8 +240,12 @@ public function storeProducto(Request $request)
             return $imagen;
         });
 
+        // Cargar categorías reales de la base de datos
+        $categorias = \App\Models\Categoria::orderBy('nombre')->get();
+        
         return Inertia::render('Dashboard/Artesano/EditProducto', [
             'producto' => $producto,
+            'categorias' => $categorias,
         ]);
     }
 
@@ -249,7 +264,7 @@ public function storeProducto(Request $request)
         'descripcion' => 'nullable|string',
         'precio' => 'nullable|numeric|min:0',
         'cantidad_disponible' => 'nullable|integer|min:0',
-        'categoria' => 'nullable|string|in:tejido,madera,ceramica,joyeria',
+        'categoria_id' => 'nullable|exists:categorias,id',
         'municipio_venta' => 'nullable|string|in:morroa,sampues',
         'tecnica_artesanal' => 'nullable|string|in:telar horizontal,bordado,cosido',
         'materia_prima' => 'nullable|string|in:paja,algodon,fique,ceramica,hilos,canamos',
@@ -273,6 +288,14 @@ public function storeProducto(Request $request)
     $excludeFields = ['imagenes_eliminadas', 'imagen_principal', 'nuevas_imagenes'];
     $dataToUpdate = array_diff_key($validatedData, array_flip($excludeFields));
 
+    // Validar que la categoría existe si se está actualizando
+    if (isset($validatedData['categoria_id'])) {
+        $categoria = \App\Models\Categoria::find($validatedData['categoria_id']);
+        if (!$categoria) {
+            return back()->withErrors(['categoria_id' => 'La categoría seleccionada no existe']);
+        }
+    }
+
     // Actualizar campos básicos
     try {
         $producto->update($request->only([
@@ -280,7 +303,7 @@ public function storeProducto(Request $request)
             'descripcion', 
             'precio', 
             'cantidad_disponible',
-            'categoria',
+            'categoria_id',
             'municipio_venta',
             'tecnica_artesanal',
             'materia_prima',
@@ -293,7 +316,7 @@ public function storeProducto(Request $request)
                 'descripcion', 
                 'precio', 
                 'cantidad_disponible',
-                'categoria',
+                'categoria_id',
                 'municipio_venta',
                 'tecnica_artesanal',
                 'materia_prima',
