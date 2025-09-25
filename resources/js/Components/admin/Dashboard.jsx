@@ -112,9 +112,9 @@ const Dashboard = ({stats, chartData, products, productosPagination, categorias,
           <h1 className='text-2xl font-extrabold mt-2'>Dashboard administrativo</h1>
             <p className='text-lg italic'>Gestión de reportes</p>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6'>
-                <StatsCard title="Total Artesanos" value={stats.total_users} />
-                <StatsCard title="Total Ventas" value={stats.total_artesanos} />
-                <StatsCard title="Total Categorías" value={stats.total_clientes} />
+                <StatsCard title="Total Artesanos" value={stats.total_artesanos} />
+                <StatsCard title="Total Ventas" value={stats.total_ventas} />
+                <StatsCard title="Total Categorías" value={stats.total_categorias} />
             </div>
             
             <div className="grid gird-cols-1 md:grid-cols-2 lg:grid-cols-3 py-16 gap-6 w-full">
@@ -150,7 +150,7 @@ const Dashboard = ({stats, chartData, products, productosPagination, categorias,
             ) : (
                 <div className='flex justify-center flex-wrap gap-2 w-full min-w-0'>
                     <div className='flex-1 min-w-[250px] max-w-full'>
-                        <h3 className='text-lg font-semibold mb-4 text-center'>Valor Total de Ventas por Producto</h3>
+                        <h3 className='text-lg font-semibold mb-4 text-center'>Cantidad de Ventas por Producto</h3>
                         <Chart data={filteredData.chartData.data1} />
                     </div>
                     <div className='flex-1 min-w-[250px] max-w-full'>

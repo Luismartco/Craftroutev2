@@ -33,25 +33,22 @@ class TransaccionController extends Controller
 
         $transaccion = DB::transaction(function () use ($validated, $userId) {
             $t = Transaccion::create([
-                'customer_id' => $userId,
-                'type' => 'compra',
-                'status' => 'simulada_pagada',
-                'subtotal_amount' => $validated['totals']['subtotal'],
-                'shipping_amount' => $validated['totals']['shipping'],
-                'total_amount' => $validated['totals']['total'],
-                'currency' => 'COP',
-                'delivery_method' => $validated['delivery']['delivery_method'] ?? null,
-                'delivery_address' => $validated['delivery']['address'] ?? null,
-                'delivery_city' => $validated['delivery']['city'] ?? null,
-                'delivery_department' => $validated['delivery']['department'] ?? null,
-                'delivery_municipality' => $validated['delivery']['municipality'] ?? null,
-                'delivery_additional_info' => $validated['delivery']['additional_info'] ?? null,
-                'recipient' => $validated['delivery']['recipient'] ?? null,
-                'payment_method' => $validated['payment']['method'] ?? 'nequi',
-                'payment_provider' => 'simulado',
-                'payment_status' => 'approved',
-                'payment_meta' => $validated['payment'] ?? [],
-                'paid_at' => now(),
+                'id_cliente' => $userId,
+                'tipo_transaccion' => 'compra',
+                'estado_transaccion' => 'simulada_pagada',
+                'subtotal' => $validated['totals']['subtotal'],
+                'costo_envio' => $validated['totals']['shipping'],
+                'total' => $validated['totals']['total'],
+                'moneda' => 'COP',
+                'metodo_entrega' => $validated['delivery']['delivery_method'] ?? null,
+                'direccion_entrega' => $validated['delivery']['address'] ?? null,
+                'ciudad_entrega' => $validated['delivery']['city'] ?? null,
+                'departamento_entrega' => $validated['delivery']['department'] ?? null,
+                'municipio_entrega' => $validated['delivery']['municipality'] ?? null,
+                'info_adicional_entrega' => $validated['delivery']['additional_info'] ?? null,
+                'destinatario' => $validated['delivery']['recipient'] ?? null,
+                'metodo_pago' => $validated['payment']['method'] ?? 'nequi',
+                'fecha_pago' => now(),
             ]);
 
             foreach ($validated['items'] as $line) {
@@ -63,20 +60,20 @@ class TransaccionController extends Controller
                     throw new \RuntimeException('No se encontró tienda para el producto ID '.$producto->id);
                 }
                 TransaccionItem::create([
-                    'transaccion_id' => $t->id,
-                    'producto_id' => $producto->id,
-                    'tienda_id' => $tiendaId,
-                    'product_name' => $producto->nombre,
-                    'unit_price_amount' => (int) $producto->precio,
-                    'quantity' => (int) $line['quantity'],
-                    'line_subtotal_amount' => (int) $producto->precio * (int) $line['quantity'],
+                    'id_transaccion' => $t->id_transaccion,
+                    'id_producto' => $producto->id,
+                    'id_tienda' => $tiendaId,
+                    'nombre_producto' => $producto->nombre,
+                    'precio_unitario' => (int) $producto->precio,
+                    'cantidad' => (int) $line['quantity'],
+                    'subtotal_linea' => (int) $producto->precio * (int) $line['quantity'],
                 ]);
             }
 
             return $t;
         });
 
-        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id]);
+        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id_transaccion]);
     }
 
     // Venta simulada (cuando artesano confirma en su flujo visual)
@@ -95,13 +92,13 @@ class TransaccionController extends Controller
 
         $transaccion = DB::transaction(function () use ($validated, $userId) {
             $t = Transaccion::create([
-                'customer_id' => $userId, // en simulación usamos el usuario actual
-                'type' => 'venta',
-                'status' => 'simulada_creada',
-                'subtotal_amount' => $validated['total'],
-                'shipping_amount' => 0,
-                'total_amount' => $validated['total'],
-                'currency' => 'COP',
+                'id_cliente' => $userId, // en simulación usamos el usuario actual
+                'tipo_transaccion' => 'venta',
+                'estado_transaccion' => 'simulada_creada',
+                'subtotal' => $validated['total'],
+                'costo_envio' => 0,
+                'total' => $validated['total'],
+                'moneda' => 'COP',
             ]);
 
             $producto = Producto::findOrFail($validated['producto_id']);
@@ -110,19 +107,19 @@ class TransaccionController extends Controller
                 throw new \RuntimeException('No se encontró tienda para el producto ID '.$producto->id);
             }
             TransaccionItem::create([
-                'transaccion_id' => $t->id,
-                'producto_id' => $producto->id,
-                'tienda_id' => $tiendaId,
-                'product_name' => $producto->nombre,
-                'unit_price_amount' => (int) $producto->precio,
-                'quantity' => (int) $validated['quantity'],
-                'line_subtotal_amount' => (int) $validated['total'],
+                'id_transaccion' => $t->id_transaccion,
+                'id_producto' => $producto->id,
+                'id_tienda' => $tiendaId,
+                'nombre_producto' => $producto->nombre,
+                'precio_unitario' => (int) $producto->precio,
+                'cantidad' => (int) $validated['quantity'],
+                'subtotal_linea' => (int) $validated['total'],
             ]);
 
             return $t;
         });
 
-        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id]);
+        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id_transaccion]);
     }
 }
 

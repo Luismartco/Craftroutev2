@@ -29,15 +29,15 @@ const ConfirmSale = ({ onClose, productoId, quantity, total }) => {
         }
         console.log('ConfirmSale: enviando venta simulada', payload)
         const res = await fetch('/transacciones/venta', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-          },
-          credentials: 'same-origin',
-          body: JSON.stringify(payload)
-        })
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+             'X-Requested-With': 'XMLHttpRequest',
+             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+           },
+           credentials: 'same-origin',
+           body: JSON.stringify(payload)
+         })
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           console.error('ConfirmSale: error registrando venta', err)

@@ -53,9 +53,13 @@ class ArtesanoDashboardController extends Controller
     {
         // Cargar categorías reales de la base de datos
         $categorias = \App\Models\Categoria::orderBy('nombre')->get();
-        
+        $tecnicas = \App\Models\Tecnica::orderBy('nombre')->get();
+        $materiales = \App\Models\Material::orderBy('nombre')->get();
+
         return Inertia::render('Dashboard/Artesano/CreateProducto', [
-            'categorias' => $categorias
+            'categorias' => $categorias,
+            'tecnicas' => $tecnicas,
+            'materiales' => $materiales
         ]);
     }
 
@@ -185,8 +189,8 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'required|integer|min:0',
         'categoria_id' => 'required|exists:categorias,id',
         'municipio_venta' => 'required|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'required|string|in:telar horizontal,bordado,cosido',
-        'materia_prima' => 'required|string|in:paja,algodon,fique,ceramica,hilos,canamos',
+        'tecnica_artesanal' => 'required|string|exists:tecnicas,nombre',
+        'materia_prima' => 'required|string|exists:materiales,nombre',
         'color' => 'nullable|string|max:255',
     ]);
 
@@ -242,10 +246,14 @@ public function storeProducto(Request $request)
 
         // Cargar categorías reales de la base de datos
         $categorias = \App\Models\Categoria::orderBy('nombre')->get();
-        
+        $tecnicas = \App\Models\Tecnica::orderBy('nombre')->get();
+        $materiales = \App\Models\Material::orderBy('nombre')->get();
+
         return Inertia::render('Dashboard/Artesano/EditProducto', [
             'producto' => $producto,
             'categorias' => $categorias,
+            'tecnicas' => $tecnicas,
+            'materiales' => $materiales,
         ]);
     }
 
@@ -266,8 +274,8 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'nullable|integer|min:0',
         'categoria_id' => 'nullable|exists:categorias,id',
         'municipio_venta' => 'nullable|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'nullable|string|in:telar horizontal,bordado,cosido',
-        'materia_prima' => 'nullable|string|in:paja,algodon,fique,ceramica,hilos,canamos',
+        'tecnica_artesanal' => 'nullable|string|exists:tecnicas,nombre',
+        'materia_prima' => 'nullable|string|exists:materiales,nombre',
         'color' => 'nullable|string|max:255',
         'imagenes_eliminadas' => 'nullable|array',
         'imagenes_eliminadas.*' => 'integer|exists:imagenes_productos,id',

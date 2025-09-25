@@ -16,7 +16,7 @@ use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
-    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user'])->get();
+    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user', 'categoria'])->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),

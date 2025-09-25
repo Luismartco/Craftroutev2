@@ -157,6 +157,17 @@ const productos = [
 
 // CartModal como componente hijo
 function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, goToCheckout }) {
+  // Función para formatear precio
+  const formatPrice = (price) => {
+    if (!price) return '$0';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return show ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
@@ -219,10 +230,10 @@ function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, 
                     <br />
                     <div className="flex flex-col items-end ml-auto">
                       <div className="text-gray-600 text-sm">
-                        Precio: ${p.precio.toLocaleString()}
+                        Precio: {formatPrice(p.precio)}
                       </div>
                       <div className="text-gray-900 font-semibold">
-                        Subtotal: ${(p.precio * p.quantity).toLocaleString()}
+                        Subtotal: {formatPrice(p.precio * p.quantity)}
                       </div>
                     </div>
                   </div>
@@ -236,7 +247,7 @@ function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, 
           <div className="flex justify-between items-center mb-4">
             <span className="text-xl font-medium text-gray-900">Total:</span>
             <span className="text-2xl font-bold text-gray-900">
-              ${total.toLocaleString()}
+              {formatPrice(total)}
             </span>
           </div>
           <button
@@ -273,26 +284,38 @@ const RANGOS_PRECIOS = [
 ];
 
 const Prod = ({ producto, onClick, onBuy, user }) => {
-  const isCustomer = user && user.role === 'customer';
-  const isLogged = !!user;
-  let img = '';
-  if (producto.imagenes && producto.imagenes.length > 0) {
-    img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
-  }
-  const showAddToCart = !isLogged || isCustomer;
-  return (
-    <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
-      {img && (
-        <img
-          src={img}
-          alt={producto.nombre}
-          className="w-full h-48 object-contain rounded-lg mb-4"
-        />
-      )}
-      <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
-      <p className="text-gray-800 font-semibold mb-4">
-        ${producto.precio?.toLocaleString?.() ?? producto.precio}
-      </p>
+   const isCustomer = user && user.role === 'customer';
+   const isLogged = !!user;
+   let img = '';
+   if (producto.imagenes && producto.imagenes.length > 0) {
+     img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
+   }
+   const showAddToCart = !isLogged || isCustomer;
+
+   // Función para formatear precio
+   const formatPrice = (price) => {
+     if (!price) return '$0';
+     return new Intl.NumberFormat('es-CO', {
+       style: 'currency',
+       currency: 'COP',
+       minimumFractionDigits: 0,
+       maximumFractionDigits: 0,
+     }).format(price);
+   };
+
+   return (
+     <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
+       {img && (
+         <img
+           src={img}
+           alt={producto.nombre}
+           className="w-full h-48 object-contain rounded-lg mb-4"
+         />
+       )}
+       <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
+       <p className="text-gray-800 font-semibold mb-4">
+         {formatPrice(producto.precio)}
+       </p>
       <div className="flex flex-row justify-center gap-2">
         {showAddToCart && (
           <button
@@ -328,6 +351,17 @@ const ProductGallery = ({ productos = [], user }) => {
   const [categoria, setCategoria] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [rangoPrecio, setRangoPrecio] = useState('');
+
+  // Función para formatear precio
+  const formatPrice = (price) => {
+    if (!price) return '$0';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   // Ordenar productos de más nuevo a más antiguo (por id descendente)
   const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
@@ -519,16 +553,52 @@ const ProductGallery = ({ productos = [], user }) => {
               <div className="flex-1 w-full max-w-xl">
                 <h2 className="text-3xl font-extrabold mb-3 text-[#2B1F1F]">{selected.nombre}</h2>
                 <p className="text-gray-700 mb-4 text-lg">{selected.descripcion}</p>
-                <p className="text-[#4B3A3A] font-bold text-3xl mb-8">
-                  ${selected.precio.toLocaleString()}
+                <p className="text-[#4B3A3A] font-bold text-3xl mb-6">
+                  {formatPrice(selected.precio)}
                 </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div>
+                    <p className="text-sm text-gray-500">Cantidad Disponible</p>
+                    <p className="font-medium">{selected.cantidad_disponible || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Técnica Artesanal</p>
+                    <p className="font-medium capitalize">{selected.tecnica_artesanal?.replace('_', ' ') || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Materia Prima</p>
+                    <p className="font-medium capitalize">{selected.materia_prima || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Color</p>
+                    <p className="font-medium capitalize">{selected.color || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Municipio de Venta</p>
+                    <p className="font-medium capitalize">{selected.municipio_venta || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Categoría</p>
+                    <p className="font-medium capitalize">{selected.categoria?.nombre || 'No especificado'}</p>
+                  </div>
+                </div>
                 <div className="flex flex-col md:flex-wrap items-center gap-3 md:flex-row md:gap-6">
-                  <button
-                    onClick={() => alert('Agregado al carrito: ' + selected.nombre)}
-                    className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
-                  >
-                    Agregar al carrito
-                  </button>
+                  {user && user.role === 'customer' && (
+                    <button
+                      onClick={() => addToCart(selected)}
+                      className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                    >
+                      Agregar al carrito
+                    </button>
+                  )}
+                  {!user && (
+                    <button
+                      onClick={() => alert('Debes iniciar sesión para poder adquirir el artículo.')}
+                      className="min-w-[140px] h-12 px-4 bg-[#F7C873] text-[#2B1F1F] font-semibold rounded-lg shadow hover:bg-[#f5b94a] transition text-base"
+                    >
+                      Agregar al carrito
+                    </button>
+                  )}
                   <button
                     onClick={() => alert('Ver ruta de: ' + selected.nombre)}
                     className="min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"

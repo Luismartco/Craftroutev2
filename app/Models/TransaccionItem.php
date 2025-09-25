@@ -10,31 +10,31 @@ class TransaccionItem extends Model
 {
     use HasFactory;
 
-    protected $table = 'transaccion_items';
+    protected $table = 'detalles_transaccion';
 
     protected $fillable = [
-        'transaccion_id',
-        'producto_id',
-        'tienda_id',
-        'product_name',
-        'unit_price_amount',
-        'quantity',
-        'line_subtotal_amount',
+        'id_transaccion',
+        'id_producto',
+        'id_tienda',
+        'nombre_producto',
+        'precio_unitario',
+        'cantidad',
+        'subtotal_linea',
     ];
 
     public function transaccion(): BelongsTo
     {
-        return $this->belongsTo(Transaccion::class);
+        return $this->belongsTo(Transaccion::class, 'id_transaccion');
     }
 
     public function producto(): BelongsTo
     {
-        return $this->belongsTo(Producto::class, 'producto_id');
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
 
     public function tienda(): BelongsTo
     {
-        return $this->belongsTo(Tienda::class, 'tienda_id');
+        return $this->belongsTo(Tienda::class, 'id_tienda');
     }
 }
 

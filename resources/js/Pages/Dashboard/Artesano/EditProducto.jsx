@@ -8,8 +8,9 @@ import TextInput from '@/Components/TextInput';
 import TextArea from '@/Components/TextArea';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
+import { NumericFormat } from 'react-number-format';
 
-export default function EditProducto({ producto, categorias }) {
+export default function EditProducto({ producto, categorias, tecnicas, materiales }) {
     // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
         if (!imagePath) return '';
@@ -197,16 +198,21 @@ export default function EditProducto({ producto, categorias }) {
 
                                     <div>
                                         <InputLabel htmlFor="precio" value="Precio *" />
-                                        <TextInput
+                                        <NumericFormat
                                             id="precio"
                                             name="precio"
-                                            type="number"
+                                            thousandSeparator="."
+                                            decimalSeparator=","
+                                            prefix="$"
+                                            decimalScale={2}
+                                            fixedDecimalScale={true}
+                                            allowNegative={false}
                                             value={data.precio}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData('precio', e.target.value)}
+                                            onValueChange={(values) => {
+                                                setData('precio', values.floatValue || '');
+                                            }}
+                                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             required
-                                            min="0"
-                                            step="0.01"
                                         />
                                         <InputError message={errors.precio} className="mt-2" />
                                     </div>
@@ -272,9 +278,11 @@ export default function EditProducto({ producto, categorias }) {
                                             onChange={(e) => setData('tecnica_artesanal', e.target.value)}
                                             required
                                         >
-                                            <option value="telar horizontal">Telar Horizontal</option>
-                                            <option value="bordado">Bordado</option>
-                                            <option value="cosido">Cosido</option>
+                                            {tecnicas.map((tecnica) => (
+                                                <option key={tecnica.id} value={tecnica.nombre}>
+                                                    {tecnica.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
                                         <InputError message={errors.tecnica_artesanal} className="mt-2" />
                                     </div>
@@ -289,12 +297,11 @@ export default function EditProducto({ producto, categorias }) {
                                             onChange={(e) => setData('materia_prima', e.target.value)}
                                             required
                                         >
-                                            <option value="paja">Paja</option>
-                                            <option value="algodon">Algodón</option>
-                                            <option value="fique">Fique</option>
-                                            <option value="ceramica">Cerámica</option>
-                                            <option value="hilos">Hilos</option>
-                                            <option value="canamos">Cañamos</option>
+                                            {materiales.map((material) => (
+                                                <option key={material.id} value={material.nombre}>
+                                                    {material.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
                                         <InputError message={errors.materia_prima} className="mt-2" />
                                     </div>

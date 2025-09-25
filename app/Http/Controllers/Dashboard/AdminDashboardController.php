@@ -18,9 +18,9 @@ class AdminDashboardController extends Controller
     {
         // Obtener estadísticas
         $stats = [
-            'total_users' => \App\Models\User::count(),
             'total_artesanos' => \App\Models\User::where('role', 'artisan')->count(),
-            'total_clientes' => \App\Models\User::where('role', 'customer')->count(),
+            'total_ventas' => \App\Models\TransaccionItem::sum('cantidad'),
+            'total_categorias' => \App\Models\Categoria::count(),
         ];
 
         // Obtener datos para los filtros
@@ -60,19 +60,21 @@ class AdminDashboardController extends Controller
         // Obtener todos los productos para generar datos de gráficas
         $todosLosProductos = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes'])->get();
         
-        // Generar datos para las gráficas
-        // Gráfica 1: Ventas por Producto (cantidad * precio)
-        $ventasPorProducto = $todosLosProductos->groupBy('nombre')->map(function($productos) {
-            return [
-                'producto' => $productos->first()->nombre,
-                'value' => $productos->sum(function($p) {
-                    return $p->cantidad_disponible * $p->precio;
-                })
-            ];
-        })->values()->toArray();
+        // Gráfica 1: Cantidad de Ventas por Producto (datos reales de transacciones)
+        $ventasPorProducto = \App\Models\TransaccionItem::selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
+            ->groupBy('nombre_producto')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'producto' => $item->nombre_producto,
+                    'value' => $item->total_cantidad
+                ];
+            })->toArray();
 
         // Gráfica 2: Cantidad de Productos por Categoría
-        $cantidadPorCategoria = $todosLosProductos->groupBy(function($producto) {
+        $cantidadPorCategoria = $todosLosProductos->filter(function($producto) {
+            return $producto->categoria_id !== null;
+        })->groupBy(function($producto) {
             // Usar solo categoria_id
             if ($producto->categoria_id && $producto->categoria && is_object($producto->categoria)) {
                 return $producto->categoria->nombre;
@@ -80,12 +82,14 @@ class AdminDashboardController extends Controller
             // Si no hay relación pero hay categoria_id, buscar la categoría
             if ($producto->categoria_id) {
                 $categoria = \App\Models\Categoria::find($producto->categoria_id);
-                return $categoria ? $categoria->nombre : 'Sin categoría';
+                return $categoria ? $categoria->nombre : null;
             }
-            return 'Sin categoría';
+            return null;
+        })->filter(function($productos, $categoria) {
+            return $categoria !== null;
         })->map(function($productos, $categoria) {
             return [
-                'producto' => $categoria ?: 'Sin categoría',
+                'producto' => $categoria,
                 'value' => $productos->sum('cantidad_disponible')
             ];
         })->values()->toArray();
@@ -363,18 +367,23 @@ class AdminDashboardController extends Controller
             Log::info('Primeros productos encontrados:', $productos->take(3)->toArray());
         }
 
-        // Gráfica 1: Ventas por Producto (cantidad * precio)
-        $ventasPorProducto = $productos->groupBy('nombre')->map(function($productos) {
-            return [
-                'producto' => $productos->first()->nombre,
-                'value' => $productos->sum(function($p) {
-                    return $p->cantidad_disponible * $p->precio;
-                })
-            ];
-        })->values()->toArray();
+        // Gráfica 1: Cantidad de Ventas por Producto (datos reales de transacciones filtrados)
+        $productIds = $productos->pluck('id');
+        $ventasPorProducto = \App\Models\TransaccionItem::whereIn('id_producto', $productIds)
+            ->selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
+            ->groupBy('nombre_producto')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'producto' => $item->nombre_producto,
+                    'value' => $item->total_cantidad
+                ];
+            })->toArray();
 
         // Gráfica 2: Cantidad de Productos por Categoría
-        $cantidadPorCategoria = $productos->groupBy(function($producto) {
+        $cantidadPorCategoria = $productos->filter(function($producto) {
+            return $producto->categoria_id !== null;
+        })->groupBy(function($producto) {
             // Usar solo categoria_id
             if ($producto->categoria_id && $producto->categoria && is_object($producto->categoria)) {
                 return $producto->categoria->nombre;
@@ -382,12 +391,14 @@ class AdminDashboardController extends Controller
             // Si no hay relación pero hay categoria_id, buscar la categoría
             if ($producto->categoria_id) {
                 $categoria = \App\Models\Categoria::find($producto->categoria_id);
-                return $categoria ? $categoria->nombre : 'Sin categoría';
+                return $categoria ? $categoria->nombre : null;
             }
-            return 'Sin categoría';
+            return null;
+        })->filter(function($productos, $categoria) {
+            return $categoria !== null;
         })->map(function($productos, $categoria) {
             return [
-                'producto' => $categoria ?: 'Sin categoría',
+                'producto' => $categoria,
                 'value' => $productos->sum('cantidad_disponible')
             ];
         })->values()->toArray();
