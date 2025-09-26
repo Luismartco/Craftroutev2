@@ -155,13 +155,76 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
         });
     };
 
+    const handleSubmitOrder = async () => {
+        if (!termsAccepted) {
+            alert('Debes aceptar los términos y condiciones para continuar.');
+            return;
+        }
+
+        try {
+            const payload = {
+                items: (data.cart_products || []).map(p => ({
+                    producto_id: p.id,
+                    quantity: p.cantidad,
+                })),
+                delivery: {
+                    delivery_method: data.delivery_data.delivery_method,
+                    address: data.delivery_data.address,
+                    city: data.delivery_data.city,
+                    department: data.delivery_data.department,
+                    municipality: data.delivery_data.municipality,
+                    additional_info: data.delivery_data.additional_info,
+                    recipient: data.delivery_data.recipient,
+                    empresa_transportadora: data.delivery_data.delivery_method === 'envio_domicilio' ? 'Servientrega' : null,
+                },
+                user: {
+                    email: data.user_data.email,
+                    name: data.user_data.name,
+                    last_name: data.user_data.last_name,
+                    phone: data.user_data.phone,
+                },
+                totals: {
+                    subtotal: toIntAmount(currentSubtotal),
+                    shipping: toIntAmount(currentShipping),
+                    total: toIntAmount(currentTotal),
+                },
+            };
+
+            const res = await fetch('/pedidos/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || 'No se pudo crear el pedido');
+            }
+
+            const json = await res.json();
+            alert('Pedido creado exitosamente. El artesano será notificado.');
+            // Limpiar carrito y redirigir
+            localStorage.removeItem('cart_data');
+            window.location.href = '/';
+
+        } catch (err) {
+            console.error(err);
+            alert('Hubo un problema creando el pedido.');
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!termsAccepted) {
             alert('Debes aceptar los términos y condiciones para continuar.');
             return;
         }
-        
+
         setData('terms_accepted', true);
         post(route('checkout.store'));
     };
@@ -187,7 +250,15 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
             alert('Por favor completa todos los campos obligatorios de información de entrega.');
             return;
         }
-        setShowPaymentForm(true);
+
+        // Si es contra entrega, no mostrar sección de pago
+        if (data.delivery_data.delivery_method === 'contra_entrega') {
+            // Procesar pedido directamente
+            handleSubmitOrder();
+        } else {
+            // Mostrar sección de pago para envío a domicilio
+            setShowPaymentForm(true);
+        }
     };
 
     const handlePaymentMethodChange = (method) => {
@@ -231,11 +302,22 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
 
     const recalculateTotals = () => {
         const newSubtotal = data.cart_products.reduce((sum, product) => sum + product.subtotal, 0);
-        const newTotal = newSubtotal + shippingCost;
-        return { subtotal: newSubtotal, total: newTotal };
+
+        // Calcular costo de envío basado en número de artesanos únicos
+        const uniqueArtisans = new Set(data.cart_products.map(product => product.artesano_id || product.user_id));
+        const numArtisans = uniqueArtisans.size;
+        const shippingCostPerArtisan = data.delivery_data.delivery_method === 'contra_entrega' ? 20000 : 5000;
+        const calculatedShippingCost = numArtisans * shippingCostPerArtisan;
+
+        const newTotal = newSubtotal + calculatedShippingCost;
+        return {
+            subtotal: newSubtotal,
+            shipping: calculatedShippingCost,
+            total: newTotal
+        };
     };
 
-    const { subtotal: currentSubtotal, total: currentTotal } = recalculateTotals();
+    const { subtotal: currentSubtotal, shipping: currentShipping, total: currentTotal } = recalculateTotals();
 
     return (
         <GuestLayout auth={auth} fullWidth={true}>
@@ -491,6 +573,20 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                             />
                                                             <InputError message={errors['delivery_data.recipient']} className="mt-2" />
                                                         </div>
+
+                                                        {/* Empresa transportadora para envío a domicilio */}
+                                                        {data.delivery_data.delivery_method === 'envio_domicilio' && (
+                                                            <div>
+                                                                <InputLabel htmlFor="empresa_transportadora" value="Empresa transportadora" />
+                                                                <TextInput
+                                                                    id="empresa_transportadora"
+                                                                    type="text"
+                                                                    className="mt-1 block w-full"
+                                                                    value="Servientrega"
+                                                                    readOnly
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -501,15 +597,15 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                 onClick={handleGoToPayment}
                                                 className="w-full bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold text-center"
                                             >
-                                                Ir para el pago
+                                                {data.delivery_data.delivery_method === 'contra_entrega' ? 'Enviar Pedido' : 'Ir para el pago'}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             )}
                             
-                            {/* Acordeón de información de pago */}
-                            {showPaymentForm && (
+                            {/* Acordeón de información de pago - Solo mostrar para envío a domicilio */}
+                            {showPaymentForm && data.delivery_data.delivery_method === 'envio_domicilio' && (
                                 <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-100 mt-6">
                                     <h2 className="text-lg font-bold mb-3 text-center">Información de pago</h2>
                                     
@@ -656,10 +752,10 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                         <span className="text-gray-600 text-sm">Subtotal:</span>
                                         <span className="font-bold text-sm">${currentSubtotal.toLocaleString()}</span>
                                     </div>
-                                    {shippingCost > 0 && (
+                                    {currentShipping > 0 && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-600 text-sm">Gastos del envío:</span>
-                                            <span className="font-bold text-sm">${shippingCost.toLocaleString()}</span>
+                                            <span className="font-bold text-sm">${currentShipping.toLocaleString()}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between items-center text-base font-bold bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg">
@@ -693,7 +789,7 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                             disabled={!termsAccepted || data.cart_products.length === 0}
                                             className="w-full bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold text-center disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#8B7355]"
                                         >
-                                            Proceder al pago
+                                            Continuar
                                         </button>
                                     )}
                                     

@@ -26,11 +26,30 @@ class ArtesanoDashboardController extends Controller
                     ->where('user_id', $user->id)
                     ->get();
 
+        // Calcular estadísticas reales
+        $totalProductos = $productos->count();
+
+        // Total de ventas: contar transacciones únicas que incluyen productos del artesano
+        $totalVentas = \App\Models\TransaccionItem::whereHas('producto', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->distinct('id_transaccion')->count('id_transaccion');
+
+        // Total de pedidos: contar pedidos del artesano
+        $totalPedidos = $user->pedidosArtesano()->count();
+
+        // Obtener pedidos del artesano
+        $pedidos = $user->pedidosArtesano()->with(['cliente', 'detalles'])->orderBy('created_at', 'desc')->take(10)->get()->map(function ($pedido) {
+            $pedido->subtotal_productos = $pedido->subtotal_productos ?? $pedido->detalles->sum('subtotal');
+            $pedido->costo_envio = $pedido->costo_envio ?? 0;
+            return $pedido;
+        });
+
         $stats = [
-            'total_productos' => $productos->count(),
-            'total_ventas' => 0,
-            'total_pedidos' => 0,
+            'total_productos' => $totalProductos,
+            'total_ventas' => $totalVentas,
+            'total_pedidos' => $totalPedidos,
             'productos' => $productos,
+            'pedidos' => $pedidos,
         ];
 
         return Inertia::render('Dashboard/Artesano/Index', [
@@ -66,8 +85,10 @@ class ArtesanoDashboardController extends Controller
     public function pedidos()
     {
         $user = Auth::user();
+        $pedidos = $user->pedidosArtesano()->with(['cliente', 'detalles.producto'])->paginate(10);
+
         return Inertia::render('Dashboard/Artesano/Pedidos', [
-            'pedidos' => $user->pedidos()->with('cliente')->paginate(10),
+            'pedidos' => $pedidos,
         ]);
     }
 
@@ -404,10 +425,15 @@ public function storeProducto(Request $request)
     public function deleteProducto($id)
     {
         $producto = Producto::findOrFail($id);
-        
+
         // Verificar que el producto pertenece al artesano actual
         if ($producto->user_id !== auth()->id()) {
             abort(403, 'No tienes permiso para eliminar este producto');
+        }
+
+        // Verificar si el producto tiene transacciones asociadas
+        if ($producto->transaccionItems()->exists()) {
+            return back()->withErrors(['delete' => 'No se puede eliminar el producto porque tiene transacciones asociadas.']);
         }
 
         // Eliminar las imágenes del almacenamiento
@@ -417,7 +443,7 @@ public function storeProducto(Request $request)
 
         // Eliminar el producto (y las imágenes por "onDelete('cascade')")
         $producto->delete();
-        
+
         return redirect()->route('dashboard.artesano.index')
             ->with('success', 'Producto eliminado exitosamente');
     }

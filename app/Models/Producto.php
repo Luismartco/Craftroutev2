@@ -46,5 +46,10 @@ class Producto extends Model
     {
         return $this->hasOne(ImagenProducto::class)->where('es_principal', true);
     }
-} 
+
+    public function transaccionItems()
+    {
+        return $this->hasMany(TransaccionItem::class, 'id_producto');
+    }
+}
 

@@ -10,13 +10,14 @@ use App\Http\Controllers\CartController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransaccionController;
+use App\Http\Controllers\PedidoController;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\UserPreferenceController;
 
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
-    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user', 'categoria'])->get();
+    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user.tienda', 'categoria'])->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -137,6 +138,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/transacciones/compra', [TransaccionController::class, 'storeCompra'])->name('transacciones.compra');
     Route::post('/transacciones/venta', [TransaccionController::class, 'storeVenta'])->name('transacciones.venta');
+    Route::post('/pedidos/create', [PedidoController::class, 'create']);
+    Route::put('/pedidos/{pedidoId}/status', [PedidoController::class, 'updateStatus']);
 });
 
 Route::get('/blog', function () {

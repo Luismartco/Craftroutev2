@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useCart } from '../../Contexts/CartContext';
 
 // Importa imágenes
 import prod1img1 from "../../../media/Products/producto1/1.jpeg";
@@ -155,112 +156,6 @@ const productos = [
 
 // ...importaciones
 
-// CartModal como componente hijo
-function CartModal({ show, onClose, cart, changeQuantity, removeProduct, total, goToCheckout }) {
-  // Función para formatear precio
-  const formatPrice = (price) => {
-    if (!price) return '$0';
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  return show ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
-        <button
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
-          onClick={onClose}
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-        <h2 className="text-2xl font-bold mb-6 text-center">Carrito de compras</h2>
-        <div className="space-y-6 max-h-[50vh] overflow-y-auto">
-          {cart.length === 0 && (
-            <div className="text-center text-gray-500">No hay productos en el carrito.</div>
-          )}
-          {cart.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center border rounded-lg p-4 shadow-sm bg-gray-50"
-            >
-              <div className="flex-1">
-                <div className="font-semibold text-lg mb-2">{p.nombre}</div>
-                <div className="flex items-center">
-                  <img
-                    src={p.imagenes && p.imagenes.length > 0 
-                      ? (p.imagenes[0].ruta_imagen ? `/storage/${p.imagenes[0].ruta_imagen}` : p.imagenes[0])
-                      : ''}
-                    alt={p.nombre}
-                    className="w-20 h-20 object-contain rounded mr-4"
-                  />
-                  <div className="flex flex-1 flex-col md:flex-row md:items-center md:justify-between w-full">
-                    {/* Controles de cantidad y eliminar */}
-                    <div className="flex items-center space-x-2 mb-2 md:mb-0">
-                      <button
-                        onClick={() => changeQuantity(p.id, -1)}
-                        className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                      >
-                        –
-                      </button>
-                      <span className="text-xl font-medium w-8 text-center">
-                        {p.quantity}
-                      </span>
-                      <button
-                        onClick={() => changeQuantity(p.id, 1)}
-                        className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() => removeProduct(p.id)}
-                        className="ml-4 text-red-500 hover:text-red-700"
-                        title="Eliminar producto"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* Precio y subtotal alineados a la derecha */}
-                    <br />
-                    <div className="flex flex-col items-end ml-auto">
-                      <div className="text-gray-600 text-sm">
-                        Precio: {formatPrice(p.precio)}
-                      </div>
-                      <div className="text-gray-900 font-semibold">
-                        Subtotal: {formatPrice(p.precio * p.quantity)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        {/* Total y checkout */}
-        <div className="mt-8 border-t pt-4">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-xl font-medium text-gray-900">Total:</span>
-            <span className="text-2xl font-bold text-gray-900">
-              {formatPrice(total)}
-            </span>
-          </div>
-          <button
-            className="w-full bg-[#4B3A3A] text-white py-3 rounded-lg hover:bg-[#2B1F1F] transition-colors text-lg font-semibold"
-            onClick={goToCheckout}
-          >
-            Ir al checkout
-          </button>
-        </div>
-      </div>
-    </div>
-  ) : null;
-}
 
 const CATEGORIAS = [
   { value: '', label: 'Todas las categorías' },
@@ -346,11 +241,12 @@ const ProductGallery = ({ productos = [], user }) => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
   const [verTodos, setVerTodos] = useState(false);
-  const [showCart, setShowCart] = useState(false);
-  const [cart, setCart] = useState([]);
   const [categoria, setCategoria] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [rangoPrecio, setRangoPrecio] = useState('');
+
+  // Usar el contexto global del carrito
+  const { addToCart } = useCart();
 
   // Función para formatear precio
   const formatPrice = (price) => {
@@ -365,60 +261,6 @@ const ProductGallery = ({ productos = [], user }) => {
 
   // Ordenar productos de más nuevo a más antiguo (por id descendente)
   const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
-
-  const addToCart = (producto) => {
-    setShowCart(true);
-    setCart((prev) => {
-      const found = prev.find((p) => p.id === producto.id);
-      if (found) {
-        return prev.map((p) =>
-          p.id === producto.id ? { ...p, quantity: p.quantity + 1 } : p
-        );
-      }
-      return [...prev, { ...producto, quantity: 1 }];
-    });
-  };
-
-  // --- FUNCIONES PARA EL CARRITO (usadas por CartModal) ---
-  const changeQuantity = (id, delta) => {
-    setCart((prev) =>
-      prev
-        .map((p) =>
-          p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
-        )
-        .filter((p) => p.quantity > 0)
-    );
-  };
-
-  const removeProduct = (id) => {
-    setCart((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  const total = cart.reduce((sum, p) => sum + p.precio * p.quantity, 0);
-
-  const goToCheckout = () => {
-    // Guardar el carrito en localStorage
-    const cartData = cart.map(item => {
-      let imagenUrl = '';
-      if (item.imagenes && item.imagenes.length > 0) {
-        imagenUrl = item.imagenes[0].ruta_imagen ? `/storage/${item.imagenes[0].ruta_imagen}` : '';
-      }
-      
-      return {
-        id: item.id,
-        quantity: item.quantity,
-        nombre: item.nombre,
-        precio: item.precio,
-        imagenes: [imagenUrl] // Guardar la URL procesada
-      };
-    });
-    
-    localStorage.setItem('cart_data', JSON.stringify(cartData));
-    
-    // Redirigir al checkout
-    window.location.href = '/checkout';
-  };
-  // --- FIN FUNCIONES CARRITO ---
 
   // Filtrado conjunto
   let productosFiltrados = productosOrdenados.filter((prod) => {
@@ -558,6 +400,14 @@ const ProductGallery = ({ productos = [], user }) => {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   <div>
+                    <p className="text-sm text-gray-500">Tienda</p>
+                    <p className="font-medium capitalize">{selected.user?.tienda?.nombre || 'Sin tienda'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Artesano</p>
+                    <p className="font-medium capitalize">{selected.user?.name} {selected.user?.last_name}</p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-500">Cantidad Disponible</p>
                     <p className="font-medium">{selected.cantidad_disponible || 'No especificado'}</p>
                   </div>
@@ -618,16 +468,6 @@ const ProductGallery = ({ productos = [], user }) => {
         </div>
       )}
 
-      {/* Modal de carrito global */}
-      <CartModal
-        show={showCart}
-        onClose={() => setShowCart(false)}
-        cart={cart}
-        changeQuantity={changeQuantity}
-        removeProduct={removeProduct}
-        total={total}
-        goToCheckout={goToCheckout}
-      />
     </>
   );
 };
