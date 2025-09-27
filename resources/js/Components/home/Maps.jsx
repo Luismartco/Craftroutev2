@@ -4,7 +4,7 @@ import { useState } from "react";
 import { APIProvider, Map, Marker, InfoWindow } from "@vis.gl/react-google-maps"
 
 
-const Maps = ({position}) => {
+const Maps = ({position, markers = []}) => {
 
         const [camera, setCamera] = useState({
             center: position,
@@ -39,6 +39,11 @@ const Maps = ({position}) => {
                             <p className="text-lg font-bold">{position.name}</p>
                         </InfoWindow>
                     }
+                    {Array.isArray(markers) && markers.slice(0, 50).map((m, idx) => (
+                        (typeof m?.lat === 'number' && typeof m?.lng === 'number') ? (
+                            <Marker key={m.id ?? idx} position={{ lat: m.lat, lng: m.lng }} />
+                        ) : null
+                    ))}
                 </Map>
             </APIProvider>
         );

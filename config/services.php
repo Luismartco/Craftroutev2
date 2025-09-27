@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    // Recomendador de IA
+    'ai_recommender' => [
+        'base_uri' => env('AI_RECO_BASE', 'http://127.0.0.1:5055'),
+    ],
+
 ];

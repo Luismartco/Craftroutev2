@@ -11,19 +11,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User; 
 
 class AdminDashboardController extends Controller
 {
     public function index(): Response
     {
-        // Obtener estadísticas
+        // Estadísticas
         $stats = [
-            'total_artesanos' => \App\Models\User::where('role', 'artisan')->count(),
+            'total_users' => User::count(),
+            'total_artesanos' => User::where('role', 'artisan')->count(),
+            'total_clientes' => User::where('role', 'customer')->count(),
+            'total_categorias' => Categoria::count(),
             'total_ventas' => \App\Models\TransaccionItem::sum('cantidad'),
-            'total_categorias' => \App\Models\Categoria::count(),
         ];
 
-        // Obtener datos para los filtros
+        // Categorías
         $categorias = Categoria::orderBy('nombre')->get()->map(function($categoria) {
             return [
                 'id' => $categoria->id,
@@ -32,7 +35,7 @@ class AdminDashboardController extends Controller
             ];
         });
 
-        // Obtener municipios únicos de las tiendas
+        // Municipios
         $municipios = \App\Models\Tienda::select('municipio_venta')
             ->distinct()
             ->orderBy('municipio_venta')
@@ -44,8 +47,8 @@ class AdminDashboardController extends Controller
                 ];
             });
 
-        // Obtener artesanos con sus tiendas
-        $artesanos = \App\Models\User::where('role', 'artisan')
+        // Artesanos
+        $artesanos = User::where('role', 'artisan')
             ->with('tienda')
             ->orderBy('name')
             ->get()
@@ -57,10 +60,10 @@ class AdminDashboardController extends Controller
                 ];
             });
 
-        // Obtener todos los productos para generar datos de gráficas
+        // Productos
         $todosLosProductos = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes'])->get();
-        
-        // Gráfica 1: Cantidad de Ventas por Producto (datos reales de transacciones)
+
+        // Gráfica 1: Ventas por producto
         $ventasPorProducto = \App\Models\TransaccionItem::selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
             ->groupBy('nombre_producto')
             ->get()
@@ -71,17 +74,15 @@ class AdminDashboardController extends Controller
                 ];
             })->toArray();
 
-        // Gráfica 2: Cantidad de Productos por Categoría
+        // Gráfica 2: Productos por categoría
         $cantidadPorCategoria = $todosLosProductos->filter(function($producto) {
             return $producto->categoria_id !== null;
         })->groupBy(function($producto) {
-            // Usar solo categoria_id
             if ($producto->categoria_id && $producto->categoria && is_object($producto->categoria)) {
                 return $producto->categoria->nombre;
             }
-            // Si no hay relación pero hay categoria_id, buscar la categoría
             if ($producto->categoria_id) {
-                $categoria = \App\Models\Categoria::find($producto->categoria_id);
+                $categoria = Categoria::find($producto->categoria_id);
                 return $categoria ? $categoria->nombre : null;
             }
             return null;
@@ -94,10 +95,8 @@ class AdminDashboardController extends Controller
             ];
         })->values()->toArray();
 
-        // Obtener productos con información completa para la tabla de estadísticas (paginado)
-        $productosPaginados = \App\Models\Producto::with(['user', 'categoria', 'imagenes'])
-            ->paginate(5);
-        
+        // Tabla de productos
+        $productosPaginados = \App\Models\Producto::with(['user', 'categoria', 'imagenes'])->paginate(5);
         $productos = $productosPaginados->map(function($producto) {
             $imagen = $producto->imagenes->where('es_principal', true)->first();
             $imagenUrl = $imagen ? asset('storage/' . $imagen->ruta_imagen) : null;
@@ -151,6 +150,7 @@ class AdminDashboardController extends Controller
         ]);
     }
 
+    // -------- Categorías --------
     public function storeCategoria(Request $request)
     {
         $validated = $request->validate([
@@ -159,7 +159,6 @@ class AdminDashboardController extends Controller
         ]);
 
         Categoria::create($validated);
-
         return redirect()->back()->with('success', 'Categoría creada exitosamente');
     }
 
@@ -173,15 +172,12 @@ class AdminDashboardController extends Controller
         ]);
 
         $categoria->update($validated);
-
         return redirect()->back()->with('success', 'Categoría actualizada exitosamente');
     }
 
     public function destroyCategoria($id)
     {
         $categoria = Categoria::findOrFail($id);
-        
-        // Verificar si hay productos asociados
         $productosAsociados = $categoria->productos()->count();
         $productosConNombreCategoria = \App\Models\Producto::where('categoria', $categoria->nombre)->count();
         
@@ -190,10 +186,10 @@ class AdminDashboardController extends Controller
         }
 
         $categoria->delete();
-
         return redirect()->back()->with('success', 'Categoría eliminada exitosamente');
     }
 
+    // -------- Materiales --------
     public function storeMaterial(Request $request)
     {
         $validated = $request->validate([
@@ -202,7 +198,6 @@ class AdminDashboardController extends Controller
         ]);
 
         Material::create($validated);
-
         return redirect()->back()->with('success', 'Material creado exitosamente');
     }
 
@@ -216,15 +211,12 @@ class AdminDashboardController extends Controller
         ]);
 
         $material->update($validated);
-
         return redirect()->back()->with('success', 'Material actualizado exitosamente');
     }
 
     public function destroyMaterial($id)
     {
         $material = Material::findOrFail($id);
-        
-        // Verificar si hay productos asociados
         $productosAsociados = $material->productos()->count();
         
         if ($productosAsociados > 0) {
@@ -232,10 +224,10 @@ class AdminDashboardController extends Controller
         }
 
         $material->delete();
-
         return redirect()->back()->with('success', 'Material eliminado exitosamente');
     }
 
+    // -------- Técnicas --------
     public function storeTecnica(Request $request)
     {
         $validated = $request->validate([
@@ -244,7 +236,6 @@ class AdminDashboardController extends Controller
         ]);
 
         Tecnica::create($validated);
-
         return redirect()->back()->with('success', 'Técnica creada exitosamente');
     }
 
@@ -258,15 +249,12 @@ class AdminDashboardController extends Controller
         ]);
 
         $tecnica->update($validated);
-
         return redirect()->back()->with('success', 'Técnica actualizada exitosamente');
     }
 
     public function destroyTecnica($id)
     {
         $tecnica = Tecnica::findOrFail($id);
-        
-        // Verificar si hay productos asociados
         $productosAsociados = $tecnica->productos()->count();
         
         if ($productosAsociados > 0) {
@@ -274,35 +262,34 @@ class AdminDashboardController extends Controller
         }
 
         $tecnica->delete();
-
         return redirect()->back()->with('success', 'Técnica eliminada exitosamente');
     }
 
+    // -------- Usuarios --------
     public function manageUsers()
     {
         return Inertia::render('Dashboard/Admin/ManageUsers', [
-            'users' => \App\Models\User::with('profile')->paginate(10),
+            'users' => User::with('profile')->paginate(10),
         ]);
     }
 
-    public function manageArtesanos()
+    public function manageArtesanos(): Response
     {
         return Inertia::render('Dashboard/Admin/ManageArtesanos', [
-            'artesanos' => \App\Models\User::where('role', 'artisan')
+            'artesanos' => User::where('role', 'artisan')
                 ->with('profile')
                 ->paginate(10),
         ]);
     }
 
+    // -------- Filtros --------
     public function getFilteredData(Request $request)
     {
         try {
-            // Verificar autenticación
             if (!Auth::check()) {
                 return response()->json(['error' => 'No autenticado'], 401);
             }
 
-            // Verificar rol de administrador
             if (Auth::user()->role !== 'admin') {
                 return response()->json(['error' => 'No autorizado'], 403);
             }
@@ -311,141 +298,98 @@ class AdminDashboardController extends Controller
             $municipio = $request->get('municipio');
             $artesanoId = $request->get('artesano_id');
 
-            // Log para depuración
             Log::info('Filtros recibidos:', [
                 'categoria_id' => $categoriaId,
                 'municipio' => $municipio,
                 'artesano_id' => $artesanoId
             ]);
 
-        // Verificar si hay productos en la base de datos
-        $totalProductos = \App\Models\Producto::count();
-        $productosSinCategoria = \App\Models\Producto::whereNull('categoria_id')->count();
-        $productosConCategoria = \App\Models\Producto::whereNotNull('categoria_id')->count();
-        
-        Log::info('Total de productos en la base de datos:', ['count' => $totalProductos]);
-        Log::info('Productos sin categoria_id:', ['count' => $productosSinCategoria]);
-        Log::info('Productos con categoria_id:', ['count' => $productosConCategoria]);
-        
-        // Ver algunos productos de ejemplo
-        $productosEjemplo = \App\Models\Producto::with('categoria')->take(3)->get();
-        Log::info('Productos de ejemplo:', $productosEjemplo->toArray());
+            $query = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes']);
 
-        // Construir query base para productos
-        $query = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes']);
+            if ($categoriaId && $categoriaId !== '') {
+                $query->where('categoria_id', $categoriaId);
+            }
 
-        // Aplicar filtros solo si tienen valor
-        if ($categoriaId && $categoriaId !== '') {
-            Log::info('Aplicando filtro de categoría:', ['categoria_id' => $categoriaId]);
-            
-            // Filtrar por categoria_id
-            $query->where('categoria_id', $categoriaId);
-        }
+            if ($municipio && $municipio !== '') {
+                $query->whereHas('user.tienda', function($q) use ($municipio) {
+                    $q->where('municipio_venta', $municipio);
+                });
+            }
 
-        if ($municipio && $municipio !== '') {
-            Log::info('Aplicando filtro de municipio:', ['municipio' => $municipio]);
-            $query->whereHas('user.tienda', function($q) use ($municipio) {
-                $q->where('municipio_venta', $municipio);
-            });
-        }
+            if ($artesanoId && $artesanoId !== '') {
+                $query->where('user_id', $artesanoId);
+            }
 
-        if ($artesanoId && $artesanoId !== '') {
-            Log::info('Aplicando filtro de artesano:', ['artesano_id' => $artesanoId]);
-            $query->where('user_id', $artesanoId);
-        }
+            $productos = $query->get();
 
-        // Log de la consulta SQL
-        Log::info('Consulta SQL:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+            // Gráfica 1
+            $productIds = $productos->pluck('id');
+            $ventasPorProducto = \App\Models\TransaccionItem::whereIn('id_producto', $productIds)
+                ->selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
+                ->groupBy('nombre_producto')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'producto' => $item->nombre_producto,
+                        'value' => $item->total_cantidad
+                    ];
+                })->toArray();
 
-        $productos = $query->get();
-        
-        // Log para depuración
-        Log::info('Productos encontrados:', ['count' => $productos->count()]);
-        
-        // Log de algunos productos para verificar
-        if ($productos->count() > 0) {
-            Log::info('Primeros productos encontrados:', $productos->take(3)->toArray());
-        }
-
-        // Gráfica 1: Cantidad de Ventas por Producto (datos reales de transacciones filtrados)
-        $productIds = $productos->pluck('id');
-        $ventasPorProducto = \App\Models\TransaccionItem::whereIn('id_producto', $productIds)
-            ->selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
-            ->groupBy('nombre_producto')
-            ->get()
-            ->map(function($item) {
+            // Gráfica 2
+            $cantidadPorCategoria = $productos->filter(function($producto) {
+                return $producto->categoria_id !== null;
+            })->groupBy(function($producto) {
+                if ($producto->categoria_id && $producto->categoria && is_object($producto->categoria)) {
+                    return $producto->categoria->nombre;
+                }
+                if ($producto->categoria_id) {
+                    $categoria = Categoria::find($producto->categoria_id);
+                    return $categoria ? $categoria->nombre : null;
+                }
+                return null;
+            })->filter(function($productos, $categoria) {
+                return $categoria !== null;
+            })->map(function($productos, $categoria) {
                 return [
-                    'producto' => $item->nombre_producto,
-                    'value' => $item->total_cantidad
+                    'producto' => $categoria,
+                    'value' => $productos->sum('cantidad_disponible')
                 ];
-            })->toArray();
+            })->values()->toArray();
 
-        // Gráfica 2: Cantidad de Productos por Categoría
-        $cantidadPorCategoria = $productos->filter(function($producto) {
-            return $producto->categoria_id !== null;
-        })->groupBy(function($producto) {
-            // Usar solo categoria_id
-            if ($producto->categoria_id && $producto->categoria && is_object($producto->categoria)) {
-                return $producto->categoria->nombre;
-            }
-            // Si no hay relación pero hay categoria_id, buscar la categoría
-            if ($producto->categoria_id) {
-                $categoria = \App\Models\Categoria::find($producto->categoria_id);
-                return $categoria ? $categoria->nombre : null;
-            }
-            return null;
-        })->filter(function($productos, $categoria) {
-            return $categoria !== null;
-        })->map(function($productos, $categoria) {
-            return [
-                'producto' => $categoria,
-                'value' => $productos->sum('cantidad_disponible')
-            ];
-        })->values()->toArray();
+            // Tabla
+            $productosPaginados = $query->paginate(5);
+            $productosTabla = $productosPaginados->map(function($producto) {
+                $imagen = $producto->imagenes->where('es_principal', true)->first();
+                $imagenUrl = $imagen ? asset('storage/' . $imagen->ruta_imagen) : null;
+                
+                return [
+                    'id' => $producto->id,
+                    'image' => $imagenUrl,
+                    'name' => $producto->nombre,
+                    'price' => '$' . number_format($producto->precio, 0, ',', '.'),
+                    'amount' => $producto->cantidad_disponible,
+                    'total' => '$' . number_format($producto->precio * $producto->cantidad_disponible, 0, ',', '.'),
+                    'store' => $producto->user && $producto->user->tienda ? $producto->user->tienda->nombre : 'Sin tienda',
+                    'municipality' => $producto->user && $producto->user->tienda ? ucfirst($producto->user->tienda->municipio_venta) : 'Sin municipio'
+                ];
+            });
 
-        // Productos paginados para la tabla
-        $productosPaginados = $query->paginate(5);
-        $productosTabla = $productosPaginados->map(function($producto) {
-            $imagen = $producto->imagenes->where('es_principal', true)->first();
-            $imagenUrl = $imagen ? asset('storage/' . $imagen->ruta_imagen) : null;
-            
-            return [
-                'id' => $producto->id,
-                'image' => $imagenUrl,
-                'name' => $producto->nombre,
-                'price' => '$' . number_format($producto->precio, 0, ',', '.'),
-                'amount' => $producto->cantidad_disponible,
-                'total' => '$' . number_format($producto->precio * $producto->cantidad_disponible, 0, ',', '.'),
-                'store' => $producto->user && $producto->user->tienda ? $producto->user->tienda->nombre : 'Sin tienda',
-                'municipality' => $producto->user && $producto->user->tienda ? ucfirst($producto->user->tienda->municipio_venta) : 'Sin municipio'
-            ];
-        });
-
-        $response = [
-            'chartData' => [
-                'data1' => $ventasPorProducto,
-                'data2' => $cantidadPorCategoria
-            ],
-            'products' => $productosTabla,
-            'pagination' => [
-                'current_page' => $productosPaginados->currentPage(),
-                'last_page' => $productosPaginados->lastPage(),
-                'per_page' => $productosPaginados->perPage(),
-                'total' => $productosPaginados->total(),
-                'from' => $productosPaginados->firstItem(),
-                'to' => $productosPaginados->lastItem(),
-                'links' => $productosPaginados->linkCollection()->toArray()
-            ]
-        ];
-
-        // Log para depuración
-        Log::info('Datos de respuesta:', [
-            'ventas_por_producto_count' => count($ventasPorProducto),
-            'cantidad_por_categoria_count' => count($cantidadPorCategoria),
-            'productos_tabla_count' => count($productosTabla)
-        ]);
-
-            return response()->json($response);
+            return response()->json([
+                'chartData' => [
+                    'data1' => $ventasPorProducto,
+                    'data2' => $cantidadPorCategoria
+                ],
+                'products' => $productosTabla,
+                'pagination' => [
+                    'current_page' => $productosPaginados->currentPage(),
+                    'last_page' => $productosPaginados->lastPage(),
+                    'per_page' => $productosPaginados->perPage(),
+                    'total' => $productosPaginados->total(),
+                    'from' => $productosPaginados->firstItem(),
+                    'to' => $productosPaginados->lastItem(),
+                    'links' => $productosPaginados->linkCollection()->toArray()
+                ]
+            ]);
         } catch (\Exception $e) {
             Log::error('Error en getFilteredData:', [
                 'message' => $e->getMessage(),
@@ -460,4 +404,4 @@ class AdminDashboardController extends Controller
             ], 500);
         }
     }
-} 
+}

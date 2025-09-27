@@ -13,17 +13,18 @@ import LocationCard from '@/Components/blog/LocationCard';
 import FeaturedProductCard from '@/Components/blog/FeaturedProductCard';
 import VideoSampleCard from '@/Components/blog/VideoSampleCard';
 import Prod from '@/Components/home/Prod';
+import Maps from '@/Components/home/Maps';
 
-export default function Blog() {
+export default function Blog({ tienda, artesano, productos }) {
     return (
         <GuestLayout fullWidth={true} className='flex flex-col bg-[#f5f5f5]'>
-            <Head title="Blog" />
+            <Head title={tienda?.nombre ? `Tienda: ${tienda.nombre}` : 'Tienda'} />
 
             {/* HERO */}
             <HeroSection 
-                ImageStore={ImageStore} 
-                NameStore="La Mano de Dios" 
-                Location="San Blas, Morroa"
+                ImageStore={tienda?.foto_perfil ? `/storage/${tienda.foto_perfil}` : ImageStore} 
+                NameStore={tienda?.nombre || 'Tienda'} 
+                Location={`${tienda?.barrio || ''}${tienda?.barrio ? ', ' : ''}${tienda?.municipio_venta || ''}`}
             />
 
             {/* SECCIÓN DESTACADA */}
@@ -38,11 +39,11 @@ export default function Blog() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-9 items-stretch">
                     <div className="">
                         <CardArtisan 
-                            imageArtisan={ImageArtisan} 
-                            nameArtisan="María Hoyos" 
-                            location="San Blas, Morroa"
-                            contact="+573012345678"
-                            description="María es una artesana con más de 20 años de experiencia en cerámica artesanal."
+                            imageArtisan={artesano?.profile_photo_url || ImageArtisan} 
+                            nameArtisan={`${artesano?.name || ''} ${artesano?.last_name || ''}`.trim() || 'Artesano'} 
+                            location={`${tienda?.barrio || ''}${tienda?.barrio ? ', ' : ''}${tienda?.municipio_venta || ''}`}
+                            contact={tienda?.telefono || ''}
+                            description={artesano?.bio || 'Artesano de la región con productos hechos a mano.'}
                         />
                     </div>
 
@@ -88,8 +89,8 @@ export default function Blog() {
                     </p>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
                 </div>
-
-                <Prod />
+                
+                <Prod productos={productos || []} user={artesano} />
             </section>
         </GuestLayout>
     );

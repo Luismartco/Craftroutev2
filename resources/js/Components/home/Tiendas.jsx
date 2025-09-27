@@ -5,6 +5,16 @@ const Tiendas = ({ tiendas = [] }) => {
   const [verTodas, setVerTodas] = useState(false);
   const tiendasParaMostrar = verTodas ? tiendas : tiendas.slice(0, 3);
   
+  const slugify = (text) =>
+    text
+      ?.toString()
+      .toLowerCase()
+      .normalize('NFD').replace(/\p{Diacritic}+/gu, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+
   return (
     <div className="px-6 py-10 bg-gray-50">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -33,7 +43,7 @@ const Tiendas = ({ tiendas = [] }) => {
               </p>
               <div className="mt-4 text-center">
                 <Link
-                  href={route('blog')}
+                  href={route('blog.show', slugify(tienda.nombre || ''))}
                   className="inline-block mt-4 px-4 py-2 no-underline bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition"
                 >
                   Ver tienda
