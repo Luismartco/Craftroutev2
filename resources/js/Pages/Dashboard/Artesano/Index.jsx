@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Link, Head, router } from '@inertiajs/react';
+import { Link, Head, router, usePage } from '@inertiajs/react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useRef } from 'react';
 import Maps from '@/Components/home/Maps';
 import Sale from './Sale';
+import { NumericFormat } from 'react-number-format';
 
 export default function Index({ stats, user, tienda }) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const { flash } = usePage().props;
 
     // Verificar si hay un mensaje de éxito en parámetros de URL
     useEffect(() => {
         console.log('Dashboard cargado, verificando parámetros de URL...');
         console.log('URL completa:', window.location.href);
         console.log('Search params:', window.location.search);
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const successParam = urlParams.get('success');
         console.log('Parámetro success encontrado:', successParam);
-        
+
         let message = null;
         if (successParam === 'created') {
             message = '¡Producto creado con éxito!';
@@ -29,7 +33,7 @@ export default function Index({ stats, user, tienda }) {
             message = '¡Producto editado con éxito!';
             console.log('Mensaje de edición asignado:', message);
         }
-        
+
         if (message) {
             console.log('Configurando mensaje de éxito:', message);
             setSuccessMessage(message);
@@ -46,6 +50,28 @@ export default function Index({ stats, user, tienda }) {
             console.log('No se encontró mensaje para mostrar');
         }
     }, []);
+
+    // Verificar si hay mensajes de error en flash
+    useEffect(() => {
+        if (flash?.error) {
+            setErrorMessage(flash.error);
+            setShowErrorMessage(true);
+            setTimeout(() => {
+                setShowErrorMessage(false);
+            }, 8000); // Ocultar después de 8 segundos
+        }
+    }, [flash]);
+
+    // Verificar si hay mensajes de éxito en flash
+    useEffect(() => {
+        if (flash?.success) {
+            setSuccessMessage(flash.success);
+            setShowSuccessMessage(true);
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 8000); // Ocultar después de 8 segundos
+        }
+    }, [flash]);
 
     // Función para construir la URL correcta de la imagen
     const getImageUrl = (imagePath) => {
@@ -143,10 +169,79 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
     setSelectedProducts(prev => prev.map(product => product.id === productId ? {...product, cantidad: quantity, subtotal: subtotal} : product));
 }
 
+// Función para formatear moneda en formato colombiano
+const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '$0,00';
+    return (
+        <NumericFormat
+            value={amount}
+            displayType={'text'}
+            thousandSeparator="."
+            decimalSeparator=","
+            prefix="$"
+            decimalScale={2}
+            fixedDecimalScale={true}
+        />
+    );
+};
+
+// Función para actualizar el estado de un pedido
+const updatePedidoStatus = async (pedidoId, newStatus) => {
+    console.log('Iniciando actualización de pedido:', { pedidoId, newStatus });
+
+    router.put(`/pedidos/${pedidoId}/status`, { estado: newStatus }, {
+        onSuccess: (page) => {
+            console.log('Pedido actualizado exitosamente');
+            // Recargar la página para mostrar los cambios
+            window.location.reload();
+        },
+        onError: (errors) => {
+            console.error('Error al actualizar pedido:', errors);
+            alert('Error al actualizar el estado del pedido');
+        }
+    });
+};
+
 
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-100">
+                {/* Mensaje de éxito */}
+                {showSuccessMessage && (
+                    <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {successMessage}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Mensaje de error */}
+                {showErrorMessage && (
+                    <div className="fixed top-4 right-4 z-50 bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-red-800">
+                                    {errorMessage}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Mensaje de éxito */}
                 {showSuccessMessage && (
                     <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
@@ -329,6 +424,109 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                 </div>
                             </div>
 
+                            {/* Pedidos */}
+                            <div className="bg-white rounded-lg shadow p-6 mb-6">
+                                <h2 className="text-lg font-semibold mb-4">Pedidos Recibidos</h2>
+                                {stats.pedidos && stats.pedidos.length === 0 ? (
+                                    <p className="text-gray-500">No hay pedidos pendientes</p>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {stats.pedidos && stats.pedidos.map((pedido) => (
+                                            <div key={pedido.id_pedido} className="border border-gray-200 rounded-lg p-4">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold mb-3">Pedido #{pedido.id_pedido}</h3>
+
+                                                        {/* Información del cliente */}
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                                                            <div>
+                                                                <span className="font-medium">Cliente:</span> {pedido.cliente?.name} {pedido.cliente?.last_name}
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">Teléfono:</span> {pedido.cliente?.phone}
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">Email:</span> {pedido.cliente?.email}
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">N° de guía:</span> 123456789012
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">Método:</span> {pedido.metodo_entrega === 'contra_entrega' ? 'Contra Entrega' : 'Envío a Domicilio'}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                                    pedido.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                                                                    pedido.estado === 'confirmado' ? 'bg-blue-100 text-blue-800' :
+                                                                    pedido.estado === 'enviado' ? 'bg-purple-100 text-purple-800' :
+                                                                    pedido.estado === 'entregado' ? 'bg-green-100 text-green-800' :
+                                                                    'bg-red-100 text-red-800'
+                                                                }`}>
+                                                                    {pedido.estado === 'pendiente' ? 'Pendiente' :
+                                                                     pedido.estado === 'confirmado' ? 'Confirmado' :
+                                                                     pedido.estado === 'enviado' ? 'Enviado' :
+                                                                     pedido.estado === 'entregado' ? 'Entregado' :
+                                                                     'Cancelado'}
+                                                                </span>
+                                                                <select
+                                                                    value={pedido.estado}
+                                                                    onChange={(e) => updatePedidoStatus(pedido.id_pedido, e.target.value)}
+                                                                    className="border border-gray-300 rounded px-3 py-1 text-xs"
+                                                                >
+                                                                    <option value="pendiente">Cambiar estado</option>
+                                                                    <option value="confirmado">Confirmado</option>
+                                                                    <option value="enviado">Enviado</option>
+                                                                    <option value="entregado">Entregado</option>
+                                                                    <option value="cancelado">Cancelado</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Resumen de costos y productos */}
+                                                        <div className="bg-gray-50 rounded-lg p-3 border">
+                                                            <div className="space-y-3">
+                                                                {/* Productos del pedido */}
+                                                                <div>
+                                                                    <div className="text-sm font-medium text-gray-700 mb-2">Productos:</div>
+                                                                    <div className="space-y-2">
+                                                                        {pedido.detalles && pedido.detalles.map((detalle, index) => (
+                                                                            <div key={index} className="text-sm text-gray-600">
+                                                                                <div>{detalle.nombre_producto} (x{detalle.cantidad})</div>
+                                                                                <div className="text-right font-medium">{formatCurrency(detalle.subtotal)}</div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Línea separadora */}
+                                                                <div className="border-t border-gray-300"></div>
+
+                                                                {/* Resumen de costos */}
+                                                                <div className="space-y-2 text-sm">
+                                                                    <div className="flex justify-between">
+                                                                        <span className="font-medium">Costo envío:</span>
+                                                                        <span>{formatCurrency(pedido.costo_envio || 0)}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <span className="font-medium">Subtotal productos:</span>
+                                                                        <span>{formatCurrency(pedido.subtotal_productos || pedido.detalles?.reduce((sum, d) => sum + d.subtotal, 0) || 0)}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between border-t pt-2 border-gray-300">
+                                                                        <span className="font-medium">Total:</span>
+                                                                        <span>{formatCurrency(pedido.total)}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Productos */}
                             <div className="bg-white rounded-lg shadow p-6 w-full max-w-7xl mx-auto">
                                 <div className="flex flex-wrap justify-between items-center mb-6">
@@ -344,7 +542,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                         <button onClick={() => setShowSaleModal(true)} className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-base">
                                             Vender
                                         </button>
-                                        
+
                                     </div>
                                 </div>
                                 {/* Condición para mostrar la modal de venta */}
@@ -428,7 +626,7 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Categoría:</span>{' '}
-                                                                <span className="capitalize">{producto.categoria}</span>
+                                                                <span className="capitalize">{producto.categoria?.nombre || 'Sin categoría'}</span>
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Técnica:</span>{' '}
@@ -454,7 +652,15 @@ const handleQuantityChange = (productId, quantity, subtotal) => {
                                                         <button
                                                             onClick={() => {
                                                                 if (confirm('¿Está seguro de que desea eliminar este producto?')) {
-                                                                    router.delete(route('dashboard.artesano.delete-producto', producto.id));
+                                                                    router.delete(route('dashboard.artesano.delete-producto', producto.id), {
+                                                                        onError: (errors) => {
+                                                                            if (errors.delete) {
+                                                                                alert(errors.delete);
+                                                                            } else {
+                                                                                alert('Error al eliminar el producto');
+                                                                            }
+                                                                        }
+                                                                    });
                                                                 }
                                                             }}
                                                             className="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"

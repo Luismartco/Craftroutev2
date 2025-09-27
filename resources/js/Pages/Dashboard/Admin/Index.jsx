@@ -8,7 +8,7 @@ import { Head } from '@inertiajs/react';
 import { MenuContext } from '@/Components/admin/MenuContext';
 import { ModalContext } from '@/Components/admin/ModalContext';
 
-export default function Index({ stats, categorias, materiales, tecnicas, flash }) {
+export default function Index({ stats, categorias, municipios, artesanos, productos, productosPagination, materiales, tecnicas, flash, chartData }) {
 
     const { auth } = usePage().props;
     const user = auth.user;
@@ -31,47 +31,6 @@ export default function Index({ stats, categorias, materiales, tecnicas, flash }
         }
     }, [flash]);
 
-    const data = {
-       data1: [
-        { producto: 'Mochila', value: 51.6 },
-        { producto: 'Hamaca', value: 28.1 },
-        { producto: 'Sombrero', value: 11.8 },
-        { producto: 'Abarcas', value: 10.3 },
-        { producto: 'Chinchorros', value: 3.4 },
-        { producto: 'Tazas', value: 3.1 },
-    ],
-        data2: [
-        { producto: 'Mochila', value: 51.6 },
-        { producto: 'Hamaca', value: 28.1 },
-        { producto: 'Sombrero', value: 11.8 },
-        { producto: 'Abarcas', value: 10.3 },
-        { producto: 'Chinchorros', value: 3.4 },
-        { producto: 'Tazas', value: 3.1 },
-    ]
-};
-
-const productsStatistics = [
-    {
-        image: 'https://th.bing.com/th/id/R.cef8b95ca40a814a617d792695962009?rik=pVFQUAiXqABezA&pid=ImgRaw&r=0',
-        name: 'Hamaca',
-        price: '$100.000',
-        amount: 20,
-        total: '$2.000.000',
-        store: 'Tienda 1',
-        municipality: 'Morroa',
-    },
-    
-    {
-        image: 'https://tse4.mm.bing.net/th/id/OIP.PxxgtADyHe67I-0T4JxUngHaID?rs=1&pid=ImgDetMain&o=7&rm=3',
-        name: 'Mochila',
-        price: '$80.000',
-        amount: 10,
-        total: '$800.000',
-        store: 'Tienda 2',
-        municipality: 'Sampués',
-    },
-]
-
 // Los datos ahora vienen del backend a través de props
     
 const [show, setShow] = useState("dashboard");
@@ -81,7 +40,15 @@ const [isModalOpen, setIsModalOpen] = useState(false);
 const renderContent = () => {
     switch(show) {
         case "dashboard":
-            return <DetailsPanel stats={stats} chartData={data} products={productsStatistics} />;
+            return <DetailsPanel 
+                stats={stats} 
+                chartData={chartData} 
+                products={productos} 
+                productosPagination={productosPagination}
+                categorias={categorias}
+                municipios={municipios}
+                artesanos={artesanos}
+            />;
         case "categories":
             return (
                 <div className="flex-1 p-8">
@@ -101,7 +68,15 @@ const renderContent = () => {
                 </div>
             );
         default:
-            return <DetailsPanel stats={stats} chartData={data} products={productsStatistics} />;
+            return <DetailsPanel 
+                stats={stats} 
+                chartData={chartData} 
+                products={productos} 
+                productosPagination={productosPagination}
+                categorias={categorias}
+                municipios={municipios}
+                artesanos={artesanos}
+            />;
     }
 };
     

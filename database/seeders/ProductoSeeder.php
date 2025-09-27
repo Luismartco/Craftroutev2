@@ -10,6 +10,14 @@ class ProductoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Mapeo de categorías string a categoria_id
+        $categoriaMap = [
+            'tejido' => 20, // Tejidos tiene ID 20
+            'madera' => 22, // Madera tiene ID 22
+            'ceramica' => 21, // Cerámica tiene ID 21
+            'joyeria' => 23, // Joyería tiene ID 23
+        ];
+
         $productos = [
             [   
                 'email' => 'carlos@cr.com',
@@ -762,6 +770,14 @@ class ProductoSeeder extends Seeder
 
             if ($user) {
                 foreach ($artesanoData['productos'] as $productoData) {
+                    // Convertir categoria string a categoria_id
+                    $categoriaString = $productoData['categoria'];
+                    $categoriaId = $categoriaMap[$categoriaString] ?? null;
+                    
+                    // Remover el campo categoria y agregar categoria_id
+                    unset($productoData['categoria']);
+                    $productoData['categoria_id'] = $categoriaId;
+                    
                     Producto::create(array_merge($productoData, [
                         'user_id' => $user->id,
                     ]));

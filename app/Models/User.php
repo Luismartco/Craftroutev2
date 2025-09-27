@@ -69,6 +69,11 @@ class User extends Authenticatable
         return $this->hasMany(Pedido::class, 'cliente_id');
     }
 
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'cliente_id');
+    }
+
     public function artesanosFavoritos()
     {
         return $this->belongsToMany(User::class, 'artesano_favorito', 'cliente_id', 'artesano_id')
@@ -83,5 +88,10 @@ class User extends Authenticatable
     public function productos()
     {
         return $this->hasMany(Producto::class);
+    }
+
+    public function pedidosArtesano()
+    {
+        return $this->hasMany(Pedido::class, 'artesano_id');
     }
 }
