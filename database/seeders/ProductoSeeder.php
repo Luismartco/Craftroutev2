@@ -5,17 +5,32 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Producto;
+use App\Models\Categoria;
 
 class ProductoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Seed categorias if not exist
+        if (Categoria::count() == 0) {
+            $categorias = [
+                ['nombre' => 'Tejidos', 'descripcion' => 'Productos artesanales elaborados con técnicas de tejido como hamacas, mochilas, chinchorros y otros accesorios.'],
+                ['nombre' => 'Cerámica', 'descripcion' => 'Productos elaborados en cerámica como tazas, platos, jarrones y figuras decorativas.'],
+                ['nombre' => 'Madera', 'descripcion' => 'Productos tallados en madera como muebles, utensilios de cocina y figuras decorativas.'],
+                ['nombre' => 'Joyería', 'descripcion' => 'Accesorios y joyería artesanal elaborada con diferentes materiales y técnicas.'],
+                ['nombre' => 'Cuero', 'descripcion' => 'Productos elaborados en cuero como carteras, cinturones, sandalias y otros accesorios.'],
+            ];
+            foreach ($categorias as $categoria) {
+                Categoria::create($categoria);
+            }
+        }
+
         // Mapeo de categorías string a categoria_id
         $categoriaMap = [
-            'tejido' => 20, // Tejidos tiene ID 20
-            'madera' => 22, // Madera tiene ID 22
-            'ceramica' => 21, // Cerámica tiene ID 21
-            'joyeria' => 23, // Joyería tiene ID 23
+            'tejido' => 1, // Tejidos tiene ID 1
+            'ceramica' => 2, // Cerámica tiene ID 2
+            'madera' => 3, // Madera tiene ID 3
+            'joyeria' => 4, // Joyería tiene ID 4
         ];
 
         $productos = [
