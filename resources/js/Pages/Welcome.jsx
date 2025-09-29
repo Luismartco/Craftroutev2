@@ -15,21 +15,17 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
     };
 
     const isCustomer = !!(auth?.user && auth?.user?.role === 'customer');
-    const [useAI, setUseAI] = useState(false);
-    const [aiLoading, setAiLoading] = useState(false);
-    const [aiError, setAiError] = useState('');
     const [aiProductos, setAiProductos] = useState([]);
     const [aiTiendas, setAiTiendas] = useState([]);
     const [hasPrefs, setHasPrefs] = useState(false);
 
     const mapMarkers = useMemo(() => {
-        if (!useAI) return [];
         return aiTiendas
             .filter(t => typeof t?.latitude === 'number' || typeof t?.latitude === 'string')
             .slice(0, 12)
             .map(t => ({ id: t.id, lat: Number(t.latitude), lng: Number(t.longitude) }))
             .filter(m => !Number.isNaN(m.lat) && !Number.isNaN(m.lng));
-    }, [useAI, aiTiendas]);
+    }, [aiTiendas]);
 
     useEffect(() => {
         if (!isCustomer) return;
@@ -40,14 +36,11 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
     }, [isCustomer]);
 
     useEffect(() => {
-        if (!isCustomer || !useAI) return;
-        if (!hasPrefs) return;
+        if (!isCustomer || !hasPrefs) return;
         const controller = new AbortController();
         const { signal } = controller;
         (async () => {
             try {
-                setAiLoading(true);
-                setAiError('');
                 const uid = auth?.user?.id;
                 // Productos
                 const resProd = await fetch(`/api/recommendations/proxy/productos?user_id=${uid}`, { signal });
@@ -77,16 +70,12 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
                     setAiTiendas(Array.isArray(detT) ? detT : []);
                 }
             } catch (e) {
-                if (e.name !== 'AbortError') setAiError(e.message || 'Error al cargar recomendaciones');
-            } finally {
-                setAiLoading(false);
+                // Silently handle errors for AI recommendations
             }
         })();
         return () => controller.abort();
-    }, [isCustomer, useAI, hasPrefs, auth?.user?.id]);
+    }, [isCustomer, hasPrefs, auth?.user?.id]);
 
-    const productosToShow = useMemo(() => (useAI ? aiProductos : productos), [useAI, aiProductos, productos]);
-    const tiendasToShow = useMemo(() => (useAI ? aiTiendas : tiendas), [useAI, aiTiendas, tiendas]);
 
     return (
          <>
@@ -98,25 +87,6 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
         <GuestLayout auth={auth} fullWidth={true}>
             <Head title="Welcome" />
             <h1 className="text-[#2B1F1F] text-center py-4 text-2xl font-bold">"Cada pieza, una historia"</h1>
-            {isCustomer && (
-                <div className="flex flex-col items-center gap-3 mb-4">
-                    <button
-                        onClick={() => setUseAI(!useAI)}
-                        className={`inline-flex items-center px-4 py-2 rounded-md transition-colors ${useAI ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700'} text-white`}
-                    >
-                        {useAI ? 'Ver productos normales' : 'Recomendación por IA'}
-                    </button>
-                    {useAI && !hasPrefs && (
-                        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-2 rounded">
-                            Debes seleccionar 3 productos en "Tus preferencias" para obtener recomendaciones.
-                        </div>
-                    )}
-                    {useAI && aiLoading && <div>Cargando recomendaciones...</div>}
-                    {useAI && aiError && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded">{aiError}</div>
-                    )}
-                </div>
-            )}
             <FlexTricks />
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras Tiendas</h1>
             <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
@@ -125,15 +95,35 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
-            <Tiendas tiendas={tiendasToShow} />
+            <Tiendas tiendas={tiendas} />
+            {aiTiendas.length > 0 && (
+                <>
+                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Tiendas Recomendadas por IA</h1>
+                    <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
+                        Tiendas recomendadas especialmente para ti basadas en tus preferencias.
+                    </p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
+                    <Tiendas tiendas={aiTiendas} />
+                </>
+            )}
             {/*<UserCards />*/}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos</h1>
             <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                        Descubre nuestra selección de productos artesanales únicos, 
+                        Descubre nuestra selección de productos artesanales únicos,
                         elaborados con técnicas tradicionales y materiales de la más alta calidad.
                     </p>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-            <Prod productos={productosToShow} user={auth?.user || user} />
+            <Prod productos={productos} user={auth?.user || user} />
+            {aiProductos.length > 0 && (
+                <>
+                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos Recomendados por IA</h1>
+                    <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
+                        Productos recomendados especialmente para ti basadas en tus preferencias.
+                    </p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
+                    <Prod productos={aiProductos} user={auth?.user || user} />
+                </>
+            )}
             <div className="w-50 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
             {/* <ProductList />*/}

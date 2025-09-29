@@ -63,7 +63,7 @@ class BlogController extends Controller
             'name' => $artesano->name,
             'last_name' => $artesano->last_name,
             'email' => $artesano->email,
-            'profile_photo_url' => method_exists($artesano, 'profilePhotoUrl') ? $artesano->profilePhotoUrl() : ($artesano->profile_photo_url ?? null),
+            'profile_photo_url' => $artesano->profile_photo ? '/storage/' . $artesano->profile_photo : null,
             'bio' => $artesano->bio ?? null,
         ] : null;
 

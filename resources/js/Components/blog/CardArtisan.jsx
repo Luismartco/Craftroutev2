@@ -11,11 +11,17 @@ const CardArtisan = ({ imageArtisan, nameArtisan, location, description, contact
             <div className="flex h-full">
                 {/* Imagen a la izquierda */}
                 <div className="w-1/4 h-full">
-                    <img 
-                        src={imageArtisan} 
-                        alt={`Imagen de ${nameArtisan}`} 
-                        className="w-full h-full object-cover"
-                    />
+                    {imageArtisan ? (
+                        <img
+                            src={imageArtisan}
+                            alt={`Imagen de ${nameArtisan}`}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">Sin imagen</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Contenido */}

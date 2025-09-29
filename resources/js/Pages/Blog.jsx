@@ -21,9 +21,9 @@ export default function Blog({ tienda, artesano, productos }) {
             <Head title={tienda?.nombre ? `Tienda: ${tienda.nombre}` : 'Tienda'} />
 
             {/* HERO */}
-            <HeroSection 
-                ImageStore={tienda?.foto_perfil ? `/storage/${tienda.foto_perfil}` : ImageStore} 
-                NameStore={tienda?.nombre || 'Tienda'} 
+            <HeroSection
+                ImageStore={tienda?.foto_perfil ? `/storage/${tienda.foto_perfil}` : null}
+                NameStore={tienda?.nombre || 'Tienda'}
                 Location={`${tienda?.barrio || ''}${tienda?.barrio ? ', ' : ''}${tienda?.municipio_venta || ''}`}
             />
 
@@ -38,9 +38,9 @@ export default function Blog({ tienda, artesano, productos }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-9 items-stretch">
                     <div className="">
-                        <CardArtisan 
-                            imageArtisan={artesano?.profile_photo_url || ImageArtisan} 
-                            nameArtisan={`${artesano?.name || ''} ${artesano?.last_name || ''}`.trim() || 'Artesano'} 
+                        <CardArtisan
+                            imageArtisan={artesano?.profile_photo_url || null}
+                            nameArtisan={`${artesano?.name || ''} ${artesano?.last_name || ''}`.trim() || 'Artesano'}
                             location={`${tienda?.barrio || ''}${tienda?.barrio ? ', ' : ''}${tienda?.municipio_venta || ''}`}
                             contact={tienda?.telefono || ''}
                             description={artesano?.bio || 'Artesano de la región con productos hechos a mano.'}

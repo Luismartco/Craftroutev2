@@ -96,6 +96,10 @@ class RecommendationController extends Controller
                     'foto_perfil' => $tienda->foto_perfil,
                     'latitude' => $tienda->latitude,
                     'longitude' => $tienda->longitude,
+                    'user' => $tienda->user ? [
+                        'name' => $tienda->user->name,
+                        'last_name' => $tienda->user->last_name,
+                    ] : null,
                 ];
             });
 
