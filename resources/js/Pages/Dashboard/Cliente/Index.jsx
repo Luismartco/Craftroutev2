@@ -152,15 +152,6 @@ export default function Index({ stats, pedidos, user }) {
                                         <p className="text-2xl font-bold text-indigo-600">{stats.artesanos_favoritos}</p>
                                     </div>
                                 </div>
-
-                                <div className="mt-6">
-                                    <Link
-                                        href={route('dashboard.cliente.recomendaciones')}
-                                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200"
-                                    >
-                                        Ver Recomendaciones
-                                    </Link>
-                                </div>
                             </div>
 
                             {/* Sección de Pedidos */}

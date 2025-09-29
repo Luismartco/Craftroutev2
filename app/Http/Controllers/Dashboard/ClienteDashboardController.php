@@ -9,12 +9,19 @@ use Inertia\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Models\UserPreference;
 
 class ClienteDashboardController extends Controller
 {
-    public function index(): Response
+    public function index()
     {
         $user = Auth::user();
+
+        // Check if user has completed preferences
+        $hasPreferences = UserPreference::where('user_id', $user->id)->where('has_completed_preferences', true)->exists();
+        if (!$hasPreferences) {
+            return redirect()->route('dashboard.cliente.recomendaciones');
+        }
 
         // Cargar pedidos del cliente con información del artesano y detalles
 
