@@ -23,7 +23,7 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
         return aiTiendas
             .filter(t => typeof t?.latitude === 'number' || typeof t?.latitude === 'string')
             .slice(0, 12)
-            .map(t => ({ id: t.id, lat: Number(t.latitude), lng: Number(t.longitude) }))
+            .map(t => ({ id: t.id, lat: Number(t.latitude), lng: Number(t.longitude), name: t.nombre }))
             .filter(m => !Number.isNaN(m.lat) && !Number.isNaN(m.lng));
     }, [aiTiendas]);
 
