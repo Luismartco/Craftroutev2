@@ -19,6 +19,6 @@ class Tecnica extends Model
 
     public function productos(): HasMany
     {
-        return $this->hasMany(Producto::class, 'tecnica_artesanal', 'nombre');
+        return $this->hasMany(Producto::class);
     }
 }

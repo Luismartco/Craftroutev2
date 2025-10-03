@@ -21,8 +21,8 @@ class ArtesanoDashboardController extends Controller
         $user = auth()->user();
         $tienda = $user->tienda;
         
-        // Cargar productos con sus imágenes y categoría
-        $productos = Producto::with(['imagenes', 'categoria'])
+        // Cargar productos con sus imágenes, categoría, material y técnica
+        $productos = Producto::with(['imagenes', 'categoria', 'material', 'tecnica'])
                     ->where('user_id', $user->id)
                     ->get();
 
@@ -210,8 +210,8 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'required|integer|min:0',
         'categoria_id' => 'required|exists:categorias,id',
         'municipio_venta' => 'required|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'required|string|exists:tecnicas,nombre',
-        'materia_prima' => 'required|string|exists:materiales,nombre',
+        'material_id' => 'required|exists:materiales,id',
+        'tecnica_id' => 'required|exists:tecnicas,id',
         'color' => 'nullable|string|max:255',
     ]);
 
@@ -251,7 +251,7 @@ public function storeProducto(Request $request)
     {
         $producto = Producto::with(['imagenes' => function($query) {
             $query->orderBy('es_principal', 'desc');
-        }, 'categoria'])
+        }, 'categoria', 'material', 'tecnica'])
         ->where('id', $id)
         ->where('user_id', auth()->id())
         ->firstOrFail();
@@ -295,8 +295,8 @@ public function storeProducto(Request $request)
         'cantidad_disponible' => 'nullable|integer|min:0',
         'categoria_id' => 'nullable|exists:categorias,id',
         'municipio_venta' => 'nullable|string|in:morroa,sampues',
-        'tecnica_artesanal' => 'nullable|string|exists:tecnicas,nombre',
-        'materia_prima' => 'nullable|string|exists:materiales,nombre',
+        'material_id' => 'nullable|exists:materiales,id',
+        'tecnica_id' => 'nullable|exists:tecnicas,id',
         'color' => 'nullable|string|max:255',
         'imagenes_eliminadas' => 'nullable|array',
         'imagenes_eliminadas.*' => 'integer|exists:imagenes_productos,id',
@@ -314,8 +314,8 @@ public function storeProducto(Request $request)
 
 
  // Solo excluye los campos especiales
-    $excludeFields = ['imagenes_eliminadas', 'imagen_principal', 'nuevas_imagenes'];
-    $dataToUpdate = array_diff_key($validatedData, array_flip($excludeFields));
+  $excludeFields = ['imagenes_eliminadas', 'imagen_principal', 'nuevas_imagenes'];
+  $dataToUpdate = array_diff_key($validatedData, array_flip($excludeFields));
 
     // Validar que la categoría existe si se está actualizando
     if (isset($validatedData['categoria_id'])) {
@@ -328,27 +328,24 @@ public function storeProducto(Request $request)
     // Actualizar campos básicos
     try {
         $producto->update($request->only([
-            'nombre', 
-            'descripcion', 
-            'precio', 
+            'nombre',
+            'descripcion',
+            'precio',
             'cantidad_disponible',
             'categoria_id',
             'municipio_venta',
-            'tecnica_artesanal',
-            'materia_prima',
             'color'
         ]));
+
         Log::info('Producto actualizado correctamente', [
             'producto_id' => $producto->id,
             'datos_actualizados' => $request->only([
-                'nombre', 
-                'descripcion', 
-                'precio', 
+                'nombre',
+                'descripcion',
+                'precio',
                 'cantidad_disponible',
                 'categoria_id',
                 'municipio_venta',
-                'tecnica_artesanal',
-                'materia_prima',
                 'color'
             ]),
         ]);
