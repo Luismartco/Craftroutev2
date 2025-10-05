@@ -7,14 +7,11 @@ const Recomendaciones = ({ productos = [] }) => {
 
     const toggleSelection = (productId) => {
         if (selectedProducts.includes(productId)) {
-            // Si el producto ya está seleccionado, lo quitamos
             setSelectedProducts(selectedProducts.filter(id => id !== productId));
         } else {
             if (selectedProducts.length < 3) {
-                // Si hay menos de 3 seleccionados, agregamos el nuevo
                 setSelectedProducts([...selectedProducts, productId]);
             } else {
-                // Si ya hay 3 seleccionados, quitamos el primero y agregamos el nuevo
                 setSelectedProducts([...selectedProducts.slice(1), productId]);
             }
         }
@@ -25,13 +22,10 @@ const Recomendaciones = ({ productos = [] }) => {
             selected_preferences: selectedProducts,
             preserveScroll: true,
             onSuccess: () => {
-                // Redireccionar al dashboard después de guardar las preferencias
                 router.visit(route('dashboard'));
             }
         });
     };
-
-
 
     return (
         <AuthenticatedLayout>
@@ -40,17 +34,13 @@ const Recomendaciones = ({ productos = [] }) => {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <h2 className="text-2xl font-bold mb-6">Selecciona hasta 3 productos</h2>
-                            {productos.length > 0 && (
-                                <p className="text-gray-600 mb-4">{productos.length} productos disponibles</p>
-                            )}
-
                             <div className="grid grid-cols-3 gap-4">
                                 {productos.map((producto) => (
                                     <div
                                         key={producto.id}
                                         className={`relative cursor-pointer transition-all duration-300 transform ${
-                                            selectedProducts.includes(producto.id) 
-                                                ? 'ring-4 ring-indigo-500 scale-105' 
+                                            selectedProducts.includes(producto.id)
+                                                ? 'ring-4 ring-indigo-500 scale-105'
                                                 : 'hover:scale-102'
                                         }`}
                                         onClick={() => toggleSelection(producto.id)}
@@ -67,12 +57,15 @@ const Recomendaciones = ({ productos = [] }) => {
                                                     <span className="text-gray-500">Sin imagen</span>
                                                 </div>
                                             )}
-                                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-2">
-                                                <div className="font-semibold">{producto.nombre}</div>
-                                                <div className="text-sm">
+
+                                            {/* NUEVO ESTILO PARA NOMBRE Y TIENDA */}
+                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/90 to-white/40 text-gray-800 backdrop-blur-sm p-2 rounded-b-lg">
+                                                <div className="font-semibold text-sm truncate">{producto.nombre}</div>
+                                                <div className="text-xs text-gray-600 truncate">
                                                     {producto.tienda_nombre || 'Sin tienda asignada'}
                                                 </div>
                                             </div>
+
                                             {selectedProducts.includes(producto.id) && (
                                                 <div className="absolute top-2 right-2 bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
                                                     {selectedProducts.indexOf(producto.id) + 1}
@@ -104,4 +97,4 @@ const Recomendaciones = ({ productos = [] }) => {
     );
 };
 
-export default Recomendaciones; 
+export default Recomendaciones;
