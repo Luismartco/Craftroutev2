@@ -50,18 +50,9 @@ class RecommendationController extends Controller
 
         $productos = Producto::with(['imagenes' => function ($q) {
                 $q->orderByDesc('es_principal');
-            }, 'user.tienda'])
+            }, 'user.tienda', 'tecnica', 'material', 'categoria'])
             ->whereIn('id', $ids)
-            ->get()
-            ->map(function ($producto) {
-                return [
-                    'id' => $producto->id,
-                    'nombre' => $producto->nombre,
-                    'precio' => $producto->precio,
-                    'imagen' => $producto->imagenes->first()->imagen ?? null,
-                    'tienda_nombre' => optional($producto->user->tienda)->nombre,
-                ];
-            });
+            ->get();
 
         // Preservar el orden segun los ids recibidos
         $byId = $productos->keyBy('id');

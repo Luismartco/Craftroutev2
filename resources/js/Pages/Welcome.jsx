@@ -88,42 +88,29 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
             <Head title="Welcome" />
             <h1 className="text-[#2B1F1F] text-center py-4 text-2xl font-bold">"Cada pieza, una historia"</h1>
             <FlexTricks />
-            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras Tiendas</h1>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                Descubre nuestra selección de productos artesanales únicos, 
-                elaborados con técnicas tradicionales y materiales de la más alta calidad.
-            </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-
-            <Tiendas tiendas={tiendas} />
+            <h1 className="text-[#2B1F1F] text-center pt-6 text-4xl font-bold">Tiendas</h1>
             {aiTiendas.length > 0 && (
                 <>
-                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Tiendas Recomendadas por IA</h1>
-                    <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                        Tiendas recomendadas especialmente para ti basadas en tus preferencias.
-                    </p>
+                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras Tiendas Recomendadas</h1>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
                     <Tiendas tiendas={aiTiendas} />
                 </>
             )}
-            {/*<UserCards />*/}
-            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos</h1>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                        Descubre nuestra selección de productos artesanales únicos,
-                        elaborados con técnicas tradicionales y materiales de la más alta calidad.
-                    </p>
+            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestras Tiendas</h1>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-            <Prod productos={productos} user={auth?.user || user} />
+            <Tiendas tiendas={tiendas} />
+            {/*<UserCards />*/}
+            <h1 className="text-[#2B1F1F] text-center pt-6 text-4xl font-bold">Productos</h1>
             {aiProductos.length > 0 && (
                 <>
-                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Productos Recomendados por IA</h1>
-                    <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                        Productos recomendados especialmente para ti basadas en tus preferencias.
-                    </p>
+                    <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros Productos Recomendados</h1>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
                     <Prod productos={aiProductos} user={auth?.user || user} />
                 </>
             )}
+            <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros Productos</h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
+            <Prod productos={productos} user={auth?.user || user} />
             <div className="w-50 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
             {/* <ProductList />*/}

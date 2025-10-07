@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useCart } from '../../Contexts/CartContext';
 
 // Importa imágenes
@@ -183,7 +183,11 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
    const isLogged = !!user;
    let img = '';
    if (producto.imagenes && producto.imagenes.length > 0) {
-     img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
+     if (typeof producto.imagenes[0] === 'string') {
+       img = `/storage/${producto.imagenes[0]}`;
+     } else {
+       img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
+     }
    }
    const showAddToCart = !isLogged || isCustomer;
 
@@ -199,7 +203,7 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
    };
 
    return (
-     <div className="p-4 bg-white shadow rounded-xl w-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ">
+     <div className="p-4 bg-white shadow rounded-xl w-64 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 flex-shrink-0">
        {img && (
          <img
            src={img}
@@ -208,6 +212,9 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
          />
        )}
        <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
+       <p className="text-sm text-gray-500 mt-2">
+         Artesano: <span className="font-medium">{producto.user ? `${producto.user.name} ${producto.user.last_name || ''}` : 'Sin artesano'}</span> | {producto.municipio_venta}
+       </p>
        <p className="text-gray-800 font-semibold mb-4">
          {formatPrice(producto.precio)}
        </p>
@@ -240,10 +247,10 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
 const ProductGallery = ({ productos = [], user }) => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
-  const [verTodos, setVerTodos] = useState(false);
   const [categoria, setCategoria] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [rangoPrecio, setRangoPrecio] = useState('');
+  const scrollRef = useRef(null);
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -276,7 +283,17 @@ const ProductGallery = ({ productos = [], user }) => {
     return ok;
   });
 
-  const productosAMostrar = verTodos ? productosFiltrados : productosFiltrados.slice(0, 4);
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -280, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 280, behavior: 'smooth' });
+    }
+  };
 
   return (
     <>
@@ -322,30 +339,44 @@ const ProductGallery = ({ productos = [], user }) => {
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
-        {productosAMostrar.map((prod, index) => (
-          <Prod
-            key={prod.id || index}
-            producto={prod}
-            user={user}
-            onClick={() => {
-              setSelected(prod);
-              setImgIndex(0);
-            }}
-            onBuy={() => addToCart(prod)}
-          />
-        ))}
-      </div>
-      {!verTodos && productosFiltrados.length > 4 && (
-        <div className="flex justify-center mb-8">
-          <button
-            onClick={() => setVerTodos(true)}
-            className="px-4 py-2 bg-[#4B3A3A] text-white rounded hover:bg-[#2B1F1F]"
-          >
-            Ver más productos
-          </button>
+      <div className="relative p-6">
+        {productosFiltrados.length > 4 && (
+          <>
+            <button
+              onClick={scrollLeft}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              aria-label="Scroll left"
+            >
+              ‹
+            </button>
+            <button
+              onClick={scrollRight}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              aria-label="Scroll right"
+            >
+              ›
+            </button>
+          </>
+        )}
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {productosFiltrados.map((prod, index) => (
+            <Prod
+              key={prod.id || index}
+              producto={prod}
+              user={user}
+              onClick={() => {
+                setSelected(prod);
+                setImgIndex(0);
+              }}
+              onBuy={() => addToCart(prod)}
+            />
+          ))}
         </div>
-      )}
+      </div>
 
       {/* Modal de los productos */}
       {selected && (
@@ -368,7 +399,7 @@ const ProductGallery = ({ productos = [], user }) => {
                     <>
                       <button onClick={() => setImgIndex((prev) => (prev - 1 + selected.imagenes.length) % selected.imagenes.length)} className="text-2xl font-bold text-gray-400 hover:text-[#4B3A3A] px-2 py-1 rounded-full transition">‹</button>
                       <img
-                        src={`/storage/${selected.imagenes[imgIndex].ruta_imagen}`}
+                        src={typeof selected.imagenes[imgIndex] === 'string' ? `/storage/${selected.imagenes[imgIndex]}` : `/storage/${selected.imagenes[imgIndex].ruta_imagen}`}
                         alt="Producto"
                         className="w-96 h-80 object-contain mx-2 rounded-xl"
                       />
@@ -393,11 +424,28 @@ const ProductGallery = ({ productos = [], user }) => {
                 )}
               </div>
               <div className="flex-1 w-full max-w-xl">
-                <h2 className="text-3xl font-extrabold mb-3 text-[#2B1F1F]">{selected.nombre}</h2>
-                <p className="text-gray-700 mb-4 text-lg">{selected.descripcion}</p>
-                <p className="text-[#4B3A3A] font-bold text-3xl mb-6">
-                  {formatPrice(selected.precio)}
-                </p>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="h-20 w-20 rounded-full bg-gray-100 shadow-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                    {selected.user?.foto_perfil ? (
+                      <img
+                        src={`/storage/${selected.user.foto_perfil}`}
+                        alt={selected.user.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl font-medium text-gray-600">
+                        {selected.user?.name ? selected.user.name.charAt(0) : '?'}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-extrabold mb-3 text-[#2B1F1F]">{selected.nombre || 'Sin nombre'}</h2>
+                    <p className="text-gray-700 mb-4 text-lg">{selected.descripcion || 'Sin descripción'}</p>
+                    <p className="text-[#4B3A3A] font-bold text-3xl mb-6">
+                      {formatPrice(selected.precio) || '$0'}
+                    </p>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   <div>
                     <p className="text-sm text-gray-500">Tienda</p>
@@ -405,7 +453,7 @@ const ProductGallery = ({ productos = [], user }) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Artesano</p>
-                    <p className="font-medium capitalize">{selected.user?.name} {selected.user?.last_name}</p>
+                    <p className="font-medium capitalize">{selected.user?.name || 'Sin artesano'} {selected.user?.last_name || ''}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Cantidad Disponible</p>
