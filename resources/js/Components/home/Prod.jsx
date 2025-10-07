@@ -413,11 +413,11 @@ const ProductGallery = ({ productos = [], user }) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Técnica Artesanal</p>
-                    <p className="font-medium capitalize">{selected.tecnica_artesanal?.replace('_', ' ') || 'No especificado'}</p>
+                    <p className="font-medium capitalize">{selected.tecnica?.nombre || 'No especificado'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Materia Prima</p>
-                    <p className="font-medium capitalize">{selected.materia_prima || 'No especificado'}</p>
+                    <p className="font-medium capitalize">{selected.material?.nombre || 'No especificado'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Color</p>

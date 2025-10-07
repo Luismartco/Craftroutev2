@@ -19,6 +19,6 @@ class Material extends Model
 
     public function productos(): HasMany
     {
-        return $this->hasMany(Producto::class, 'materia_prima', 'nombre');
+        return $this->hasMany(Producto::class);
     }
 }

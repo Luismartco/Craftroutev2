@@ -16,12 +16,22 @@ class Producto extends Model
         'precio',
         'cantidad_disponible',
         'categoria_id',
+        'material_id',
+        'tecnica_id',
         'municipio_venta',
-        'tecnica_artesanal',
-        'materia_prima',
         'color',
         'user_id',
     ];
+
+    public function material(): BelongsTo
+    {
+        return $this->belongsTo(Material::class);
+    }
+
+    public function tecnica(): BelongsTo
+    {
+        return $this->belongsTo(Tecnica::class);
+    }
 
     public function user()
     {

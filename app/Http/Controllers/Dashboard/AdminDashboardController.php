@@ -61,7 +61,7 @@ class AdminDashboardController extends Controller
             });
 
         // Productos
-        $todosLosProductos = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes'])->get();
+        $todosLosProductos = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes', 'material', 'tecnica'])->get();
 
         // Gráfica 1: Ventas por producto
         $ventasPorProducto = \App\Models\TransaccionItem::selectRaw('nombre_producto, SUM(cantidad) as total_cantidad')
@@ -96,7 +96,7 @@ class AdminDashboardController extends Controller
         })->values()->toArray();
 
         // Tabla de productos
-        $productosPaginados = \App\Models\Producto::with(['user', 'categoria', 'imagenes'])->paginate(5);
+        $productosPaginados = \App\Models\Producto::with(['user', 'categoria', 'imagenes', 'material', 'tecnica'])->paginate(5);
         $productos = $productosPaginados->map(function($producto) {
             $imagen = $producto->imagenes->where('es_principal', true)->first();
             $imagenUrl = $imagen ? asset('storage/' . $imagen->ruta_imagen) : null;
@@ -304,7 +304,7 @@ class AdminDashboardController extends Controller
                 'artesano_id' => $artesanoId
             ]);
 
-            $query = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes']);
+            $query = \App\Models\Producto::with(['user.tienda', 'categoria', 'imagenes', 'material', 'tecnica']);
 
             if ($categoriaId && $categoriaId !== '') {
                 $query->where('categoria_id', $categoriaId);

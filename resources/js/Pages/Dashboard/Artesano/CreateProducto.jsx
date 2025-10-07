@@ -22,8 +22,8 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
         cantidad_disponible: '',
         categoria_id: '',
         municipio_venta: '',
-        tecnica_artesanal: '',
-        materia_prima: '',
+        material_id: '',
+        tecnica_id: '',
         color: '',
         imagenes: [],
     });
@@ -201,43 +201,43 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="tecnica_artesanal" value="Técnica Artesanal" />
+                                        <InputLabel htmlFor="tecnica_id" value="Técnica Artesanal" />
                                         <SelectInput
-                                            id="tecnica_artesanal"
-                                            name="tecnica_artesanal"
-                                            value={data.tecnica_artesanal}
+                                            id="tecnica_id"
+                                            name="tecnica_id"
+                                            value={data.tecnica_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('tecnica_artesanal', e.target.value)}
+                                            onChange={(e) => setData('tecnica_id', e.target.value)}
                                             required
                                         >
                                             <option value="">Seleccione una técnica</option>
                                             {tecnicas.map((tecnica) => (
-                                                <option key={tecnica.id} value={tecnica.nombre}>
+                                                <option key={tecnica.id} value={tecnica.id}>
                                                     {tecnica.nombre}
                                                 </option>
                                             ))}
                                         </SelectInput>
-                                        <InputError message={errors.tecnica_artesanal} className="mt-2" />
+                                        <InputError message={errors.tecnica_id} className="mt-2" />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="materia_prima" value="Materia Prima" />
+                                        <InputLabel htmlFor="material_id" value="Materia Prima" />
                                         <SelectInput
-                                            id="materia_prima"
-                                            name="materia_prima"
-                                            value={data.materia_prima}
+                                            id="material_id"
+                                            name="material_id"
+                                            value={data.material_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('materia_prima', e.target.value)}
+                                            onChange={(e) => setData('material_id', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione una materia prima</option>
+                                            <option value="">Seleccione un material</option>
                                             {materiales.map((material) => (
-                                                <option key={material.id} value={material.nombre}>
+                                                <option key={material.id} value={material.id}>
                                                     {material.nombre}
                                                 </option>
                                             ))}
                                         </SelectInput>
-                                        <InputError message={errors.materia_prima} className="mt-2" />
+                                        <InputError message={errors.material_id} className="mt-2" />
                                     </div>
 
                                     <div>

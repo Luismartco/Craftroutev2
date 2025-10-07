@@ -630,11 +630,11 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Técnica:</span>{' '}
-                                                                <span className="capitalize">{producto.tecnica_artesanal.replace('_', ' ')}</span>
+                                                                <span className="capitalize">{producto.tecnica?.nombre || 'No especificado'}</span>
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Materia Prima:</span>{' '}
-                                                                <span className="capitalize">{producto.materia_prima}</span>
+                                                                <span className="capitalize">{producto.material?.nombre || 'No especificado'}</span>
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Color:</span>{' '}
