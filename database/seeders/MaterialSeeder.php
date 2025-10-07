@@ -38,6 +38,22 @@ class MaterialSeeder extends Seeder
                 'nombre' => 'Cañamos',
                 'descripcion' => 'Material natural obtenido de plantas, utilizado para la elaboración de tejidos y productos artesanales.',
             ],
+            [
+                'nombre' => 'Cuero',
+                'descripcion' => 'Utilizado para fabricar carteras, sandalias y accesorios, con gran presencia en Quibdó y Bogotá.',
+            ],
+            [
+                'nombre' => 'Totumo',
+                'descripcion' => 'Fruto seco usado como materia prima para elaborar utensilios y objetos decorativos en zonas del Caribe colombiano.',
+            ],
+            [
+                'nombre' => 'Arcilla',
+                'descripcion' => 'Material base utilizado en la cerámica tradicional colombiana, especialmente en regiones como Ráquira y La Chamba.',
+            ],
+            [
+                'nombre' => 'Madera',
+                'descripcion' => 'Usada para tallar figuras, utensilios y muebles artesanales en departamentos como Boyacá, Santander y el Chocó.',
+            ],
         ];
 
         foreach ($materiales as $material) {

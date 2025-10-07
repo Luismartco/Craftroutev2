@@ -42,4 +42,5 @@ Desarrollar un aplicativo tipo marketplace con sistemas de recomendación basado
 
 ## API de Recomendaciones:
 El sistema de recomendaciones IA/ML fue desarrollado en Flask para ser consumido desde este proyecto.
+
 [API en Flask](https://github.com/Luismartco/RecomendacionesCraftroute).
