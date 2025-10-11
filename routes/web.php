@@ -6,18 +6,19 @@ use App\Http\Controllers\Dashboard\ArtesanoDashboardController;
 use App\Http\Controllers\Dashboard\ClienteDashboardController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\MaterialController;
-use App\Http\Controllers\TecnicaController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TransaccionController;
+use App\Http\Controllers\PedidoController;
 use Inertia\Inertia;
 use App\Http\Middleware\CheckRole;
 use App\Http\Controllers\UserPreferenceController;
+use App\Http\Controllers\RecommendationController;
 
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
-    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user'])->get();
+    $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user.tienda', 'categoria', 'material', 'tecnica'])->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -53,36 +54,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':admin'])->group(function () {
         Route::prefix('dashboard/admin')->name('dashboard.admin.')->group(function () {
             Route::get('/', [AdminDashboardController::class, 'index'])->name('index');
-            Route::get('/categories', function() {
-                return Inertia::render('Dashboard/Admin/Categories');
-            })->name('view-state');
-            Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
-            Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
-        });
+                    Route::get('/manage-users', [AdminDashboardController::class, 'manageUsers'])->name('manage-users');
+        Route::get('/manage-artesanos', [AdminDashboardController::class, 'manageArtesanos'])->name('manage-artesanos');
+        Route::get('/filtered-data', [AdminDashboardController::class, 'getFilteredData'])->name('filtered-data');
+        
+        // Rutas para categorías
+        Route::get('/categorias', function() { return redirect()->route('dashboard.admin.index'); })->name('categorias.index');
+        Route::post('/categorias', [AdminDashboardController::class, 'storeCategoria'])->name('categorias.store');
+        Route::put('/categorias/{id}', [AdminDashboardController::class, 'updateCategoria'])->name('categorias.update');
+        Route::delete('/categorias/{id}', [AdminDashboardController::class, 'destroyCategoria'])->name('categorias.destroy');
 
-        // Rutas API para categorías, materiales y técnicas (solo admin)
-        Route::prefix('api')->name('api.')->group(function () {
-            // Rutas para categorías
-            Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-            Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
-            Route::get('/categorias/{id}', [CategoriaController::class, 'show'])->name('categorias.show');
-            Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
-            Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+        // Rutas para materiales
+        Route::get('/materiales', function() { return redirect()->route('dashboard.admin.index'); })->name('materiales.index');
+        Route::post('/materiales', [AdminDashboardController::class, 'storeMaterial'])->name('materiales.store');
+        Route::put('/materiales/{id}', [AdminDashboardController::class, 'updateMaterial'])->name('materiales.update');
+        Route::delete('/materiales/{id}', [AdminDashboardController::class, 'destroyMaterial'])->name('materiales.destroy');
 
-            // Rutas para materiales
-            Route::get('/materiales', [MaterialController::class, 'index'])->name('materiales.index');
-            Route::post('/materiales', [MaterialController::class, 'store'])->name('materiales.store');
-            Route::get('/materiales/{id}', [MaterialController::class, 'show'])->name('materiales.show');
-            Route::put('/materiales/{id}', [MaterialController::class, 'update'])->name('materiales.update');
-            Route::delete('/materiales/{id}', [MaterialController::class, 'destroy'])->name('materiales.destroy');
-
-            // Rutas para técnicas
-            Route::get('/tecnicas', [TecnicaController::class, 'index'])->name('tecnicas.index');
-            Route::post('/tecnicas', [TecnicaController::class, 'store'])->name('tecnicas.store');
-            Route::get('/tecnicas/{id}', [TecnicaController::class, 'show'])->name('tecnicas.show');
-            Route::put('/tecnicas/{id}', [TecnicaController::class, 'update'])->name('tecnicas.update');
-            Route::delete('/tecnicas/{id}', [TecnicaController::class, 'destroy'])->name('tecnicas.destroy');
-        });
+        // Rutas para técnicas
+        Route::get('/tecnicas', function() { return redirect()->route('dashboard.admin.index'); })->name('tecnicas.index');
+        Route::post('/tecnicas', [AdminDashboardController::class, 'storeTecnica'])->name('tecnicas.store');
+        Route::put('/tecnicas/{id}', [AdminDashboardController::class, 'updateTecnica'])->name('tecnicas.update');
+        Route::delete('/tecnicas/{id}', [AdminDashboardController::class, 'destroyTecnica'])->name('tecnicas.destroy');
+    });
     });
 
     // Rutas del artesano
@@ -108,14 +101,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([CheckRole::class . ':customer'])->group(function () {
         Route::prefix('dashboard/cliente')->name('dashboard.cliente.')->group(function () {
             Route::get('/', [ClienteDashboardController::class, 'index'])->name('index');
-            Route::get('/recomendaciones', function () {
-                return Inertia::render('Dashboard/Cliente/Recomendaciones');
-            })->name('recomendaciones');
+            Route::get('/recomendaciones', [UserPreferenceController::class, 'show'])->name('recomendaciones');
+            Route::get('/recomendaciones-ia', [UserPreferenceController::class, 'recommendationsPage'])->name('recomendaciones-ia');
         });
+        Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
+        Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
     });
-
-    Route::get('/preferences', [UserPreferenceController::class, 'show'])->name('preferences.show');
-    Route::post('/preferences', [UserPreferenceController::class, 'store'])->name('preferences.store');
 });
 
 // Rutas de checkout (accesibles para todos)
@@ -128,6 +119,13 @@ Route::post('/api/cart/store', [CartController::class, 'store'])->name('cart.sto
 Route::get('/api/cart/get', [CartController::class, 'get'])->name('cart.get');
 Route::delete('/api/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
+// Ruta para renovar token CSRF
+Route::get('/api/csrf-token', function () {
+    return response()->json([
+        'csrf_token' => csrf_token()
+    ]);
+})->name('csrf.token');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -135,8 +133,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
 });
 
+// Transacciones simuladas
+Route::middleware(['auth'])->group(function () {
+    Route::post('/transacciones/compra', [TransaccionController::class, 'storeCompra'])->name('transacciones.compra');
+    Route::post('/transacciones/venta', [TransaccionController::class, 'storeVenta'])->name('transacciones.venta');
+    Route::post('/pedidos/create', [PedidoController::class, 'create']);
+    Route::put('/pedidos/{pedidoId}/status', [PedidoController::class, 'updateStatus']);
+});
+
 Route::get('/blog', function () {
-    return Inertia::render('Blog');
-})->name('blog');
+    abort(404);
+});
+
+Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
+// API interna para resolver detalles por IDs (accesible para clientes autenticados)
+Route::middleware(['auth', CheckRole::class . ':customer'])->group(function () {
+    Route::get('/api/recommendations/productos', [RecommendationController::class, 'productosByIds']);
+    Route::get('/api/recommendations/tiendas', [RecommendationController::class, 'tiendasByIds']);
+    Route::get('/api/recommendations/proxy/productos', [RecommendationController::class, 'proxyProductos']);
+    Route::get('/api/recommendations/proxy/tiendas', [RecommendationController::class, 'proxyTiendas']);
+    Route::get('/api/recommendations/has-preferences', [RecommendationController::class, 'hasPreferences']);
+});
 
 require __DIR__.'/auth.php';

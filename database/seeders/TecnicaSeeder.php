@@ -15,28 +15,36 @@ class TecnicaSeeder extends Seeder
     {
         $tecnicas = [
             [
-                'nombre' => 'Telar Horizontal',
-                'descripcion' => 'Técnica de tejido que utiliza un telar horizontal para elaborar productos como hamacas, mochilas y otros tejidos.',
+                'nombre' => 'Tejido en telar',
+                'descripcion' => 'Técnica tradicional para elaborar mantas, mochilas y hamacas usando hilos de algodón o lana.',
             ],
             [
-                'nombre' => 'Bordado',
-                'descripcion' => 'Técnica de decoración textil que consiste en coser hilos sobre una tela para crear diseños y figuras.',
+                'nombre' => 'Alfarería',
+                'descripcion' => 'Técnica ancestral usada para moldear arcilla y crear piezas como ollas, platos y figuras decorativas.',
             ],
             [
-                'nombre' => 'Cosido',
-                'descripcion' => 'Técnica de unión de materiales mediante hilos y agujas para crear productos textiles y otros artículos.',
+                'nombre' => 'Talla en madera',
+                'descripcion' => 'Proceso artesanal de esculpir figuras o utensilios en diferentes tipos de madera nativa.',
             ],
             [
-                'nombre' => 'Moldeado',
-                'descripcion' => 'Técnica de modelado de materiales como arcilla o cerámica para crear figuras y objetos.',
+                'nombre' => 'Cestería en iraca',
+                'descripcion' => 'Técnica de trenzado de palma de iraca para crear sombreros, individuales y bolsos decorativos.',
             ],
             [
-                'nombre' => 'Tallado',
-                'descripcion' => 'Técnica de escultura que consiste en tallar materiales como madera o piedra para crear figuras y objetos.',
+                'nombre' => 'Orfebrería',
+                'descripcion' => 'Técnica de trabajo del oro y la plata para crear joyas y objetos decorativos con diseños tradicionales.',
             ],
             [
-                'nombre' => 'Tejido de Palma',
-                'descripcion' => 'Técnica tradicional de tejido utilizando fibras de palma para elaborar sombreros, canastos y otros productos.',
+                'nombre' => 'Marroquinería',
+                'descripcion' => 'Trabajo artesanal del cuero para elaborar calzado, cinturones y bolsos de alta calidad.',
+            ],
+            [
+                'nombre' => 'Tejeduría en chaquiras',
+                'descripcion' => 'Arte de ensartar pequeñas cuentas de colores para crear collares, manillas y accesorios típicos de comunidades indígenas.',
+            ],
+            [
+                'nombre' => 'Pintura sobre totumo',
+                'descripcion' => 'Decoración artesanal de objetos elaborados con el fruto del totumo, con motivos florales o geométricos.',
             ],
         ];
 

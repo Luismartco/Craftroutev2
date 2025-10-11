@@ -7,11 +7,17 @@ const HeroSection = ({ImageStore, NameStore, Location}) => {
                 <div className='relative max-w-4xl mx-auto'>
                     <div className='flex flex-col lg:flex-row items-center gap-6 relative z-10'>
                         <div className='relative group'>
-                            <img 
-                                className='rounded-xl shadow-lg hover:scale-105 transition-all duration-300 w-48 h-48 object-cover border-2 border-white' 
-                                src={ImageStore} 
-                                alt="image store" 
-                            />
+                            {ImageStore ? (
+                                <img
+                                    className='rounded-xl shadow-lg hover:scale-105 transition-all duration-300 w-48 h-48 object-cover border-2 border-white'
+                                    src={ImageStore}
+                                    alt="image store"
+                                />
+                            ) : (
+                                <div className='rounded-xl shadow-lg w-48 h-48 bg-gray-200 flex items-center justify-center border-2 border-white'>
+                                    <span className='text-gray-500'>Sin imagen</span>
+                                </div>
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#2B1F1F]/15 to-transparent rounded-xl"></div>
                         </div>
                         

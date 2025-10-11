@@ -23,8 +23,17 @@ class DatabaseSeeder extends Seeder
 
         $this->call(AdminSeeder::class);
         $this->call(ArtisanSeeder::class);
+        $this->call(CategoriaSeeder::class);
+        $this->call(MaterialSeeder::class);
+        $this->call(TecnicaSeeder::class);
         $this->call(TiendasSeeder::class);
         $this->call(ProductoSeeder::class);
         $this->call(CustomerSeeder::class);
     }
 }
+
+
+
+
+
+

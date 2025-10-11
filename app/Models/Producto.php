@@ -15,14 +15,23 @@ class Producto extends Model
         'descripcion',
         'precio',
         'cantidad_disponible',
-        'categoria',
         'categoria_id',
+        'material_id',
+        'tecnica_id',
         'municipio_venta',
-        'tecnica_artesanal',
-        'materia_prima',
         'color',
         'user_id',
     ];
+
+    public function material(): BelongsTo
+    {
+        return $this->belongsTo(Material::class);
+    }
+
+    public function tecnica(): BelongsTo
+    {
+        return $this->belongsTo(Tecnica::class);
+    }
 
     public function user()
     {
@@ -47,5 +56,10 @@ class Producto extends Model
     {
         return $this->hasOne(ImagenProducto::class)->where('es_principal', true);
     }
-} 
+
+    public function transaccionItems()
+    {
+        return $this->hasMany(TransaccionItem::class, 'id_producto');
+    }
+}
 

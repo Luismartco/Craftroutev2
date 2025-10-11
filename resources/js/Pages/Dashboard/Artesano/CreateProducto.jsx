@@ -9,8 +9,9 @@ import TextArea from '@/Components/TextArea';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import axios from 'axios';
+import { NumericFormat } from 'react-number-format';
 
-export default function CreateProducto() {
+export default function CreateProducto({ categorias, tecnicas, materiales }) {
     const [previewImages, setPreviewImages] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,10 +20,10 @@ export default function CreateProducto() {
         descripcion: '',
         precio: '',
         cantidad_disponible: '',
-        categoria: '',
+        categoria_id: '',
         municipio_venta: '',
-        tecnica_artesanal: '',
-        materia_prima: '',
+        material_id: '',
+        tecnica_id: '',
         color: '',
         imagenes: [],
     });
@@ -128,16 +129,21 @@ export default function CreateProducto() {
 
                                     <div>
                                         <InputLabel htmlFor="precio" value="Precio" />
-                                        <TextInput
+                                        <NumericFormat
                                             id="precio"
                                             name="precio"
-                                            type="number"
+                                            thousandSeparator="."
+                                            decimalSeparator=","
+                                            prefix="$"
+                                            decimalScale={2}
+                                            fixedDecimalScale={true}
+                                            allowNegative={false}
                                             value={data.precio}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData('precio', e.target.value)}
+                                            onValueChange={(values) => {
+                                                setData('precio', values.floatValue || '');
+                                            }}
+                                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             required
-                                            min="0"
-                                            step="0.01"
                                         />
                                         <InputError message={errors.precio} className="mt-2" />
                                     </div>
@@ -158,22 +164,23 @@ export default function CreateProducto() {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="categoria" value="Categoría" />
+                                        <InputLabel htmlFor="categoria_id" value="Categoría" />
                                         <SelectInput
-                                            id="categoria"
-                                            name="categoria"
-                                            value={data.categoria}
+                                            id="categoria_id"
+                                            name="categoria_id"
+                                            value={data.categoria_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('categoria', e.target.value)}
+                                            onChange={(e) => setData('categoria_id', e.target.value)}
                                             required
                                         >
                                             <option value="">Seleccione una categoría</option>
-                                            <option value="tejido">Tejido</option>
-                                            <option value="madera">Madera</option>
-                                            <option value="ceramica">Cerámica</option>
-                                            <option value="joyeria">Joyería</option>
+                                            {categorias.map((categoria) => (
+                                                <option key={categoria.id} value={categoria.id}>
+                                                    {categoria.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
-                                        <InputError message={errors.categoria} className="mt-2" />
+                                        <InputError message={errors.categoria_id} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -194,42 +201,43 @@ export default function CreateProducto() {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="tecnica_artesanal" value="Técnica Artesanal" />
+                                        <InputLabel htmlFor="tecnica_id" value="Técnica Artesanal" />
                                         <SelectInput
-                                            id="tecnica_artesanal"
-                                            name="tecnica_artesanal"
-                                            value={data.tecnica_artesanal}
+                                            id="tecnica_id"
+                                            name="tecnica_id"
+                                            value={data.tecnica_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('tecnica_artesanal', e.target.value)}
+                                            onChange={(e) => setData('tecnica_id', e.target.value)}
                                             required
                                         >
                                             <option value="">Seleccione una técnica</option>
-                                            <option value="telar horizontal">Telar Horizontal</option>
-                                            <option value="bordado">Bordado</option>
-                                            <option value="cosido">Cosido</option>
+                                            {tecnicas.map((tecnica) => (
+                                                <option key={tecnica.id} value={tecnica.id}>
+                                                    {tecnica.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
-                                        <InputError message={errors.tecnica_artesanal} className="mt-2" />
+                                        <InputError message={errors.tecnica_id} className="mt-2" />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="materia_prima" value="Materia Prima" />
+                                        <InputLabel htmlFor="material_id" value="Materia Prima" />
                                         <SelectInput
-                                            id="materia_prima"
-                                            name="materia_prima"
-                                            value={data.materia_prima}
+                                            id="material_id"
+                                            name="material_id"
+                                            value={data.material_id}
                                             className="mt-1 block w-full"
-                                            onChange={(e) => setData('materia_prima', e.target.value)}
+                                            onChange={(e) => setData('material_id', e.target.value)}
                                             required
                                         >
-                                            <option value="">Seleccione una materia prima</option>
-                                            <option value="paja">Paja</option>
-                                            <option value="algodon">Algodón</option>
-                                            <option value="fique">Fique</option>
-                                            <option value="ceramica">Cerámica</option>
-                                            <option value="hilos">Hilos</option>
-                                            <option value="canamos">Cañamos</option>
+                                            <option value="">Seleccione un material</option>
+                                            {materiales.map((material) => (
+                                                <option key={material.id} value={material.id}>
+                                                    {material.nombre}
+                                                </option>
+                                            ))}
                                         </SelectInput>
-                                        <InputError message={errors.materia_prima} className="mt-2" />
+                                        <InputError message={errors.material_id} className="mt-2" />
                                     </div>
 
                                     <div>
