@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import GuestLayout from "@/Layouts/GuestLayout";
 import FlexTricks from '../Components/home/FlexTricks';
-import UserCards from '../Components/home/UsersCards';
-import ProductList from '../Components/home/Products';
 import Tiendas from '../Components/home/Tiendas';
 import Maps from '../Components/home/Maps';
 import Prod from '@/Components/home/Prod';

@@ -4,7 +4,7 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, Link } from "@inertiajs/react";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -26,6 +26,8 @@ export default function Register() {
 
     const [isArtesano, setIsArtesano] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+    const [acceptPolicy, setAcceptPolicy] = useState(false);
+    const [localError, setLocalError] = useState("");
 
     const handleRoleChange = (e) => {
         const roleValue = e.target.value;
@@ -52,6 +54,21 @@ export default function Register() {
     const submit = (e) => {
         e.preventDefault();
         setSuccessMessage("");
+        // Validación local antes de enviar
+        const pwd = data.password || "";
+        const isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(pwd);
+
+        if (!isPasswordValid) {
+            setLocalError('La contraseña debe tener al menos 8 caracteres e incluir letras y números.');
+            return;
+        }
+
+        if (!acceptPolicy) {
+            setLocalError('Debe aceptar las políticas de tratamiento de datos para registrarse.');
+            return;
+        }
+
+        setLocalError("");
 
         post(route("register"), {
             onSuccess: () => {
@@ -137,6 +154,16 @@ export default function Register() {
                                 required 
                             />
                             <InputError message={errors.password} />
+                            {/* Mensaje de requisitos en tiempo real */}
+                            {data.password ? (
+                                /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(data.password) ? (
+                                    <p className="text-sm text-green-600">Contraseña válida</p>
+                                ) : (
+                                    <p className="text-sm text-red-600">La contraseña debe tener al menos 8 caracteres e incluir letras y números.</p>
+                                )
+                            ) : (
+                                <p className="text-sm text-gray-500">Mínimo 8 caracteres, incluir letras y números.</p>
+                            )}
                         </div>
 
                         <div className="space-y-1">
@@ -302,9 +329,34 @@ export default function Register() {
                         </div>
 
                         <div>
+                            {/* Mensaje de error local (políticas / validación) */}
+                            {localError && (
+                                <div className="mb-2 text-sm text-red-600">{localError}</div>
+                            )}
+
+                            <div className="flex items-center mb-3">
+                            <input
+                                id="acceptPolicy"
+                                type="checkbox"
+                                checked={acceptPolicy}
+                                onChange={(e) => setAcceptPolicy(e.target.checked)}
+                                className="w-4 h-4 mr-2"
+                            />
+                            <label htmlFor="acceptPolicy" className="text-sm text-gray-700">
+                                Acepto las{" "}
+                                <a
+                                    href={route('politica.datos')}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#2B1F1F] underline hover:text-[#3C2F2F]"
+                                >
+                                    políticas de tratamiento de datos
+                                </a>
+                            </label>
+                        </div>
                             <PrimaryButton 
                                 type="submit" 
-                                disabled={processing} 
+                                disabled={processing || !acceptPolicy || !/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(data.password)} 
                                 className="w-full bg-[#2B1F1F] text-white py-3 rounded hover:bg-[#3C2F2F] transition"
                             >
                                 Registrarse

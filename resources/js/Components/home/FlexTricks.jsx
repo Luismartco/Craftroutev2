@@ -1,8 +1,6 @@
 import React from 'react';
-import AMorroa from '../../../media/AMorroa.jpg';
+
 import CasaCulMorr from '../../../media/CasaCulMorr.png';
-import hilaza from '../../../media/hilaza.jpg';
-import Sampues from '../../../media/Sampues.jpg';
 import sombrero from '../../../media/sombrero.jpg';
 import artisan from '../../../media/artisan.png';
 import mochila from '../../../media/mochila.png';

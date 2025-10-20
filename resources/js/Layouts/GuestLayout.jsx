@@ -9,7 +9,7 @@ const GuestLayout = ({ children, auth, fullWidth = false }) => {
             <main>
                 {fullWidth ? children : (
                     <div className="flex justify-center items-center min-h-[calc(100vh-200px)] p-6">
-                        <div className="bg-white p-12 rounded-lg shadow-lg w-[480px] flex flex-col items-center">
+                        <div className="bg-white p-12 rounded-lg shadow-lg w-[640px] flex flex-col items-center">
                             {children}
                         </div>
                     </div>

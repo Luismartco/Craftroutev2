@@ -71,7 +71,7 @@ const Maps = ({position, markers = []}) => {
                     gestureHandling="greedy"
                     onCameraChanged={handleCameraChanged}
                 >
-                    <Marker position={position} onClick={() => setOpen(!open)} />
+                    
                     {open &&
                         <InfoWindow position={position} onCloseClick={() => setOpen(false)} >
                             <p className="text-lg font-bold">{position.name}</p>
@@ -94,7 +94,7 @@ const Maps = ({position, markers = []}) => {
                                             <p className="text-lg font-bold mb-2">{m.name}</p>
                                             <Link
                                                 href={route('blog.show', slugify(m.name || ''))}
-                                                className="inline-block px-3 py-1 bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition text-sm"
+                                                className="inline-block px-3 py-1 bg-[#2B1F1F] text-white rounded hover:bg-[#3e2f2f] transition text-sm no-underline"
                                             >
                                                 Visitar tienda
                                             </Link>
