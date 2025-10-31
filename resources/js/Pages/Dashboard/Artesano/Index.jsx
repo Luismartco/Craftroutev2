@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import { useRef } from 'react';
 import Maps from '@/Components/home/Maps';
 import Sale from './Sale';
+import { NumericFormat } from 'react-number-format';
+
 
 import { FormatCurrency } from '@/utils/FormatCurrency';
 
