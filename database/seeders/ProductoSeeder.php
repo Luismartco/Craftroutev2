@@ -19,7 +19,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Tapete artesanal tejido con fibra de cáñamo. Resistente al tráfico y perfecto para decoración del hogar. Elaborado con técnicas tradicionales.',
                         'precio' => 95000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Tapete de Cañamo Tejido: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 4,
@@ -30,7 +30,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Bolso elaborado con fibra de fique, material 100% natural y biodegradable. Perfecto para compras ecológicas. Resistente al peso y duradero.',
                         'precio' => 45000,
                         'cantidad_disponible' => 25,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Bolso de Fique Ecológico: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 1,
@@ -46,7 +46,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Sombrero vueltiao tejido a mano con técnicas ancestrales. Elaborado con caña flecha natural de la región de Córdoba. Ideal para protegerse del sol manteniendo el estilo tradicional colombiano.',
                         'precio' => 120000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Sombrero Vueltiao Tradicional: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -57,7 +57,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hamaca tejida completamente a mano con algodón 100% natural. Perfecta para descansar en espacios interiores y exteriores. Resistente y cómoda, con acabados tradicionales.',
                         'precio' => 250000,
                         'cantidad_disponible' => 8,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Hamaca de Algodón Artesanal: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 2,
@@ -73,7 +73,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Tapete artesanal tejido con fibra de cáñamo. Resistente al tráfico y perfecto para decoración del hogar. Elaborado con técnicas tradicionales.',
                         'precio' => 95000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 3,
+                        'categoria_id' => 1, // Tapete de Cañamo Tejido multicolor con toques amaderado: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 4,
@@ -84,7 +84,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Bolso elaborado con fibra de fique, material 100% natural y biodegradable. Perfecto para compras ecológicas. Resistente al peso y duradero.',
                         'precio' => 45000,
                         'cantidad_disponible' => 25,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Bolso de Fique Ecológico: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 1,
@@ -100,7 +100,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 79000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Cesta Decorativa de Paja: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -111,7 +111,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Bolso tejido con diseños geométricos tradicionales.',
                         'precio' => 100000,
                         'cantidad_disponible' => 33,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Bolso de Paja Decorativo: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -122,7 +122,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hamaca resistente tejida con fibras naturales de fique.',
                         'precio' => 250000,
                         'cantidad_disponible' => 6,
-                        'categoria_id' => 3,
+                        'categoria_id' => 1, // Hamaca de Fique: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 1,
@@ -138,7 +138,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Vasija decorativa moldeada y pintada a mano.',
                         'precio' => 79000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Vasija de Cerámica: Cerámica
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -149,7 +149,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Tapete tejido con hilos de diversos colores en patrones geométricos.',
                         'precio' => 50000,
                         'cantidad_disponible' => 8,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Tapete de Hilos Multicolor: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 6,
@@ -160,7 +160,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Morral resistente tejido con fibras de cáñamo natural.',
                         'precio' => 220000,
                         'cantidad_disponible' => 50,
-                        'categoria_id' => 3,
+                        'categoria_id' => 1, // Morral de Cáñamo y madera: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -176,7 +176,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Sombrero de paja con tejido fino y acabados elegantes.',
                         'precio' => 82000,
                         'cantidad_disponible' => 26,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Sombrero de Paja Fino: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -187,7 +187,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Maceta decorativa con diseños coloridos pintados a mano.',
                         'precio' => 300000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Maceta de Cerámica Pintada: Cerámica
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -198,7 +198,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Mantel de fique con bordados decorativos en los bordes.',
                         'precio' => 60000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Mantel de Fique Bordado: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 2,
                         'material_id' => 1,
@@ -214,7 +214,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Bufanda tejida con hilos suaves en colores pasteles.',
                         'precio' => 80000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Bufanda de Hilos Suaves: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 6,
@@ -225,7 +225,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Cojín relleno con decoraciones en fibra de cáñamo.',
                         'precio' => 79000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Cojín de Cáñamo Decorativo: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -236,7 +236,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hermoso centro de mesa tejido a mano por artesanos locales. Ideal para darle vida a tu mesa.',
                         'precio' => 30000,
                         'cantidad_disponible' => 38,
-                        'categoria_id' => 3,
+                        'categoria_id' => 4, // Centro de mesa decorativo en madera: Madera
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 2,
                         'material_id' => 2,
@@ -252,7 +252,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Set de posavasos tejidos con paja natural.',
                         'precio' => 25000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 3,
+                        'categoria_id' => 4, // Posavasos de Paja con Bordado en madera: Madera
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -263,7 +263,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Chaleco tejido con fibras de fique en diseño contemporáneo.',
                         'precio' => 30000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Chaleco de Fique Artesanal: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 1,
@@ -274,7 +274,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 76000,
                         'cantidad_disponible' => 6,
-                        'categoria_id' => 3,
+                        'categoria_id' => 4, // Tapete de Cáñamo Tejido con madera fina: Madera
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 5,
@@ -290,7 +290,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Diseño único y duradero. Cada pieza refleja la riqueza cultural y la destreza de su creador.',
                         'precio' => 115000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Bolso Artesanal de Fique: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 2,
@@ -301,7 +301,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 53000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 3,
+                        'categoria_id' => 4, // Camino de Mesa Bordado con detalles en madera: Madera
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 6,
@@ -312,7 +312,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 78000,
                         'cantidad_disponible' => 17,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Cesta  de pintada a mano por niños de la comunidad: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 2,
                         'material_id' => 1,
@@ -328,7 +328,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Diseño único y duradero. Cada pieza refleja la riqueza cultural y la destreza de su creador.',
                         'precio' => 76333,
                         'cantidad_disponible' => 7,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Bolso de Hilo Cosido a Mano: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 1,
@@ -339,7 +339,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Producto artesanal elaborado con técnicas tradicionales y materiales sostenibles. Ideal para decoración o uso diario.',
                         'precio' => 100000,
                         'cantidad_disponible' => 40,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Sombrero Artesanal: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 6,
@@ -350,7 +350,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Producto artesanal elaborado con técnicas tradicionales y materiales sostenibles. Ideal para decoración o uso diario.',
                         'precio' => 15000,
                         'cantidad_disponible' => 21,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Portavasos de Algodón Tejido: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -366,7 +366,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 300000,
                         'cantidad_disponible' => 7,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Maceta de Cerámica Pintada a Mano: Cerámica
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 2,
@@ -377,7 +377,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Producto artesanal elaborado con técnicas tradicionales y materiales sostenibles. Ideal para decoración o uso diario.',
                         'precio' => 60000,
                         'cantidad_disponible' => 18,
-                        'categoria_id' => 2,
+                        'categoria_id' => 1, // Tapete de Cáñamo Tejido: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 2,
                         'material_id' => 2,
@@ -388,7 +388,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Gorro tejido con hilos de colores vibrantes, perfecto para combinar con tu estilo diario, diseñado para brindar calidez y estilo.',
                         'precio' => 70000,
                         'cantidad_disponible' => 25,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Gorro de Hilos Coloridos: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 6,
@@ -404,7 +404,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Florero de cerámica con acabado rústico y texturas naturales, ideal para decoración de interiores, elaborado a mano por artesanos locales.',
                         'precio' => 290000,
                         'cantidad_disponible' => 1,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Florero de Cerámica Rústico: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -415,7 +415,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Pulsera artesanal tejida con fibras de fique natural, con un diseño elegante y sostenible.',
                         'precio' => 18000,
                         'cantidad_disponible' => 10,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Pulsera de Fique Natural: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 1,
@@ -426,7 +426,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Pañuelo tejido con hilos finos en patrones delicados, ideal para complementar tu atuendo.',
                         'precio' => 12000,
                         'cantidad_disponible' => 40,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Pañuelo de Hilos Delicados: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 6,
@@ -442,7 +442,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Sandalia cómoda con suela tejida de fibras de cáñamo, capacidad de adaptación y confort.',
                         'precio' => 50000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 3,
+                        'categoria_id' => 6, // Sandalia de Cáñamo: Cuero
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -453,7 +453,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Abanico decorativo de paja con diseños pintados a mano, perfecto para el calor del Caribe.',
                         'precio' => 79000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Abanico de Paja Pintado: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -464,7 +464,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Taza de cerámica moldeada y decorada a mano, hermosa para disfrutar de tus bebidas favoritas.',
                         'precio' => 29000,
                         'cantidad_disponible' => 90,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Taza de Cerámica Artesanal: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -480,7 +480,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Alfombra pequeña tejida con fibras de fique resistente, ideal para decoración de espacios pequeños.',
                         'precio' => 79000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 2,
+                        'categoria_id' => 1, // Alfombra de Fique Pequeña: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 1,
@@ -491,7 +491,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hermoso collar decorativo tejido con hilos coloridos, espectacular para cualquier ocasión.',
                         'precio' => 10000,
                         'cantidad_disponible' => 36,
-                        'categoria_id' => 4,
+                        'categoria_id' => 5, // Collar de Hilos Artesanal: Joyería
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 6,
@@ -502,7 +502,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Delantal de cocina con bordados decorativos en algodón, el cual te brinda estilo y funcionalidad. Además de ser resistente y fácil de lavar.',
                         'precio' => 90000,
                         'cantidad_disponible' => 5,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Delantal de Algodón Bordado: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 2,
                         'material_id' => 2,
@@ -518,7 +518,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Sombrero pequeño tejido especialmente para niños, con un diseño divertido y colorido. Ideal para proteger del sol mientras juegan y descubren nuevos mundos.',
                         'precio' => 79000,
                         'cantidad_disponible' => 32,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Sombrerito de Paja Infantil: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -529,7 +529,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Cuenco pequeño de cerámica para servir alimentos, con un acabado rústico y natural. Ideal para uso diario o decoración.',
                         'precio' => 20000,
                         'cantidad_disponible' => 1,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Cuenco de Cerámica Pequeño: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -540,7 +540,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Cartera femenina tejida con fique en diseño elegante, te permitirá llevar tus pertenencias con estilo y sostenibilidad.',
                         'precio' => 30000,
                         'cantidad_disponible' => 40,
-                        'categoria_id' => 3,
+                        'categoria_id' => 1, // Cartera de Fique Elegante: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 1,
@@ -556,7 +556,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Alpargata tradicional con suela de cáñamo trenzado, la que además tiene un estilo único, ideal para usarlas en tu día a día.',
                         'precio' => 100000,
                         'cantidad_disponible' => 1,
-                        'categoria_id' => 4,
+                        'categoria_id' => 6, // Alpargata de Cáñamo: Cuero
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -567,7 +567,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Servilletero decorativo tejido con paja natural, el cual es ideal para decorar y darle un estilo único y original a tu mesa.',
                         'precio' => 29000,
                         'cantidad_disponible' => 89,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Servilletero de Paja: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -578,7 +578,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Set de portavasos resistentes tejidos con cáñamo, ideales para proteger tus superficies y añadir un toque rústico a tu hogar.',
                         'precio' => 20000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Portavasos de Cáñamo: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -594,7 +594,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Individual para mesa tejido con paja fina, ideal para proteger y decorar tu mesa de comedor. Además, es resistente y fácil de limpiar.',
                         'precio' => 8000,
                         'cantidad_disponible' => 70,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Individual de Paja Mesa: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -605,7 +605,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Alcancía decorativa moldeada y pintada a mano, útil para enseñar a los niños a ahorrar de una manera divertida y colorida.',
                         'precio' => 30000,
                         'cantidad_disponible' => 13,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Alcancía de Cerámica: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -616,7 +616,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Aretes artesanales tejidos con hilos multicolores, perfectos para añadir un toque vibrante a tu atuendo diario.',
                         'precio' => 11000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 4,
+                        'categoria_id' => 5, // Aretes de Hilos Coloridos: Joyería
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 6,
@@ -632,7 +632,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Frutero grande tejido con paja para cocina, dale un toque natural y elegante a tu mesa con este hermoso frutero, ideal para exhibir tus frutas frescas.',
                         'precio' => 20000,
                         'cantidad_disponible' => 90,
-                        'categoria_id' => 3,
+                        'categoria_id' => 1, // Frutero de Paja Grande: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 3,
                         'material_id' => 3,
@@ -643,7 +643,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Marco portarretratos moldeado en cerámica decorativa, perfecto para resaltar tus fotos favoritas con un toque artesanal.',
                         'precio' => 20000,
                         'cantidad_disponible' => 11,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Portarretratos de Cerámica: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 5,
@@ -654,7 +654,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Tobillera decorativa tejida con fibras de fique, única y sostenible, ideal para complementar tu estilo diario.',
                         'precio' => 15000,
                         'cantidad_disponible' => 29,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Tobillera de Fique: Tejeduría
                         'municipio_venta' => 'sampues',
                         'tecnica_id' => 1,
                         'material_id' => 1,
@@ -670,7 +670,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Banda elástica para cabello tejida con hilos suaves, capaz de mantener tu peinado en su lugar con estilo y comodidad.',
                         'precio' => 9000,
                         'cantidad_disponible' => 15,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Banda para Cabello de Hilos: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 2,
@@ -681,7 +681,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 19000,
                         'cantidad_disponible' => 6,
-                        'categoria_id' => 1,
+                        'categoria_id' => 1, // Camino de Mesa Bordado: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 2,
@@ -692,7 +692,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Hecho a mano por artesanos locales, resistente y estético. Perfecto para regalar o embellecer espacios.',
                         'precio' => 29000,
                         'cantidad_disponible' => 7,
-                        'categoria_id' => 2,
+                        'categoria_id' => 3, // Maceta de Cerámica Pintada a Mano: Cerámica
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 2,
@@ -708,7 +708,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Producto artesanal elaborado con técnicas tradicionales y materiales sostenibles. Ideal para decoración o uso diario.',
                         'precio' => 91700,
                         'cantidad_disponible' => 19,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Cesta elaborada en Paja: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 1,
                         'material_id' => 4,
@@ -719,7 +719,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Diseño único y duradero. Cada pieza refleja la riqueza cultural y la destreza de su creador.',
                         'precio' => 72000,
                         'cantidad_disponible' => 8,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Bolso de Hilo hecho a Mano: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 2,
                         'material_id' => 4,
@@ -730,7 +730,7 @@ class ProductoSeeder extends Seeder
                         'descripcion' => 'Diseño único y duradero. Cada pieza refleja la riqueza cultural y la destreza de su creador.',
                         'precio' => 113000,
                         'cantidad_disponible' => 20,
-                        'categoria_id' => 4,
+                        'categoria_id' => 1, // Tapete de Cáñamo Tejido: Tejeduría
                         'municipio_venta' => 'morroa',
                         'tecnica_id' => 3,
                         'material_id' => 3,

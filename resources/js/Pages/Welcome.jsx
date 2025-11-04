@@ -114,7 +114,7 @@ export default function Welcome({ auth, tiendas = [], productos = [], categorias
             )}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros Productos</h1>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-            <Prod productos={productos} categorias={categorias} user={auth?.user || user} showFilters={false} categoria={categoria} setCategoria={setCategoria} municipio={municipio} setMunicipio={setMunicipio} rangoPrecio={rangoPrecio} setRangoPrecio={setRangoPrecio} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <Prod productos={productos} categorias={categorias} user={auth?.user || user} showFilters={aiProductos.length === 0} categoria={categoria} setCategoria={setCategoria} municipio={municipio} setMunicipio={setMunicipio} rangoPrecio={rangoPrecio} setRangoPrecio={setRangoPrecio} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="w-50 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
             {/* <ProductList />*/}
