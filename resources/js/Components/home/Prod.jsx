@@ -1,12 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useCart } from '../../Contexts/CartContext';
 
-const CATEGORIAS = [
+// Dynamic categories from backend
+const getCategoriasOptions = (categorias) => [
   { value: '', label: 'Todas las categorías' },
-  { value: 'tejido', label: 'Tejido' },
-  { value: 'madera', label: 'Madera' },
-  { value: 'ceramica', label: 'Cerámica' },
-  { value: 'joyeria', label: 'Joyería' },
+  ...categorias.map(cat => ({ value: cat.id.toString(), label: cat.nombre }))
 ];
 const MUNICIPIOS = [
   { value: '', label: 'Todos los municipios' },
@@ -88,13 +86,24 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
   );
 };
 
-const ProductGallery = ({ productos = [], user }) => {
+const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
-  const [categoria, setCategoria] = useState('');
-  const [municipio, setMunicipio] = useState('');
-  const [rangoPrecio, setRangoPrecio] = useState('');
+  const [localCategoria, setLocalCategoria] = useState('');
+  const [localMunicipio, setLocalMunicipio] = useState('');
+  const [localRangoPrecio, setLocalRangoPrecio] = useState('');
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
   const scrollRef = useRef(null);
+
+  // Use shared filters if provided, otherwise use local state
+  const currentCategoria = categoria !== undefined ? categoria : localCategoria;
+  const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
+  const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
+  const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
+  const setCurrentCategoria = setCategoria || setLocalCategoria;
+  const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
+  const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
+  const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -116,14 +125,15 @@ const ProductGallery = ({ productos = [], user }) => {
   // Filtrado conjunto
   let productosFiltrados = productosOrdenados.filter((prod) => {
     let ok = true;
-    if (categoria && prod.categoria !== categoria) ok = false;
-    if (municipio && prod.municipio_venta !== municipio) ok = false;
-    if (rangoPrecio) {
-      const [min, max] = rangoPrecio.split('-');
+    if (currentCategoria && prod.categoria_id != currentCategoria) ok = false;
+    if (currentMunicipio && prod.municipio_venta !== currentMunicipio) ok = false;
+    if (currentRangoPrecio) {
+      const [min, max] = currentRangoPrecio.split('-');
       const precio = Number(prod.precio);
       if (min && precio < Number(min)) ok = false;
       if (max && max !== '' && precio > Number(max)) ok = false;
     }
+    if (currentSearchTerm && !prod.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase())) ok = false;
     return ok;
   });
 
@@ -141,61 +151,76 @@ const ProductGallery = ({ productos = [], user }) => {
 
   return (
     <>
-      <br />
-      <div className="mb-6 flex flex-wrap gap-10 justify-center">
-        {/* Filtro por Municipio */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={municipio}
-            onChange={e => setMunicipio(e.target.value)}
-          >
-            {MUNICIPIOS.map(m => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-        </div>
-        {/* Filtro por Categoría */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={categoria}
-            onChange={e => setCategoria(e.target.value)}
-          >
-            {CATEGORIAS.map(c => (
-              <option key={c.value} value={c.value}>{c.label}</option>
-            ))}
-          </select>
-        </div>
-        {/* Filtro por Precio */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={rangoPrecio}
-            onChange={e => setRangoPrecio(e.target.value)}
-          >
-            {RANGOS_PRECIOS.map(r => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {showFilters && (
+        <>
+          <br />
+          <div className="mb-6 flex flex-wrap gap-10 justify-center">
+            {/* Barra de búsqueda */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Buscar producto</label>
+              <input
+                type="text"
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                placeholder="Escribe el nombre del producto..."
+                value={currentSearchTerm}
+                onChange={e => setCurrentSearchTerm(e.target.value)}
+              />
+            </div>
+            {/* Filtro por Municipio */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentMunicipio}
+                onChange={e => setCurrentMunicipio(e.target.value)}
+              >
+                {MUNICIPIOS.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+            {/* Filtro por Categoría */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentCategoria}
+                onChange={e => setCurrentCategoria(e.target.value)}
+              >
+                {getCategoriasOptions(categorias).map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+            {/* Filtro por Precio */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentRangoPrecio}
+                onChange={e => setCurrentRangoPrecio(e.target.value)}
+              >
+                {RANGOS_PRECIOS.map(r => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </>
+      )}
       <div className="relative p-6">
         {productosFiltrados.length > 4 && (
           <>
             <button
               onClick={scrollLeft}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
               aria-label="Scroll left"
             >
               ‹
             </button>
             <button
               onClick={scrollRight}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
               aria-label="Scroll right"
             >
               ›

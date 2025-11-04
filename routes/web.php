@@ -19,6 +19,7 @@ use App\Http\Controllers\RecommendationController;
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
     $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user.tienda', 'categoria', 'material', 'tecnica'])->get();
+    $categorias = \App\Models\Categoria::all();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -26,6 +27,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
         'tiendas' => $tiendas,
         'productos' => $productos,
+        'categorias' => $categorias,
     ]);
 });
 
