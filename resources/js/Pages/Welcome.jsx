@@ -2,13 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import GuestLayout from "@/Layouts/GuestLayout";
 import FlexTricks from '../Components/home/FlexTricks';
-import UserCards from '../Components/home/UsersCards';
-import ProductList from '../Components/home/Products';
 import Tiendas from '../Components/home/Tiendas';
 import Maps from '../Components/home/Maps';
 import Prod from '@/Components/home/Prod';
 
-export default function Welcome({ auth, tiendas = [], productos = [], user }) {
+export default function Welcome({ auth, tiendas = [], productos = [], categorias = [], user }) {
     const locations = {
         morroa: { lat: 9.3337, lng: -75.3022, name: "Morroa" },
         sampues: { lat: 9.1835, lng: -75.3812, name: "Sampués" }
@@ -18,6 +16,12 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
     const [aiProductos, setAiProductos] = useState([]);
     const [aiTiendas, setAiTiendas] = useState([]);
     const [hasPrefs, setHasPrefs] = useState(false);
+
+    // Shared filter state
+    const [categoria, setCategoria] = useState('');
+    const [municipio, setMunicipio] = useState('');
+    const [rangoPrecio, setRangoPrecio] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const mapMarkers = useMemo(() => {
         return aiTiendas
@@ -105,12 +109,12 @@ export default function Welcome({ auth, tiendas = [], productos = [], user }) {
                 <>
                     <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros Productos Recomendados</h1>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-                    <Prod productos={aiProductos} user={auth?.user || user} />
+                    <Prod productos={aiProductos} categorias={categorias} user={auth?.user || user} showFilters={true} categoria={categoria} setCategoria={setCategoria} municipio={municipio} setMunicipio={setMunicipio} rangoPrecio={rangoPrecio} setRangoPrecio={setRangoPrecio} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                 </>
             )}
             <h1 className="text-[#2B1F1F] text-center pt-6 text-2xl font-bold">Nuestros Productos</h1>
             <div className="w-24 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
-            <Prod productos={productos} user={auth?.user || user} />
+            <Prod productos={productos} categorias={categorias} user={auth?.user || user} showFilters={aiProductos.length === 0} categoria={categoria} setCategoria={setCategoria} municipio={municipio} setMunicipio={setMunicipio} rangoPrecio={rangoPrecio} setRangoPrecio={setRangoPrecio} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="w-50 h-1 bg-gradient-to-r from-[#4B3A3A] to-[#2B1F1F] mx-auto rounded-full"></div>
 
             {/* <ProductList />*/}

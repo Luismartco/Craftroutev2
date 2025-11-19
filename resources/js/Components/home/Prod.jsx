@@ -1,168 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useCart } from '../../Contexts/CartContext';
 
-// Importa imágenes
-import prod1img1 from "../../../media/Products/producto1/1.jpeg";
-import prod1img2 from "../../../media/Products/producto1/2.jpeg";
-
-
-import prod2img1 from "../../../media/Products/producto2/1.jpg";
-import prod2img2 from "../../../media/Products/producto2/2.jpg";
-//import prod2img3 from "../../../media/Products/producto2/3.jpeg";
-//import prod2img4 from "../../../media/Products/producto2/4.jpeg";
-//import prod2img5 from "../../../media/Products/producto2/5.jpeg";
-
-import prod3img1 from "../../../media/Products/producto3/1.jpg";
-import prod3img2 from "../../../media/Products/producto3/2.jpg";
-//import prod3img3 from "../../../media/Products/producto3/3.jpeg";
-//import prod3img4 from "../../../media/Products/producto3/4.jpeg";
-//import prod3img5 from "../../../media/Products/producto3/5.jpeg";
-
-import prod4img1 from "../../../media/Products/producto4/1.jpeg";
-import prod4img2 from "../../../media/Products/producto4/2.jpeg";
-//import prod4img3 from "../../../media/Products/producto4/3.jpeg";
-//import prod4img4 from "../../../media/Products/producto4/4.jpeg";
-//import prod4img5 from "../../../media/Products/producto4/5.jpeg";
-
-import prod5img1 from "../../../media/Products/producto5/1.jpg";
-import prod5img2 from "../../../media/Products/producto5/2.jpeg";
-//import prod5img3 from "../../../media/Products/producto5/3.jpeg";
-//import prod5img4 from "../../../media/Products/producto5/4.jpeg";
-//import prod5img5 from "../../../media/Products/producto5/5.jpeg";
-
-import prod6img1 from "../../../media/Products/producto6/1.png";
-import prod6img2 from "../../../media/Products/producto6/2.png";
-//import prod6img3 from "../../../media/Products/producto6/3.jpeg";
-//import prod6img4 from "../../../media/Products/producto6/4.jpeg";
-//import prod6img5 from "../../../media/Products/producto6/5.jpeg";
-
-import prod7img1 from "../../../media/Products/producto7/1.jpg";
-import prod7img2 from "../../../media/Products/producto7/2.jpeg";
-//import prod7img3 from "../../../media/Products/producto7/3.jpeg";
-//import prod7img4 from "../../../media/Products/producto7/4.jpeg";
-//import prod7img5 from "../../../media/Products/producto7/5.jpeg";
-
-import prod8img1 from "../../../media/Products/producto8/1.png";
-import prod8img2 from "../../../media/Products/producto8/2.png";
-//import prod8img3 from "../../../media/Products/producto8/3.jpeg";
-//import prod8img4 from "../../../media/Products/producto8/4.jpeg";
-//import prod8img5 from "../../../media/Products/producto8/5.jpeg";
-
-import prod9img1 from "../../../media/Products/producto9/1.jpg";
-import prod9img2 from "../../../media/Products/producto9/2.jpg";
-//import prod9img3 from "../../../media/Products/producto9/3.jpeg";
-//import prod9img4 from "../../../media/Products/producto9/4.jpeg";
-//import prod9img5 from "../../../media/Products/producto9/5.jpeg";
-
-
-import prod10img1 from "../../../media/Products/producto10/1.png";
-import prod10img2 from "../../../media/Products/producto10/2.png";
-
-
-import prod11img1 from "../../../media/Products/producto11/1.png";
-import prod11img2 from "../../../media/Products/producto11/2.png";
-
-import prod12img1 from "../../../media/Products/producto12/1.jpeg";
-import prod12img2 from "../../../media/Products/producto12/2.jpeg";
-
-
-const productos = [
-  {
-    id: 1,
-    nombre: "Canasto Artesanal para Lámpara",
-    descripcion: "Tejido a mano en fibras naturales",
-    precio: 120000,
-    imagenes: [prod1img1, prod1img2],
-  },
-  
-  {
-    id: 2,
-    nombre: "Manilla Tejida a Mano",
-    descripcion: "Colorida y elaborada con hilos resistentes",
-    precio: 95000,
-    imagenes: [prod2img1, prod2img2],
-  },
-  {
-    id: 3,
-    nombre: "Hamaca Artesanal",
-    descripcion: "Práctica y auténtica, tejida a mano.",
-    precio: 85000,
-    imagenes: [prod3img1, prod3img2],
-  },
-  {
-    id: 4,
-    nombre: "Sombrero Vueltiao Tradicional",
-    descripcion: "Tejido a mano con caña flecha.",
-    precio: 45000,
-    imagenes: [prod4img1, prod4img2],
-  },
-  {
-    id: 5,
-    nombre: "Adornos para mesas",
-    descripcion: "Conjunto de adornos tejidos que embellecen tu hogar.",
-    precio: 40000,
-    imagenes: [prod5img1, prod5img2],
-  },
-  {
-    id: 6,
-    nombre: "Mochila Tejida",
-    descripcion: "Diseño tradicional, tejida con amor por artesanas locales",
-    precio: 30000,
-    imagenes: [prod6img1, prod6img2],
-  },
-  {
-    id: 7,
-    nombre: "Mochila Artesanal de Hilo",
-    descripcion: "Ligera, colorida y tejida a mano con diseños únicos",
-    precio: 65000,
-    imagenes: [prod7img1, prod7img2],
-  },
-  {
-    id: 8,
-    nombre: "Canasta de picnic artesanal",
-    descripcion: "Canasta tejida ideal para salidas al aire libre.",
-    precio: 70000,
-    imagenes: [prod8img1, prod8img2],
-  },
-  {
-    id: 9,
-    nombre: "Loro Artesanal en Madera",
-    descripcion: "Tallado y pintado a mano, con detalles vibrantes",
-    precio: 60000,
-    imagenes: [prod9img1, prod9img2],
-  },
-  {
-    id: 10,
-    nombre: "Sobremesa artesanal",
-    descripcion: "Elemento decorativo hecho a mano para realzar.",
-    precio: 60000,
-    imagenes: [prod10img1, prod10img2],
-  },
-  {
-    id: 11,
-    nombre: " Centro de Mesa con Tejido Artesanal",
-    descripcion: "Hecho a mano con detalles finos.",
-    precio: 60000,
-    imagenes: [prod11img1, prod11img2],
-  },
-  {
-    id: 12,
-    nombre: "Mochila Tradicional",
-    descripcion: "Tejido firme y elegante.",
-    precio: 60000,
-    imagenes: [prod12img1, prod12img2],
-  },
-];
-
-// ...importaciones
-
-
-const CATEGORIAS = [
+// Dynamic categories from backend
+const getCategoriasOptions = (categorias) => [
   { value: '', label: 'Todas las categorías' },
-  { value: 'tejido', label: 'Tejido' },
-  { value: 'madera', label: 'Madera' },
-  { value: 'ceramica', label: 'Cerámica' },
-  { value: 'joyeria', label: 'Joyería' },
+  ...categorias.map(cat => ({ value: cat.id.toString(), label: cat.nombre }))
 ];
 const MUNICIPIOS = [
   { value: '', label: 'Todos los municipios' },
@@ -244,13 +86,24 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
   );
 };
 
-const ProductGallery = ({ productos = [], user }) => {
+const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
   const [selected, setSelected] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
-  const [categoria, setCategoria] = useState('');
-  const [municipio, setMunicipio] = useState('');
-  const [rangoPrecio, setRangoPrecio] = useState('');
+  const [localCategoria, setLocalCategoria] = useState('');
+  const [localMunicipio, setLocalMunicipio] = useState('');
+  const [localRangoPrecio, setLocalRangoPrecio] = useState('');
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
   const scrollRef = useRef(null);
+
+  // Use shared filters if provided, otherwise use local state
+  const currentCategoria = categoria !== undefined ? categoria : localCategoria;
+  const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
+  const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
+  const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
+  const setCurrentCategoria = setCategoria || setLocalCategoria;
+  const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
+  const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
+  const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -272,14 +125,15 @@ const ProductGallery = ({ productos = [], user }) => {
   // Filtrado conjunto
   let productosFiltrados = productosOrdenados.filter((prod) => { 
     let ok = true;
-    if (categoria && prod.categoria !== categoria) ok = false;
-    if (municipio && prod.municipio_venta !== municipio) ok = false;
-    if (rangoPrecio) {
-      const [min, max] = rangoPrecio.split('-');
+    if (currentCategoria && prod.categoria_id != currentCategoria) ok = false;
+    if (currentMunicipio && prod.municipio_venta !== currentMunicipio) ok = false;
+    if (currentRangoPrecio) {
+      const [min, max] = currentRangoPrecio.split('-');
       const precio = Number(prod.precio);
       if (min && precio < Number(min)) ok = false;
       if (max && max !== '' && precio > Number(max)) ok = false;
     }
+    if (currentSearchTerm && !prod.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase())) ok = false;
     return ok;
   });
 
@@ -297,61 +151,76 @@ const ProductGallery = ({ productos = [], user }) => {
 
   return (
     <>
-      <br />
-      <div className="mb-6 flex flex-wrap gap-10 justify-center">
-        {/* Filtro por Municipio */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={municipio}
-            onChange={e => setMunicipio(e.target.value)}
-          >
-            {MUNICIPIOS.map(m => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-        </div>
-        {/* Filtro por Categoría */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={categoria}
-            onChange={e => setCategoria(e.target.value)}
-          >
-            {CATEGORIAS.map(c => (
-              <option key={c.value} value={c.value}>{c.label}</option>
-            ))}
-          </select>
-        </div>
-        {/* Filtro por Precio */}
-        <div className="flex flex-col w-80">
-          <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
-          <select
-            className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
-            value={rangoPrecio}
-            onChange={e => setRangoPrecio(e.target.value)}
-          >
-            {RANGOS_PRECIOS.map(r => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {showFilters && (
+        <>
+          <br />
+          <div className="mb-6 flex flex-wrap gap-10 justify-center">
+            {/* Barra de búsqueda */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Buscar producto</label>
+              <input
+                type="text"
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                placeholder="Escribe el nombre del producto..."
+                value={currentSearchTerm}
+                onChange={e => setCurrentSearchTerm(e.target.value)}
+              />
+            </div>
+            {/* Filtro por Municipio */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Municipio</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentMunicipio}
+                onChange={e => setCurrentMunicipio(e.target.value)}
+              >
+                {MUNICIPIOS.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+            {/* Filtro por Categoría */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentCategoria}
+                onChange={e => setCurrentCategoria(e.target.value)}
+              >
+                {getCategoriasOptions(categorias).map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+            {/* Filtro por Precio */}
+            <div className="flex flex-col w-80">
+              <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+              <select
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                value={currentRangoPrecio}
+                onChange={e => setCurrentRangoPrecio(e.target.value)}
+              >
+                {RANGOS_PRECIOS.map(r => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </>
+      )}
       <div className="relative p-6">
         {productosFiltrados.length > 4 && (
           <>
             <button
               onClick={scrollLeft}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
               aria-label="Scroll left"
             >
               ‹
             </button>
             <button
               onClick={scrollRight}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-6 text-3xl rounded-full shadow-lg border-2 border-[#4B3A3A]"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
               aria-label="Scroll right"
             >
               ›

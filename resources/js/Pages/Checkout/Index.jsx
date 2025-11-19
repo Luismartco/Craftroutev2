@@ -772,14 +772,11 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                         />
                                         <label className="text-xs text-gray-700">
                                             Confirmo que soy mayor de edad y acepto los{' '}
-                                            <a href="#" className="text-blue-600 hover:text-blue-800 underline">
+                                            <a href={route('politica.datos')} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                                                 Términos y Condiciones
                                             </a>{' '}
                                             de la Política de Tratamiento de Datos.
                                             He leído y acepto el tratamiento de mis datos personales de acuerdo a la autorización expuesta.{' '}
-                                            <a href="#" className="text-blue-600 hover:text-blue-800 underline">
-                                                [Aquí]
-                                            </a>
                                         </label>
                                     </div>
                                     

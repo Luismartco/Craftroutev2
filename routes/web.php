@@ -19,6 +19,7 @@ use App\Http\Controllers\RecommendationController;
 Route::get('/', function () {
     $tiendas = \App\Models\Tienda::with('user')->get();
     $productos = \App\Models\Producto::with(['imagenes' => function($q) { $q->orderByDesc('es_principal'); }, 'user.tienda', 'categoria', 'material', 'tecnica'])->get();
+    $categorias = \App\Models\Categoria::all();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -26,6 +27,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
         'tiendas' => $tiendas,
         'productos' => $productos,
+        'categorias' => $categorias,
     ]);
 });
 
@@ -146,6 +148,11 @@ Route::get('/blog', function () {
 });
 
 Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
+// Página pública de políticas de tratamiento de datos
+Route::get('/politica-datos', function () {
+    return Inertia::render('PoliticaDatos');
+})->name('politica.datos');
 
 // API interna para resolver detalles por IDs (accesible para clientes autenticados)
 Route::middleware(['auth', CheckRole::class . ':customer'])->group(function () {
