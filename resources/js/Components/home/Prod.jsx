@@ -270,7 +270,7 @@ const ProductGallery = ({ productos = [], user }) => {
   const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
   // Filtrado conjunto
-  let productosFiltrados = productosOrdenados.filter((prod) => {
+  let productosFiltrados = productosOrdenados.filter((prod) => { 
     let ok = true;
     if (categoria && prod.categoria !== categoria) ok = false;
     if (municipio && prod.municipio_venta !== municipio) ok = false;

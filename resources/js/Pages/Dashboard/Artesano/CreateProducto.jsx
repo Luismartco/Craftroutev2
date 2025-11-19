@@ -29,7 +29,7 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
     });
 
 
- const handleSubmit = (e) => {
+const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         
