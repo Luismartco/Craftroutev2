@@ -68,12 +68,15 @@ class TransaccionController extends Controller
                     'cantidad' => (int) $line['quantity'],
                     'subtotal_linea' => (int) $producto->precio * (int) $line['quantity'],
                 ]);
+
+                // Descontar stock del producto
+                $producto->decrement('cantidad_disponible', $line['quantity']);
             }
 
             return $t;
         });
 
-        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id_transaccion]);
+        return redirect('/')->with('success', 'Compra simulada realizada con éxito');
     }
 
     // Venta simulada (cuando artesano confirma en su flujo visual)
@@ -116,10 +119,13 @@ class TransaccionController extends Controller
                 'subtotal_linea' => (int) $validated['total'],
             ]);
 
+            // Descontar stock del producto
+            $producto->decrement('cantidad_disponible', $validated['quantity']);
+
             return $t;
         });
 
-        return response()->json(['ok' => true, 'transaccion_id' => $transaccion->id_transaccion]);
+        return back()->with('success', 'Venta simulada realizada con éxito');
     }
 }
 

@@ -15,6 +15,8 @@ const ManageForm = ({data, title}) => {
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [isErrorModalOpen, setErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
 
     const openAddModal = () => {
@@ -41,6 +43,8 @@ const ManageForm = ({data, title}) => {
                 return '/dashboard/admin/materiales';
             case 'técnicas':
                 return '/dashboard/admin/tecnicas';
+            case 'usuarios':
+                return '/dashboard/admin/users';
             default:
                 return '/dashboard/admin/categorias';
         }
@@ -78,16 +82,22 @@ const ManageForm = ({data, title}) => {
     const handleDelete = (id) => {
         const url = getUrl();
         router.delete(`${url}/${id}`, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                alert(response.success || 'Eliminado exitosamente');
                 // Recargar la página para obtener los datos actualizados
                 router.reload();
+            },
+            onError: (errors) => {
+                setErrorMessage(errors.response?.data?.error || 'Error al eliminar');
+                setErrorModalOpen(true);
             }
         });
         setDeleteModalOpen(false);
     }
 
     return (
-                <section className={"relative flex flex-col items-center justify-center bg-[#ffffff] shadow-lg rounded-xl p-4 w-full max-w-2xl mx-auto mt-4"}>
+        <>
+            <section className={"relative flex flex-col items-center justify-center bg-[#ffffff] shadow-lg rounded-xl p-4 w-full max-w-2xl mx-auto mt-4"}>
                 <div className="flex flex-col items-start justify-center w-full max-w-md">
                 <h1 className="text-3xl font-bold ">{title} disponibles</h1>
                 <button className="bg-[#3C2F2F] p-2 rounded-xl text-white my-2 transform hover:scale-105 transition duration-300 ease-in-out hover:bg-[#4B3A3A]" onClick={openAddModal}>Agregar {title}</button>
@@ -97,7 +107,7 @@ const ManageForm = ({data, title}) => {
                 ))}
                 {
                     isModalOpen && (
-                        <ModalItems 
+                        <ModalItems
                             data={list}
                             onClose={() => setModalOpen(false)}
                             onSubmit={handleSubmitItem}
@@ -117,7 +127,7 @@ const ManageForm = ({data, title}) => {
                     //modal de confirmación para eliminar
 
                     isDeleteModalOpen && (
-                        <Agree 
+                        <Agree
                             onClose={() => setDeleteModalOpen(false)}
                             onDelete={handleDelete}
                             item={selectedItem}
@@ -125,6 +135,32 @@ const ManageForm = ({data, title}) => {
                     )
                 }
             </section>
+            {
+                //modal de error
+                isErrorModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
+                            <button
+                                onClick={() => setErrorModalOpen(false)}
+                                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl"
+                            >
+                                ×
+                            </button>
+                            <h4 className="text-lg font-bold mb-4">Error</h4>
+                            <p>{errorMessage}</p>
+                            <div className="flex justify-end mt-4">
+                                <button
+                                    onClick={() => setErrorModalOpen(false)}
+                                    className="px-4 py-2 bg-gray-300 rounded"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </>
     );
 }
 

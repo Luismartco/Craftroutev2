@@ -77,6 +77,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/tecnicas', [AdminDashboardController::class, 'storeTecnica'])->name('tecnicas.store');
         Route::put('/tecnicas/{id}', [AdminDashboardController::class, 'updateTecnica'])->name('tecnicas.update');
         Route::delete('/tecnicas/{id}', [AdminDashboardController::class, 'destroyTecnica'])->name('tecnicas.destroy');
+
+        // Rutas para usuarios
+        Route::get('/users', function() { return redirect()->route('dashboard.admin.index'); })->name('users.index');
+        Route::post('/users', [AdminDashboardController::class, 'storeUser'])->name('users.store');
+        Route::put('/users/{id}', [AdminDashboardController::class, 'updateUser'])->name('users.update');
+        Route::delete('/users/{id}', [AdminDashboardController::class, 'destroyUser'])->name('users.destroy');
+        Route::post('/users/{id}/reset-password', [AdminDashboardController::class, 'resetUserPassword'])->name('users.reset-password');
     });
     });
 

@@ -56,6 +56,10 @@ class ArtesanoDashboardController extends Controller
             'stats' => $stats,
             'user' => $user,
             'tienda' => $tienda,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 
@@ -218,7 +222,7 @@ public function storeProducto(Request $request)
     // Validación de imágenes por separado
     $request->validate([
         'imagenes' => 'required|array|min:1|max:5',
-        'imagenes.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+        'imagenes.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Validar que la categoría existe

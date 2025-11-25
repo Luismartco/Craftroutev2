@@ -27,7 +27,7 @@ const Menu = ({user}) => {
                     <h2 className='text-center text-xl font-bold'>MENÚ ADMINISTRADOR</h2>
                     <div className='flex flex-col px-4 py-6 gap-8'>
                         <ButtonMenu text="Dashboard" onClick={() => setShow("dashboard")} />
-                        <ButtonMenu text="Reportes" link="/dashboard/admin/users" />
+                        <ButtonMenu text="Gestión de Usuarios" onClick={() => setShow("users")} />
                         <ButtonMenu text="Gestión Categorías" onClick={() => setShow("categories")} />
                         <ButtonMenu text="Gestión Materiales" onClick={() => setShow("materials")} />
                         <ButtonMenu text="Gestión Técnicas" onClick={() => setShow("techniques")} />

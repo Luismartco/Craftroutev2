@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import GuestLayout from "@/Layouts/GuestLayout";
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
@@ -1007,22 +1007,16 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                             total: toIntAmount(currentTotal),
                                                         },
                                                     };
-                                                    const res = await fetch('/transacciones/compra', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'X-Requested-With': 'XMLHttpRequest',
-                                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                                    router.post(route('transacciones.compra'), payload, {
+                                                        onSuccess: () => {
+                                                            alert('Compra simulada realizada con éxito');
+                                                            setShowNequiAuthModal(false);
                                                         },
-                                                        credentials: 'same-origin',
-                                                        body: JSON.stringify(payload),
+                                                        onError: (errors) => {
+                                                            console.error('Error registrando compra', errors);
+                                                            alert('Hubo un problema registrando la compra simulada.');
+                                                        }
                                                     });
-                                                    if (!res.ok) {
-                                                        const err = await res.json().catch(() => ({}));
-                                                        throw new Error(err.message || 'No se pudo registrar la compra simulada');
-                                                    }
-                                                    const json = await res.json();
-                                                    alert('Simulación de ingreso a Nequi. Compra registrada #' + json.transaccion_id);
                                                 } catch (err) {
                                                     console.error(err);
                                                     alert('Hubo un problema registrando la compra simulada.');

@@ -590,19 +590,19 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                                 <>
                                                                     <button
                                                                         onClick={() => handlePrev(producto.id, imagenes.length)}
-                                                                        className="absolute left-2 top-1/2 -translate-y-1/2 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
                                                                         aria-label="Anterior"
                                                                     >
                                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                                                                     </button>
                                                                     <button
                                                                         onClick={() => handleNext(producto.id, imagenes.length)}
-                                                                        className="absolute right-2 top-1/2 -translate-y-1/2 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
                                                                         aria-label="Siguiente"
                                                                     >
                                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                                                     </button>
-                                                                    <div className="absolute flex gap-1 -translate-x-1/2 bottom-2 left-1/2">
+                                                                    <div className="absolute flex gap-1 -translate-x-1/2 bottom-2 left-1/2 z-10">
                                                                         {imagenes.map((_, idx) => (
                                                                             <span
                                                                                 key={idx}
@@ -622,7 +622,7 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                         <p className="mt-1 text-sm text-gray-500 line-clamp-2">{producto.descripcion}</p>
                                                         <div className="grid grid-cols-2 mt-4 sm:grid-cols-2 gap-x-4 gap-y-2">
                                                             <p className="text-sm">
-                                                                <span className="font-medium">Precio:</span> ${producto.precio.toLocaleString()}
+                                                                <span className="font-medium">Precio:</span> {formatCurrency(producto.precio)}
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Cantidad:</span> {producto.cantidad_disponible}

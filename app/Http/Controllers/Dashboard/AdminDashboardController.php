@@ -147,6 +147,21 @@ class AdminDashboardController extends Controller
                     'description' => $tecnica->descripcion
                 ];
             }),
+            'users' => User::orderBy('name')->paginate(10)->through(function($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'birth_date' => $user->birth_date,
+                    'gender' => $user->gender,
+                    'role' => $user->role,
+                    'phone' => $user->phone,
+                    'residence_municipality' => $user->residence_municipality,
+                    'neighborhood' => $user->neighborhood,
+                    'address' => $user->address,
+                ];
+            }),
         ]);
     }
 
@@ -179,9 +194,8 @@ class AdminDashboardController extends Controller
     {
         $categoria = Categoria::findOrFail($id);
         $productosAsociados = $categoria->productos()->count();
-        $productosConNombreCategoria = \App\Models\Producto::where('categoria', $categoria->nombre)->count();
-        
-        if ($productosAsociados > 0 || $productosConNombreCategoria > 0) {
+
+        if ($productosAsociados > 0) {
             return redirect()->back()->with('error', 'No se puede eliminar la categoría porque tiene productos asociados');
         }
 
@@ -218,13 +232,13 @@ class AdminDashboardController extends Controller
     {
         $material = Material::findOrFail($id);
         $productosAsociados = $material->productos()->count();
-        
+
         if ($productosAsociados > 0) {
-            return redirect()->back()->with('error', 'No se puede eliminar el material porque tiene productos asociados');
+            return response()->json(['error' => 'No se puede eliminar el material porque tiene productos asociados'], 422);
         }
 
         $material->delete();
-        return redirect()->back()->with('success', 'Material eliminado exitosamente');
+        return response()->json(['success' => 'Material eliminado exitosamente']);
     }
 
     // -------- Técnicas --------
@@ -256,16 +270,83 @@ class AdminDashboardController extends Controller
     {
         $tecnica = Tecnica::findOrFail($id);
         $productosAsociados = $tecnica->productos()->count();
-        
+
         if ($productosAsociados > 0) {
-            return redirect()->back()->with('error', 'No se puede eliminar la técnica porque tiene productos asociados');
+            return response()->json(['error' => 'No se puede eliminar la técnica porque tiene productos asociados'], 422);
         }
 
         $tecnica->delete();
-        return redirect()->back()->with('success', 'Técnica eliminada exitosamente');
+        return response()->json(['success' => 'Técnica eliminada exitosamente']);
     }
 
     // -------- Usuarios --------
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|email|unique:users,email',
+        ]);
+
+        User::create([
+            'name' => $validated['nombre'],
+            'email' => $validated['descripcion'],
+            'password' => bcrypt('password'), // default password
+            'role' => 'customer', // default role
+        ]);
+
+        return redirect()->back()->with('success', 'Usuario creado exitosamente');
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:Male,Female,Other',
+            'role' => 'required|in:admin,artisan,customer',
+            'phone' => 'required|string|max:20',
+            'residence_municipality' => 'required|string|max:255',
+            'neighborhood' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+        ]);
+
+        $user->update($validated);
+
+        return redirect()->back()->with('success', 'Usuario actualizado exitosamente');
+    }
+
+    public function destroyUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Prevent deleting self or other admins
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'No puedes eliminar tu propia cuenta');
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', 'No puedes eliminar a otro administrador');
+        }
+
+        $user->delete();
+        return redirect()->back()->with('success', 'Usuario eliminado exitosamente');
+    }
+
+    public function resetUserPassword($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Reset to default password
+        $user->password = bcrypt('12345678');
+        $user->save();
+
+        return redirect()->back()->with('success', 'Contraseña del usuario reseteada a "12345678"');
+    }
+
     public function manageUsers()
     {
         return Inertia::render('Dashboard/Admin/ManageUsers', [
