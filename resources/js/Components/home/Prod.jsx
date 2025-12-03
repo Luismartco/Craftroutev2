@@ -87,23 +87,23 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
 };
 
 const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
-  const [selected, setSelected] = useState(null);
-  const [imgIndex, setImgIndex] = useState(0);
-  const [localCategoria, setLocalCategoria] = useState('');
-  const [localMunicipio, setLocalMunicipio] = useState('');
-  const [localRangoPrecio, setLocalRangoPrecio] = useState('');
-  const [localSearchTerm, setLocalSearchTerm] = useState('');
-  const scrollRef = useRef(null);
+   const [selected, setSelected] = useState(null);
+   const [imgIndex, setImgIndex] = useState(0);
+   const [localCategoria, setLocalCategoria] = useState('');
+   const [localMunicipio, setLocalMunicipio] = useState('');
+   const [localRangoPrecio, setLocalRangoPrecio] = useState('');
+   const [localSearchTerm, setLocalSearchTerm] = useState('');
+   const scrollRef = useRef(null);
 
-  // Use shared filters if provided, otherwise use local state
-  const currentCategoria = categoria !== undefined ? categoria : localCategoria;
-  const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
-  const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
-  const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
-  const setCurrentCategoria = setCategoria || setLocalCategoria;
-  const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
-  const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
-  const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
+   // Use shared filters if provided, otherwise use local state
+   const currentCategoria = categoria !== undefined ? categoria : localCategoria;
+   const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
+   const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
+   const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
+   const setCurrentCategoria = setCategoria || setLocalCategoria;
+   const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
+   const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
+   const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -123,7 +123,7 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
   const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
   // Filtrado conjunto
-  let productosFiltrados = productosOrdenados.filter((prod) => { 
+  let productosFiltrados = productosOrdenados.filter((prod) => {
     let ok = true;
     if (currentCategoria && prod.categoria_id != currentCategoria) ok = false;
     if (currentMunicipio && prod.municipio_venta !== currentMunicipio) ok = false;
@@ -213,14 +213,14 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
           <>
             <button
               onClick={scrollLeft}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#4B3A3A] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
               aria-label="Scroll left"
             >
               ‹
             </button>
             <button
               onClick={scrollRight}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#4B3A3A] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
               aria-label="Scroll right"
             >
               ›

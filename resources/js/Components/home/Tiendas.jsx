@@ -32,14 +32,14 @@ const Tiendas = ({ tiendas = [] }) => {
         <>
           <button
             onClick={scrollLeft}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#2B1F1F] p-8 text-5xl rounded-full shadow-lg"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#2B1F1F] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
             aria-label="Scroll left"
           >
             ‹
           </button>
           <button
             onClick={scrollRight}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#2B1F1F] p-8 text-5xl rounded-full shadow-lg"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#2B1F1F] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
             aria-label="Scroll right"
           >
             ›

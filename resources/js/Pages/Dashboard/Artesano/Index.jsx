@@ -19,6 +19,18 @@ export default function Index({ stats, user, tienda }) {
     const [errorMessage, setErrorMessage] = useState('');
     const { flash } = usePage().props;
 
+    // Estado para modal de pedidos
+    const [showOrdersModal, setShowOrdersModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ordersPerPage = 4;
+
+    // Estado para paginación de productos
+    const [currentProductPage, setCurrentProductPage] = useState(1);
+    const productsPerPage = 4;
+
+    // Estado para búsqueda de productos
+    const [searchTerm, setSearchTerm] = useState('');
+
     // Verificar si hay un mensaje de éxito en parámetros de URL
     useEffect(() => {
         console.log('Dashboard cargado, verificando parámetros de URL...');
@@ -404,6 +416,60 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Productos Más Vendidos */}
+                            {stats.productos_mas_vendidos && stats.productos_mas_vendidos.length > 0 && (
+                                <div className="w-full max-w-full p-6 mx-auto mt-10 bg-white rounded-lg shadow">
+                                    <h2 className="mb-4 text-lg font-semibold">Productos Más Vendidos</h2>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {stats.productos_mas_vendidos.map((item, index) => {
+                                            const producto = item.producto;
+                                            const imagenPrincipal = producto.imagenes?.find(img => img.es_principal) || producto.imagenes?.[0];
+
+                                            return (
+                                                <div key={producto.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden">
+                                                            {imagenPrincipal ? (
+                                                                <img
+                                                                    src={getImageUrl(imagenPrincipal.ruta_imagen)}
+                                                                    alt={producto.nombre}
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={handleImageError}
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                                    </svg>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between">
+                                                            <h3 className="text-sm font-medium text-gray-900 truncate pr-2">
+                                                                {producto.nombre}
+                                                            </h3>
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 flex-shrink-0">
+                                                                #{index + 1}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between mt-1">
+                                                            <span className="text-xs font-medium text-indigo-600">
+                                                                {formatCurrency(producto.precio)}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500">
+                                                                {item.total_vendido} vendido{item.total_vendido !== 1 ? 's' : ''}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Columna derecha - Estadísticas y productos */}
@@ -427,107 +493,22 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                 </div>
                             </div>
 
-                            {/* Pedidos */}
+                            {/* Botón para ver pedidos */}
                             <div className="bg-white rounded-lg shadow p-6 mb-6">
-                                <h2 className="text-lg font-semibold mb-4">Pedidos Recibidos</h2>
-                                {stats.pedidos && stats.pedidos.length === 0 ? (
-                                    <p className="text-gray-500">No hay pedidos pendientes</p>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {stats.pedidos && stats.pedidos.map((pedido) => (
-                                            <div key={pedido.id_pedido} className="border border-gray-200 rounded-lg p-4">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="flex-1">
-                                                        <h3 className="font-semibold mb-3">Pedido #{pedido.id_pedido}</h3>
-
-                                                        {/* Información del cliente */}
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
-                                                            <div>
-                                                                <span className="font-medium">Cliente:</span> {pedido.cliente?.name} {pedido.cliente?.last_name}
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-medium">Teléfono:</span> {pedido.cliente?.phone}
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-medium">Email:</span> {pedido.cliente?.email}
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-medium">N° de guía:</span> 123456789012
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-medium">Método:</span> {pedido.metodo_entrega === 'contra_entrega' ? 'Contra Entrega' : 'Envío a Domicilio'}
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                                    pedido.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
-                                                                    pedido.estado === 'confirmado' ? 'bg-blue-100 text-blue-800' :
-                                                                    pedido.estado === 'enviado' ? 'bg-purple-100 text-purple-800' :
-                                                                    pedido.estado === 'entregado' ? 'bg-green-100 text-green-800' :
-                                                                    'bg-red-100 text-red-800'
-                                                                }`}>
-                                                                    {pedido.estado === 'pendiente' ? 'Pendiente' :
-                                                                     pedido.estado === 'confirmado' ? 'Confirmado' :
-                                                                     pedido.estado === 'enviado' ? 'Enviado' :
-                                                                     pedido.estado === 'entregado' ? 'Entregado' :
-                                                                     'Cancelado'}
-                                                                </span>
-                                                                <select
-                                                                    value={pedido.estado}
-                                                                    onChange={(e) => updatePedidoStatus(pedido.id_pedido, e.target.value)}
-                                                                    className="border border-gray-300 rounded px-3 py-1 text-xs"
-                                                                >
-                                                                    <option value="pendiente">Cambiar estado</option>
-                                                                    <option value="confirmado">Confirmado</option>
-                                                                    <option value="enviado">Enviado</option>
-                                                                    <option value="entregado">Entregado</option>
-                                                                    <option value="cancelado">Cancelado</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Resumen de costos y productos */}
-                                                        <div className="bg-gray-50 rounded-lg p-3 border">
-                                                            <div className="space-y-3">
-                                                                {/* Productos del pedido */}
-                                                                <div>
-                                                                    <div className="text-sm font-medium text-gray-700 mb-2">Productos:</div>
-                                                                    <div className="space-y-2">
-                                                                        {pedido.detalles && pedido.detalles.map((detalle, index) => (
-                                                                            <div key={index} className="text-sm text-gray-600">
-                                                                                <div>{detalle.nombre_producto} (x{detalle.cantidad})</div>
-                                                                                <div className="text-right font-medium">{formatCurrency(detalle.subtotal)}</div>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Línea separadora */}
-                                                                <div className="border-t border-gray-300"></div>
-
-                                                                {/* Resumen de costos */}
-                                                                <div className="space-y-2 text-sm">
-                                                                    <div className="flex justify-between">
-                                                                        <span className="font-medium">Costo envío:</span>
-                                                                        <span>{formatCurrency(pedido.costo_envio || 0)}</span>
-                                                                    </div>
-                                                                    <div className="flex justify-between">
-                                                                        <span className="font-medium">Subtotal productos:</span>
-                                                                        <span>{formatCurrency(pedido.subtotal_productos || pedido.detalles?.reduce((sum, d) => sum + d.subtotal, 0) || 0)}</span>
-                                                                    </div>
-                                                                    <div className="flex justify-between border-t pt-2 border-gray-300">
-                                                                        <span className="font-medium">Total:</span>
-                                                                        <span>{formatCurrency(pedido.total)}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-lg font-semibold">Pedidos Recibidos</h2>
+                                        <p className="text-sm text-gray-600 mt-1">
+                                            {stats.pedidos ? `${stats.pedidos.length} pedidos totales` : '0 pedidos totales'}
+                                        </p>
                                     </div>
-                                )}
+                                    <button
+                                        onClick={() => setShowOrdersModal(true)}
+                                        className="inline-flex items-center px-4 py-2 bg-amber-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-700 focus:bg-amber-700 active:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                    >
+                                        Ver Pedidos
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Productos */}
@@ -548,14 +529,239 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
 
                                     </div>
                                 </div>
+
+                                {/* Campo de búsqueda */}
+                                <div className="mb-6">
+                                    <input
+                                        type="text"
+                                        className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A] focus:border-transparent"
+                                        placeholder="Escribe el nombre del producto..."
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                            setSearchTerm(e.target.value);
+                                            setCurrentProductPage(1); // Reset to first page when searching
+                                        }}
+                                    />
+                                </div>
                                 {/* Condición para mostrar la modal de venta */}
                                 {showSaleModal && (
-                                    //Sale es un componente, que es basicamente la modal de ventas, este recibe 5 props, como se ve acontinuación. 
+                                    //Sale es un componente, que es basicamente la modal de ventas, este recibe 5 props, como se ve acontinuación.
                                      <Sale onClose={() => setShowSaleModal(false)} products={selectedProducts} onDeleteProduct={handleDeleteProduct} onClearBasket={handleClearBasket} onQuantityChange={handleQuantityChange} />
                                 )}
 
-                                <div  className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
-                                    {stats.productos.map((producto) => {
+                                {/* Modal de pedidos */}
+                                {showOrdersModal && (
+                                    <div className="fixed inset-0 z-50 overflow-y-auto">
+                                        <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                                                <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setShowOrdersModal(false)}></div>
+                                            </div>
+
+                                            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                                                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h3 className="text-lg font-semibold text-gray-900">Pedidos Recibidos</h3>
+                                                        <button
+                                                            onClick={() => setShowOrdersModal(false)}
+                                                            className="text-gray-400 hover:text-gray-600"
+                                                        >
+                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    {stats.pedidos && stats.pedidos.length === 0 ? (
+                                                        <p className="text-gray-500 text-center py-8">No hay pedidos pendientes</p>
+                                                    ) : (
+                                                        (() => {
+                                                            const indexOfLastOrder = currentPage * ordersPerPage;
+                                                            const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+                                                            const currentOrders = stats.pedidos.slice(indexOfFirstOrder, indexOfLastOrder);
+                                                            const totalPages = Math.ceil(stats.pedidos.length / ordersPerPage);
+                                                            const totalResults = stats.pedidos.length;
+                                                            const showingFrom = indexOfFirstOrder + 1;
+                                                            const showingTo = Math.min(indexOfLastOrder, totalResults);
+
+                                                            return (
+                                                                <>
+                                                                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                                                                        {currentOrders.map((pedido) => (
+                                                                            <div key={pedido.id_pedido} className="border border-gray-200 rounded-lg p-4">
+                                                                                <div className="flex justify-between items-start mb-4">
+                                                                                    <div className="flex-1">
+                                                                                        <h4 className="font-semibold mb-3">Pedido #{pedido.id_pedido}</h4>
+
+                                                                                        {/* Información del cliente */}
+                                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                                                                                            <div>
+                                                                                                <span className="font-medium">Cliente:</span> {pedido.cliente?.name} {pedido.cliente?.last_name}
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-medium">Teléfono:</span> {pedido.cliente?.phone}
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-medium">Email:</span> {pedido.cliente?.email}
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-medium">N° de guía:</span> 123456789012
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-medium">Método:</span> {pedido.metodo_entrega === 'contra_entrega' ? 'Contra Entrega' : 'Envío a Domicilio'}
+                                                                                            </div>
+                                                                                            <div className="flex items-center gap-2">
+                                                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                                                                    pedido.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                                                                                                    pedido.estado === 'confirmado' ? 'bg-blue-100 text-blue-800' :
+                                                                                                    pedido.estado === 'enviado' ? 'bg-purple-100 text-purple-800' :
+                                                                                                    pedido.estado === 'entregado' ? 'bg-green-100 text-green-800' :
+                                                                                                    'bg-red-100 text-red-800'
+                                                                                                }`}>
+                                                                                                    {pedido.estado === 'pendiente' ? 'Pendiente' :
+                                                                                                     pedido.estado === 'confirmado' ? 'Confirmado' :
+                                                                                                     pedido.estado === 'enviado' ? 'Enviado' :
+                                                                                                     pedido.estado === 'entregado' ? 'Entregado' :
+                                                                                                     'Cancelado'}
+                                                                                                </span>
+                                                                                                <select
+                                                                                                    value={pedido.estado}
+                                                                                                    onChange={(e) => updatePedidoStatus(pedido.id_pedido, e.target.value)}
+                                                                                                    className="border border-gray-300 rounded px-3 py-1 text-xs"
+                                                                                                >
+                                                                                                    <option value="pendiente">Cambiar estado</option>
+                                                                                                    <option value="confirmado">Confirmado</option>
+                                                                                                    <option value="enviado">Enviado</option>
+                                                                                                    <option value="entregado">Entregado</option>
+                                                                                                    <option value="cancelado">Cancelado</option>
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        {/* Resumen de costos y productos */}
+                                                                                        <div className="bg-gray-50 rounded-lg p-3 border">
+                                                                                            <div className="space-y-3">
+                                                                                                {/* Productos del pedido */}
+                                                                                                <div>
+                                                                                                    <div className="text-sm font-medium text-gray-700 mb-2">Productos:</div>
+                                                                                                    <div className="space-y-2">
+                                                                                                        {pedido.detalles && pedido.detalles.map((detalle, index) => (
+                                                                                                            <div key={index} className="text-sm text-gray-600">
+                                                                                                                <div>{detalle.nombre_producto} (x{detalle.cantidad})</div>
+                                                                                                                <div className="text-right font-medium">{formatCurrency(detalle.subtotal)}</div>
+                                                                                                            </div>
+                                                                                                        ))}
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                {/* Línea separadora */}
+                                                                                                <div className="border-t border-gray-300"></div>
+
+                                                                                                {/* Resumen de costos */}
+                                                                                                <div className="space-y-2 text-sm">
+                                                                                                    <div className="flex justify-between">
+                                                                                                        <span className="font-medium">Costo envío:</span>
+                                                                                                        <span>{formatCurrency(pedido.costo_envio || 0)}</span>
+                                                                                                    </div>
+                                                                                                    <div className="flex justify-between">
+                                                                                                        <span className="font-medium">Subtotal productos:</span>
+                                                                                                        <span>{formatCurrency(pedido.subtotal_productos || pedido.detalles?.reduce((sum, d) => sum + d.subtotal, 0) || 0)}</span>
+                                                                                                    </div>
+                                                                                                    <div className="flex justify-between border-t pt-2 border-gray-300">
+                                                                                                        <span className="font-medium">Total:</span>
+                                                                                                        <span>{formatCurrency(pedido.total)}</span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+
+                                                                    {/* Componente de paginación */}
+                                                                    <div className="flex items-center justify-between mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
+                                                                        <div className="flex-1 flex justify-between sm:hidden">
+                                                                            <button
+                                                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                                                disabled={currentPage === 1}
+                                                                                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                            >
+                                                                                Siguiente
+                                                                            </button>
+                                                                        </div>
+                                                                        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                                                            <div>
+                                                                                <p className="text-sm text-gray-700">
+                                                                                    Mostrando <span className="font-medium">{showingFrom}</span> a <span className="font-medium">{showingTo}</span> de <span className="font-medium">{totalResults}</span> resultados
+                                                                                </p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                                                                    <button
+                                                                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                                                        disabled={currentPage === 1}
+                                                                                        className="relative inline-flex items-center px-4 py-2 border text-sm font-medium bg-white border-gray-300 text-gray-500 hover:bg-gray-50 rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                    >
+                                                                                        « Anterior
+                                                                                    </button>
+
+                                                                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                                                                        <button
+                                                                                            key={page}
+                                                                                            onClick={() => setCurrentPage(page)}
+                                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                                                                                                currentPage === page
+                                                                                                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                                                                                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                                                            }`}
+                                                                                        >
+                                                                                            {page}
+                                                                                        </button>
+                                                                                    ))}
+
+                                                                                    <button
+                                                                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                                                                        disabled={currentPage === totalPages}
+                                                                                        className="relative inline-flex items-center px-4 py-2 border text-sm font-medium bg-white border-gray-300 text-gray-500 hover:bg-gray-50 rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                    >
+                                                                                        Siguiente »
+                                                                                    </button>
+                                                                                </nav>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            );
+                                                        })()
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <>
+                                    {/* Lógica de paginación para productos */}
+                                    {(() => {
+                                        // Filtrar productos por término de búsqueda
+                                        const filteredProducts = stats.productos.filter(producto =>
+                                            producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            producto.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+                                        );
+
+                                        const indexOfLastProduct = currentProductPage * productsPerPage;
+                                        const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+                                        const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+                                        const totalProductPages = Math.ceil(filteredProducts.length / productsPerPage);
+                                        const totalProductResults = filteredProducts.length;
+                                        const showingProductFrom = indexOfFirstProduct + 1;
+                                        const showingProductTo = Math.min(indexOfLastProduct, totalProductResults);
+
+                                        return (
+                                            <>
+                                                <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+                                                    {currentProducts.map((producto) => {
                                         // Depuración en consola
                                         console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
                                         
@@ -677,8 +883,67 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                 </div>
                                             </div>
                                         );
-                                    })}
-                                </div>
+                                                    })}
+                                                </div>
+
+                                                {/* Componente de paginación para productos */}
+                                                {totalProductPages > 1 && (
+                                                    <div className="flex items-center justify-between mt-4 px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+                                                        <div className="flex-1 flex justify-between sm:hidden">
+                                                            <button
+                                                                onClick={() => setCurrentProductPage(prev => Math.max(prev - 1, 1))}
+                                                                disabled={currentProductPage === 1}
+                                                                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            >
+                                                                Siguiente
+                                                            </button>
+                                                        </div>
+                                                        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                                            <div>
+                                                                <p className="text-sm text-gray-700">
+                                                                    Mostrando <span className="font-medium">{showingProductFrom}</span> a <span className="font-medium">{showingProductTo}</span> de <span className="font-medium">{totalProductResults}</span> resultados
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                                                    <button
+                                                                        onClick={() => setCurrentProductPage(prev => Math.max(prev - 1, 1))}
+                                                                        disabled={currentProductPage === 1}
+                                                                        className="relative inline-flex items-center px-4 py-2 border text-sm font-medium bg-white border-gray-300 text-gray-500 hover:bg-gray-50 rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                    >
+                                                                        « Anterior
+                                                                    </button>
+
+                                                                    {Array.from({ length: totalProductPages }, (_, i) => i + 1).map(page => (
+                                                                        <button
+                                                                            key={page}
+                                                                            onClick={() => setCurrentProductPage(page)}
+                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                                                                                currentProductPage === page
+                                                                                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                                                                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                                            }`}
+                                                                        >
+                                                                            {page}
+                                                                        </button>
+                                                                    ))}
+
+                                                                    <button
+                                                                        onClick={() => setCurrentProductPage(prev => Math.min(prev + 1, totalProductPages))}
+                                                                        disabled={currentProductPage === totalProductPages}
+                                                                        className="relative inline-flex items-center px-4 py-2 border text-sm font-medium bg-white border-gray-300 text-gray-500 hover:bg-gray-50 rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                    >
+                                                                        Siguiente »
+                                                                    </button>
+                                                                </nav>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
+                                </>
                             </div>
 
 

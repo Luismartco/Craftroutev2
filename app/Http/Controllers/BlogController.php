@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Tienda;
 use App\Models\Producto;
+use App\Models\TiendaFeaturedContent;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
@@ -24,6 +25,8 @@ class BlogController extends Controller
         }
 
         $artesano = $tienda->user;
+
+        $featuredContent = TiendaFeaturedContent::where('tienda_id', $tienda->id)->first();
 
         $productos = Producto::with([
                 'imagenes' => function($q) { $q->orderByDesc('es_principal'); }
@@ -71,6 +74,7 @@ class BlogController extends Controller
             'tienda' => $tiendaPayload,
             'artesano' => $artesanoPayload,
             'productos' => $productos,
+            'featuredContent' => $featuredContent,
         ]);
     }
 }

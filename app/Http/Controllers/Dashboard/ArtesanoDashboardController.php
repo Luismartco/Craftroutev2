@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Tienda;
 use App\Models\Producto;
 use App\Models\ImagenProducto; // Importación crucial
+use App\Models\TiendaFeaturedContent;
 use Illuminate\Support\Facades\Log;
 
 
@@ -44,12 +45,32 @@ class ArtesanoDashboardController extends Controller
             return $pedido;
         });
 
+        // Obtener los 3 productos más vendidos del artesano
+        $productosMasVendidos = \App\Models\TransaccionItem::select('id_producto', \DB::raw('SUM(cantidad) as total_vendido'))
+            ->whereHas('producto', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->groupBy('id_producto')
+            ->orderBy('total_vendido', 'desc')
+            ->take(3)
+            ->with(['producto' => function($query) {
+                $query->with(['imagenes', 'categoria', 'material', 'tecnica']);
+            }])
+            ->get()
+            ->map(function($item) {
+                return [
+                    'producto' => $item->producto,
+                    'total_vendido' => $item->total_vendido
+                ];
+            });
+
         $stats = [
             'total_productos' => $totalProductos,
             'total_ventas' => $totalVentas,
             'total_pedidos' => $totalPedidos,
             'productos' => $productos,
             'pedidos' => $pedidos,
+            'productos_mas_vendidos' => $productosMasVendidos,
         ];
 
         return Inertia::render('Dashboard/Artesano/Index', [
@@ -158,8 +179,11 @@ class ArtesanoDashboardController extends Controller
                 ->with('error', 'No tienes una tienda creada.');
         }
 
+        $featuredContent = $tienda->featuredContent;
+
         return Inertia::render('Dashboard/Artesano/EditTienda', [
             'tienda' => $tienda,
+            'featuredContent' => $featuredContent,
         ]);
     }
 
@@ -174,6 +198,12 @@ class ArtesanoDashboardController extends Controller
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'featured_product_title' => 'nullable|string|max:255',
+            'featured_product_description' => 'nullable|string',
+            'featured_product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'video_title' => 'nullable|string|max:255',
+            'video_description' => 'nullable|string',
+            'video_url' => 'nullable|url',
         ]);
 
         $user = auth()->user();
@@ -184,7 +214,7 @@ class ArtesanoDashboardController extends Controller
                 ->with('error', 'No tienes una tienda creada.');
         }
 
-        $data = $request->except('foto_perfil');
+        $data = $request->except(['foto_perfil', 'featured_product_image', 'featured_product_title', 'featured_product_description', 'video_title', 'video_description', 'video_url']);
 
         // Manejar la imagen de perfil si se sube
         if ($request->hasFile('foto_perfil')) {
@@ -198,6 +228,27 @@ class ArtesanoDashboardController extends Controller
 
         // Actualizar la tienda
         $tienda->update($data);
+
+        // Manejar el contenido destacado
+        $featuredData = [
+            'featured_product_title' => $request->featured_product_title,
+            'featured_product_description' => $request->featured_product_description,
+            'video_title' => $request->video_title,
+            'video_description' => $request->video_description,
+            'video_url' => $request->video_url,
+        ];
+
+        // Manejar la imagen del producto destacado
+        if ($request->hasFile('featured_product_image')) {
+            $featuredImagePath = $request->file('featured_product_image')->store('tiendas/featured', 'public');
+            $featuredData['featured_product_image'] = $featuredImagePath;
+        }
+
+        // Crear o actualizar el contenido destacado
+        TiendaFeaturedContent::updateOrCreate(
+            ['tienda_id' => $tienda->id],
+            $featuredData
+        );
 
         return redirect()->route('dashboard.artesano.gestionar-tienda')
             ->with('success', 'Tienda actualizada exitosamente.');
