@@ -14,6 +14,7 @@ import { NumericFormat } from 'react-number-format';
 export default function CreateProducto({ categorias, tecnicas, materiales }) {
     const [previewImages, setPreviewImages] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const { data, setData, post, processing, errors } = useForm({
         nombre: '',
@@ -29,9 +30,10 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
     });
 
 
- const handleSubmit = (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
+const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Formulario enviado');
+    setIsSubmitting(true);
         
         const formData = new FormData();
         
@@ -50,11 +52,13 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
         post(route('dashboard.artesano.store-producto'), formData, {
             forceFormData: true,
             onSuccess: () => {
+                console.log('Producto creado con éxito');
                 setIsSubmitting(false);
-                // Redirigir al dashboard para ver todos los productos
-                window.location.href = route('dashboard.artesano.index');
+                // Redirigir al dashboard con Inertia
+                router.visit(route('dashboard.artesano.index'));
             },
             onError: (errors) => {
+                console.log('Error al crear producto:', errors);
                 setIsSubmitting(false);
             }
         });
@@ -94,7 +98,12 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
             <Head title="Agregar Producto" />
 
             {/* Mensaje de éxito local */}
-            {/* Removed local success message as it's now handled by Inertia */}
+            {successMessage && (
+                <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    {console.log('Mostrando mensaje:', successMessage)}
+                    {successMessage}
+                </div>
+            )}
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -307,7 +316,7 @@ export default function CreateProducto({ categorias, tecnicas, materiales }) {
                                                 <p className="pl-1">o arrastrar y soltar</p>
                                             </div>
                                             <p className="text-xs text-gray-500">
-                                                Formatos: PNG, JPG, JPEG, GIF (hasta 10MB cada una)
+                                                Formatos: PNG, JPG, JPEG, GIF (hasta 2MB cada una)
                                             </p>
                                             <p className="text-xs text-gray-500">
                                                 Máximo 5 imágenes. {previewImages.length > 0 && `${previewImages.length} seleccionadas`}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { toIntAmount } from '@/utils/money'
+import { router } from '@inertiajs/react'
 import closeIcon from '../../../media/svg/close-icon.svg'
 
 
@@ -28,25 +29,15 @@ const ConfirmSale = ({ onClose, productoId, quantity, total }) => {
           total: toIntAmount(total),
         }
         console.log('ConfirmSale: enviando venta simulada', payload)
-        const res = await fetch('/transacciones/venta', {
-           method: 'POST',
-           headers: {
-             'Content-Type': 'application/json',
-             'X-Requested-With': 'XMLHttpRequest',
-             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-           },
-           credentials: 'same-origin',
-           body: JSON.stringify(payload)
-         })
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}))
-          console.error('ConfirmSale: error registrando venta', err)
-          alert('No se pudo registrar la venta simulada. Revisa consola.')
-          return
-        }
-        const json = await res.json().catch(() => ({}))
-        console.log('ConfirmSale: venta registrada', json)
-        alert('Venta simulada registrada #' + (json.transaccion_id ?? ''))
+        router.post(route('transacciones.venta'), payload, {
+          onSuccess: (page) => {
+            console.log('ConfirmSale: venta registrada', page)
+          },
+          onError: (errors) => {
+            console.error('ConfirmSale: error registrando venta', errors)
+            alert('No se pudo registrar la venta simulada. Revisa consola.')
+          }
+        })
       } catch (e) {
         console.error('ConfirmSale: excepción registrando venta', e)
         alert('Ocurrió un error registrando la venta simulada. Revisa consola.')

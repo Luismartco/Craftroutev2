@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import GuestLayout from "@/Layouts/GuestLayout";
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
@@ -23,9 +23,8 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
     const [selectedBank, setSelectedBank] = useState('');
     const [showUnavailableMessage, setShowUnavailableMessage] = useState(false);
     const [shippingCost, setShippingCost] = useState(20000); // Inicializar con el costo de contra entrega
-    // Modals: PSE, Nequi, Nequi Auth
+    // Modals: PSE, Nequi Auth
     const [showPseModal, setShowPseModal] = useState(false);
-    const [showNequiModal, setShowNequiModal] = useState(false);
     const [showNequiAuthModal, setShowNequiAuthModal] = useState(false);
     // Forms for modals
     const [pseForm, setPseForm] = useState({
@@ -34,11 +33,6 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
         personType: 'natural',
         bank: 'bancolombia',
         holderName: '',
-    });
-    const [nequiForm, setNequiForm] = useState({
-        documentType: 'cc',
-        personType: 'natural',
-        bank: 'nequi',
     });
     const [nequiAuthForm, setNequiAuthForm] = useState({
         phone: '',
@@ -674,32 +668,6 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                     </div>
                                                 )}
                                                 
-                                                {/* Selección de banco para PSE */}
-                                                {selectedPaymentMethod === 'pse' && (
-                                                    <div>
-                                                        <InputLabel value="Escoge tu banco para continuar con el pago" />
-                                                        <div className="mt-2 space-y-2">
-                                                            <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                                <input
-                                                                    type="radio"
-                                                                    name="bank"
-                                                                    value="nequi"
-                                                                    checked={selectedBank === 'nequi'}
-                                                                    onChange={(e) => {
-                                                                        setSelectedBank(e.target.value);
-                                                                        handlePaymentDataChange('bank', e.target.value);
-                                                                            // Abrir flujo de Nequi al seleccionar Nequi
-                                                                            setShowNequiModal(true);
-                                                                    }}
-                                                                    className="text-blue-600"
-                                                                />
-                                                                <div className="flex-1">
-                                                                    <div className="font-semibold">Nequi</div>
-                                                                </div>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
                                         </Accordion>
                                         
@@ -845,6 +813,7 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                             <option value="bancolombia">Bancolombia</option>
                                             <option value="bbva">BBVA</option>
                                             <option value="davivienda">Davivienda</option>
+                                            <option value="nequi">Nequi</option>
                                         </select>
                                     </div>
                                     <div>
@@ -864,74 +833,19 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                         <button
                                             className="flex-1 bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors"
                                             onClick={() => {
-                                                // Simulación de envío
-                                                alert('Pago PSE simulado.');
-                                                setShowPseModal(false);
+                                                if (pseForm.bank === 'nequi') {
+                                                    setShowPseModal(false);
+                                                    setShowNequiAuthModal(true);
+                                                } else {
+                                                    setShowPseModal(false);
+                                                    // Handle PSE payment for other banks
+                                                    alert('Pago PSE en desarrollo para este banco.');
+                                                }
                                             }}
                                         >
                                             Pagar
                                         </button>
                                         <button className="px-4 py-2 rounded-lg border" onClick={() => setShowPseModal(false)}>Cancelar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {showNequiModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-bold">Datos de pago (Nequi)</h3>
-                                    <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowNequiModal(false)}>✕</button>
-                                </div>
-                                <div className="space-y-4">
-                                    <div>
-                                        <InputLabel value="Tipo de documento" />
-                                        <select
-                                            className="mt-1 block w-full border-gray-300 rounded-md"
-                                            value={nequiForm.documentType}
-                                            onChange={(e) => setNequiForm({ ...nequiForm, documentType: e.target.value })}
-                                        >
-                                            <option value="cc">Cédula de ciudadanía</option>
-                                            <option value="ce">Cédula de extranjería</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <InputLabel value="Tipo de persona" />
-                                        <select
-                                            className="mt-1 block w-full border-gray-300 rounded-md"
-                                            value={nequiForm.personType}
-                                            onChange={(e) => setNequiForm({ ...nequiForm, personType: e.target.value })}
-                                        >
-                                            <option value="natural">Persona natural</option>
-                                            <option value="juridica">Persona jurídica</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <InputLabel value="Banco" />
-                                        <select
-                                            className="mt-1 block w-full border-gray-300 rounded-md"
-                                            value={nequiForm.bank}
-                                            onChange={(e) => setNequiForm({ ...nequiForm, bank: e.target.value })}
-                                        >
-                                            <option value="nequi">Nequi</option>
-                                        </select>
-                                    </div>
-                                    <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                                        <span className="font-medium">Cantidad</span>
-                                        <span className="font-bold text-blue-600">${(currentTotal).toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex gap-3 pt-2">
-                                        <button
-                                            className="flex-1 bg-[#4B3A3A] text-white py-2 rounded-lg hover:bg-[#2B1F1F] transition-colors"
-                                            onClick={() => {
-                                                setShowNequiModal(false);
-                                                setShowNequiAuthModal(true);
-                                            }}
-                                        >
-                                            Pagar
-                                        </button>
-                                        <button className="px-4 py-2 rounded-lg border" onClick={() => setShowNequiModal(false)}>Cancelar</button>
                                     </div>
                                 </div>
                             </div>
@@ -998,8 +912,8 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                             method: 'nequi',
                                                             bank: 'nequi',
                                                             phone: nequiAuthForm.phone,
-                                                            person_type: nequiForm.personType,
-                                                            document_type: nequiForm.documentType,
+                                                            person_type: pseForm.personType,
+                                                            document_type: pseForm.documentType,
                                                         },
                                                         totals: {
                                                             subtotal: toIntAmount(currentSubtotal),
@@ -1007,22 +921,16 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                             total: toIntAmount(currentTotal),
                                                         },
                                                     };
-                                                    const res = await fetch('/transacciones/compra', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'X-Requested-With': 'XMLHttpRequest',
-                                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                                    router.post(route('transacciones.compra'), payload, {
+                                                        onSuccess: () => {
+                                                            alert('Compra simulada realizada con éxito');
+                                                            setShowNequiAuthModal(false);
                                                         },
-                                                        credentials: 'same-origin',
-                                                        body: JSON.stringify(payload),
+                                                        onError: (errors) => {
+                                                            console.error('Error registrando compra', errors);
+                                                            alert('Hubo un problema registrando la compra simulada.');
+                                                        }
                                                     });
-                                                    if (!res.ok) {
-                                                        const err = await res.json().catch(() => ({}));
-                                                        throw new Error(err.message || 'No se pudo registrar la compra simulada');
-                                                    }
-                                                    const json = await res.json();
-                                                    alert('Simulación de ingreso a Nequi. Compra registrada #' + json.transaccion_id);
                                                 } catch (err) {
                                                     console.error(err);
                                                     alert('Hubo un problema registrando la compra simulada.');
@@ -1043,4 +951,4 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
             </div>
         </GuestLayout>
     );
-} 
+}

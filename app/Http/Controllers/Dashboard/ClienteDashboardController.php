@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\UserPreference;
+use App\Models\Transaccion;
 
 class ClienteDashboardController extends Controller
 {
@@ -24,21 +25,27 @@ class ClienteDashboardController extends Controller
         }
 
         // Cargar pedidos del cliente con información del artesano y detalles
-
-        // Cargar pedidos del cliente con información del artesano y detalles
         $pedidos = $user->pedidosCliente()
             ->with(['artesano.tienda', 'detalles.producto'])
             ->latest()
             ->take(5) // Mostrar solo los 5 más recientes en el dashboard
             ->get();
 
+        // Cargar transacciones simuladas pagadas del cliente
+        $transaccionesSimuladas = Transaccion::where('id_cliente', $user->id)
+            ->where('estado_transaccion', 'simulada_pagada')
+            ->with(['detalles.producto', 'detalles.tienda'])
+            ->latest('fecha_creacion')
+            ->get();
+
 
         return Inertia::render('Dashboard/Cliente/Index', [
             'stats' => [
                 'total_pedidos' => $user->pedidosCliente()->count(),
-                'artesanos_favoritos' => $user->artesanosFavoritos()->count(),
+                'compras_simuladas' => $transaccionesSimuladas->count(),
             ],
             'pedidos' => $pedidos,
+            'transaccionesSimuladas' => $transaccionesSimuladas,
             'user' => [
                 'name' => $user->name,
                 'last_name' => $user->last_name,

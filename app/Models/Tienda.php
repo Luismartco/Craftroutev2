@@ -30,4 +30,9 @@ class Tienda extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function featuredContent()
+    {
+        return $this->hasOne(TiendaFeaturedContent::class);
+    }
 }

@@ -21,17 +21,23 @@ const RANGOS_PRECIOS = [
 ];
 
 const Prod = ({ producto, onClick, onBuy, user }) => {
-   const isCustomer = user && user.role === 'customer';
-   const isLogged = !!user;
-   let img = '';
-   if (producto.imagenes && producto.imagenes.length > 0) {
-     if (typeof producto.imagenes[0] === 'string') {
-       img = `/storage/${producto.imagenes[0]}`;
-     } else {
-       img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
-     }
-   }
-   const showAddToCart = !isLogged || isCustomer;
+    const isCustomer = user && user.role === 'customer';
+    const isLogged = !!user;
+    let img = '';
+    if (producto.imagenes && producto.imagenes.length > 0) {
+      if (typeof producto.imagenes[0] === 'string') {
+        img = `/storage/${producto.imagenes[0]}`;
+      } else {
+        img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
+      }
+    }
+    const showAddToCart = !isLogged || isCustomer;
+
+    // Usar el contexto global del carrito
+    const { cart, addToCartSilently } = useCart();
+
+    // Obtener la cantidad actual de este producto en el carrito
+    const currentQuantity = cart.find(item => item.id === producto.id)?.quantity || 0;
 
    // Función para formatear precio
    const formatPrice = (price) => {
@@ -45,13 +51,19 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
    };
 
    return (
-     <div className="p-4 bg-white shadow rounded-xl w-64 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 flex-shrink-0">
+     <div className="p-4 bg-white shadow rounded-xl w-64 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 flex-shrink-0 relative">
        {img && (
          <img
            src={img}
            alt={producto.nombre}
            className="w-full h-48 object-contain rounded-lg mb-4"
          />
+       )}
+       {/* Counter Badge */}
+       {currentQuantity > 0 && (
+         <div className="absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300">
+           <p className="text-sm">{currentQuantity}</p>
+         </div>
        )}
        <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
        <p className="text-sm text-gray-500 mt-2">
@@ -67,10 +79,10 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
               if (!isLogged) {
                 alert('Debes iniciar sesión para poder adquirir el artículo.');
               } else if (isCustomer) {
-                onBuy();
+                addToCartSilently(producto);
               }
             }}
-            className="p-2 text-sm bg-[#2B1F1F] text-white rounded hover:bg-[#4B3A3A]"
+            className="w-full p-2 text-xs font-semibold tracking-widest text-white uppercase bg-[#4B3A3A] border border-transparent rounded-md buttom-0 hover:bg-green-700 flex items-center justify-center gap-2"
           >
             Agregar al carrito
           </button>
@@ -87,23 +99,23 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
 };
 
 const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
-  const [selected, setSelected] = useState(null);
-  const [imgIndex, setImgIndex] = useState(0);
-  const [localCategoria, setLocalCategoria] = useState('');
-  const [localMunicipio, setLocalMunicipio] = useState('');
-  const [localRangoPrecio, setLocalRangoPrecio] = useState('');
-  const [localSearchTerm, setLocalSearchTerm] = useState('');
-  const scrollRef = useRef(null);
+   const [selected, setSelected] = useState(null);
+   const [imgIndex, setImgIndex] = useState(0);
+   const [localCategoria, setLocalCategoria] = useState('');
+   const [localMunicipio, setLocalMunicipio] = useState('');
+   const [localRangoPrecio, setLocalRangoPrecio] = useState('');
+   const [localSearchTerm, setLocalSearchTerm] = useState('');
+   const scrollRef = useRef(null);
 
-  // Use shared filters if provided, otherwise use local state
-  const currentCategoria = categoria !== undefined ? categoria : localCategoria;
-  const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
-  const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
-  const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
-  const setCurrentCategoria = setCategoria || setLocalCategoria;
-  const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
-  const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
-  const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
+   // Use shared filters if provided, otherwise use local state
+   const currentCategoria = categoria !== undefined ? categoria : localCategoria;
+   const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
+   const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
+   const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
+   const setCurrentCategoria = setCategoria || setLocalCategoria;
+   const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
+   const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
+   const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -213,14 +225,14 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
           <>
             <button
               onClick={scrollLeft}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#4B3A3A] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
               aria-label="Scroll left"
             >
               ‹
             </button>
             <button
               onClick={scrollRight}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white text-[#4B3A3A] p-8 text-5xl rounded-full shadow-lg"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/60 backdrop-blur-sm text-[#4B3A3A] p-3 text-4xl rounded-full shadow-lg hover:bg-white/80 hover:shadow-xl hover:scale-110 transition-all duration-300 border border-white/20"
               aria-label="Scroll right"
             >
               ›

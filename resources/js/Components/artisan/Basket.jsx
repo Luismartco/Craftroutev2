@@ -33,7 +33,15 @@ const Basket = ({product, onDeleteProduct, onQuantityChange}) => {
     <div className='flex flex-col gap-2 w-full border-b-2 border-gray-300 mb-3'>
        <div className='flex items-center justify-between'>
        <div className='flex items-center justify-between gap-2'>
-       <img src="https://th.bing.com/th/id/R.22a001364d64321f60b3ddc3cfdd954f?rik=sN1CBEpuRp8T8g&pid=ImgRaw&r=0" alt="" className='w-10 h-10 rounded-full object-cover mb-3' />
+       <img
+           src={product.imagenes && product.imagenes.length > 0
+               ? `/storage/${(product.imagenes.find(img => img.es_principal) || product.imagenes[0]).ruta_imagen}`
+               : "https://via.placeholder.com/40x40?text=Sin+imagen"
+           }
+           alt={product.nombre}
+           className='w-10 h-10 rounded-full object-cover mb-3'
+           onError={(e) => e.target.src = "https://via.placeholder.com/40x40?text=Error"}
+       />
        <div className='flex flex-col justify-center'>
        <p className='font-medium mb-1'>{product.nombre}</p>
        <p className='text-sm text-gray-500'>{product.cantidad_disponible} {product.cantidad_disponible > 1 ? 'Disponibles' : 'Disponible'} </p>

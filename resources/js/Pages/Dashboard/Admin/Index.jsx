@@ -4,11 +4,12 @@ import { Link, usePage } from '@inertiajs/react';
 import Menu from '@/Components/admin/Menu';
 import DetailsPanel from '@/Components/admin/DetailsPanel';
 import ManageForm from '@/Components/admin/ManageForm';
+import UserManagement from '@/Components/admin/UserManagement';
 import { Head } from '@inertiajs/react';
 import { MenuContext } from '@/Components/admin/MenuContext';
 import { ModalContext } from '@/Components/admin/ModalContext';
 
-export default function Index({ stats, categorias, municipios, artesanos, productos, productosPagination, materiales, tecnicas, flash, chartData }) {
+export default function Index({ stats, categorias, municipios, artesanos, productos, productosPagination, materiales, tecnicas, users, flash, chartData }) {
 
     const { auth } = usePage().props;
     const user = auth.user;
@@ -65,6 +66,12 @@ const renderContent = () => {
             return (
                 <div className="flex-1 p-8">
                     <ManageForm data={tecnicas} title="Técnicas" />
+                </div>
+            );
+        case "users":
+            return (
+                <div className="flex-1 p-8">
+                    <UserManagement users={users} title="Gestión de Usuarios" />
                 </div>
             );
         default:

@@ -109,6 +109,9 @@ class PedidoController extends Controller
                         'subtotal' => $item['subtotal'],
                         'nombre_producto' => $item['producto']->nombre,
                     ]);
+
+                    // Descontar stock del producto
+                    $item['producto']->decrement('cantidad_disponible', $item['quantity']);
                 }
 
                 $pedidosCreados[] = $pedido->id_pedido;

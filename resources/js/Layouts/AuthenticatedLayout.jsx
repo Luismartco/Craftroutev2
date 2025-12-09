@@ -122,7 +122,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             <Dropdown.Content>
                                 <Dropdown.Link href={route('profile.edit')}>
-                                    Profile
+                                    Perfil
                                 </Dropdown.Link>
                                 <Dropdown.Link
                                     href={route('logout')}
@@ -130,7 +130,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     as="button"
                                     preserveScroll
                                 >
-                                    Log Out
+                                    Salir
                                 </Dropdown.Link>
                             </Dropdown.Content>
                         </Dropdown>
@@ -168,7 +168,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 href={route('profile.edit')}
                                 className="block text-white px-4 py-2 hover:bg-[#4B3A3A]"
                             >
-                                Profile
+                                Perfil
                             </Link>
                             <Link
                                 href={route('logout')}
@@ -177,7 +177,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 preserveScroll
                                 className="block text-white px-4 py-2 hover:bg-[#4B3A3A] text-left w-full"
                             >
-                                Log Out
+                                Salir
                             </Link>
                         </div>
                     </div>

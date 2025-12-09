@@ -68,7 +68,36 @@ export const CartProvider = ({ children }) => {
                 };
                 newCart = [...prev, productoConImagenes];
             }
-            
+
+            // Actualizar localStorage
+            localStorage.setItem('cart_data', JSON.stringify(newCart));
+            return newCart;
+        });
+    };
+
+    const addToCartSilently = (producto) => {
+        setCart((prev) => {
+            const found = prev.find((p) => p.id === producto.id);
+            let newCart;
+            if (found) {
+                newCart = prev.map((p) =>
+                    p.id === producto.id ? { ...p, quantity: p.quantity + 1 } : p
+                );
+            } else {
+                // Procesar las imágenes correctamente antes de agregar al carrito
+                const productoConImagenes = {
+                    ...producto,
+                    quantity: 1,
+                    imagenes: producto.imagenes ? producto.imagenes.map(img => {
+                        if (typeof img === 'string') {
+                            return img;
+                        }
+                        return img.ruta_imagen ? `/storage/${img.ruta_imagen}` : img;
+                    }) : []
+                };
+                newCart = [...prev, productoConImagenes];
+            }
+
             // Actualizar localStorage
             localStorage.setItem('cart_data', JSON.stringify(newCart));
             return newCart;
@@ -198,6 +227,7 @@ export const CartProvider = ({ children }) => {
     const value = {
         cart,
         addToCart,
+        addToCartSilently,
         changeQuantity,
         removeProduct,
         total,
