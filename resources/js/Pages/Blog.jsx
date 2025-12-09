@@ -1,5 +1,5 @@
 // Blog.js (página principal) - Diseño Moderno y Elegante
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head } from '@inertiajs/react';
 
@@ -11,7 +11,39 @@ import VideoSampleCard from '@/Components/blog/VideoSampleCard';
 import Prod from '@/Components/home/Prod';
 import Maps from '@/Components/home/Maps';
 
-export default function Blog({ tienda, artesano, productos, featuredContent }) {
+export default function Blog({ tienda, artesano, productos, featuredContent, categorias }) {
+    // Filter states
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedPriceRange, setSelectedPriceRange] = useState('');
+
+    // Filtered products based on search and filters
+    const filteredProducts = useMemo(() => {
+        if (!productos) return [];
+
+        return productos.filter(producto => {
+            // Search filter
+            if (searchTerm && !producto.nombre.toLowerCase().includes(searchTerm.toLowerCase())) {
+                return false;
+            }
+
+            // Category filter
+            if (selectedCategory && producto.categoria_id != selectedCategory) {
+                return false;
+            }
+
+            // Price range filter
+            if (selectedPriceRange) {
+                const [min, max] = selectedPriceRange.split('-');
+                const precio = Number(producto.precio);
+                if (min && precio < Number(min)) return false;
+                if (max && max !== '' && precio > Number(max)) return false;
+            }
+
+            return true;
+        });
+    }, [productos, searchTerm, selectedCategory, selectedPriceRange]);
+
     return (
         <GuestLayout fullWidth={true} className='flex flex-col bg-gradient-to-br from-slate-50 via-white to-amber-50'>
             <Head title={tienda?.nombre ? `Tienda: ${tienda.nombre}` : 'Tienda'} />
@@ -142,9 +174,56 @@ export default function Blog({ tienda, artesano, productos, featuredContent }) {
                         </div>
                     </div>
 
+                    {/* Custom Filters for Blog */}
+                    <div className="mb-8 bg-white/60 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
+                        <div className="flex flex-wrap gap-6 justify-center">
+                            {/* Barra de búsqueda */}
+                            <div className="flex flex-col w-80">
+                                <label className="mb-1 text-sm font-semibold text-gray-700">Buscar producto</label>
+                                <input
+                                    type="text"
+                                    className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                                    placeholder="Escribe el nombre del producto..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            {/* Filtro por Categoría */}
+                            <div className="flex flex-col w-80">
+                                <label className="mb-1 text-sm font-semibold text-gray-700">Categoría</label>
+                                <select
+                                    className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
+                                    <option value="">Todas las categorías</option>
+                                    {categorias && categorias.map(cat => (
+                                        <option key={cat.id} value={cat.id.toString()}>{cat.nombre}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* Filtro por Precio */}
+                            <div className="flex flex-col w-80">
+                                <label className="mb-1 text-sm font-semibold text-gray-700">Rango de precios</label>
+                                <select
+                                    className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#4B3A3A]"
+                                    value={selectedPriceRange}
+                                    onChange={(e) => setSelectedPriceRange(e.target.value)}
+                                >
+                                    <option value="">Todos los precios</option>
+                                    <option value="0-10000">Hasta $10.000</option>
+                                    <option value="10001-50000">$10.001 - $50.000</option>
+                                    <option value="50001-100000">$50.001 - $100.000</option>
+                                    <option value="100001-200000">$100.001 - $200.000</option>
+                                    <option value="200001-">Más de $200.000</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Products Component */}
                     <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8 md:p-12">
-                        <Prod productos={productos || []} user={artesano} />
+                        <Prod productos={filteredProducts} user={artesano} showFilters={false} />
                     </div>
                 </div>
             </section>

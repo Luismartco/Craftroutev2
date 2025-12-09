@@ -7,6 +7,7 @@ use Inertia\Response;
 use App\Models\Tienda;
 use App\Models\Producto;
 use App\Models\TiendaFeaturedContent;
+use App\Models\Categoria;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
@@ -70,11 +71,19 @@ class BlogController extends Controller
             'bio' => $artesano->bio ?? null,
         ] : null;
 
+        $categorias = Categoria::all()->map(function ($categoria) {
+            return [
+                'id' => $categoria->id,
+                'nombre' => $categoria->nombre,
+            ];
+        });
+
         return Inertia::render('Blog', [
             'tienda' => $tiendaPayload,
             'artesano' => $artesanoPayload,
             'productos' => $productos,
             'featuredContent' => $featuredContent,
+            'categorias' => $categorias,
         ]);
     }
 }

@@ -831,7 +831,7 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                                 <span className="font-medium">Precio:</span> {formatCurrency(producto.precio)}
                                                             </p>
                                                             <p className="text-sm">
-                                                                <span className="font-medium">Cantidad:</span> {producto.cantidad_disponible}
+                                                                <span className="font-medium">Cantidad:</span> <span className={producto.cantidad_disponible === 0 ? 'text-red-600 font-bold' : ''}>{producto.cantidad_disponible}</span>
                                                             </p>
                                                             <p className="text-sm">
                                                                 <span className="font-medium">Categoría:</span>{' '}
@@ -876,7 +876,15 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                         >
                                                             Eliminar
                                                         </button>
-                                                        <button onClick={() => addProduct(producto) } className="w-full p-2 text-xs font-semibold tracking-widest text-white uppercase bg-green-600 border border-transparent rounded-md buttom-0 hover:bg-green-700 lg:w-auto">
+                                                        <button
+                                                            onClick={() => addProduct(producto)}
+                                                            disabled={producto.cantidad_disponible === 0}
+                                                            className={`w-full p-2 text-xs font-semibold tracking-widest text-white uppercase border border-transparent rounded-md buttom-0 lg:w-auto ${
+                                                                producto.cantidad_disponible === 0
+                                                                    ? 'bg-gray-400 cursor-not-allowed'
+                                                                    : 'bg-green-600 hover:bg-green-700'
+                                                            }`}
+                                                        >
                                                             Agregar a la canasta
                                                         </button>
                                                     </div>
