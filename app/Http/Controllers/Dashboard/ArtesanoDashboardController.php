@@ -133,6 +133,12 @@ class ArtesanoDashboardController extends Controller
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'featured_product_title' => 'nullable|string|max:255',
+            'featured_product_description' => 'nullable|string',
+            'featured_product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'video_title' => 'nullable|string|max:255',
+            'video_description' => 'nullable|string',
+            'video_url' => 'nullable|url',
         ]);
 
         $user = auth()->user();
@@ -142,7 +148,7 @@ class ArtesanoDashboardController extends Controller
             return redirect()->back()->with('error', 'Ya tienes una tienda creada.');
         }
 
-        $data = $request->except('foto_perfil');
+        $data = $request->except(['foto_perfil', 'featured_product_image', 'featured_product_title', 'featured_product_description', 'video_title', 'video_description', 'video_url']);
 
         // Manejar la imagen de perfil si se sube
         if ($request->hasFile('foto_perfil')) {
@@ -152,6 +158,34 @@ class ArtesanoDashboardController extends Controller
 
         // Crear la tienda
         $tienda = $user->tienda()->create($data);
+
+        // Manejar el contenido destacado solo si hay contenido
+        $hasFeaturedContent = $request->filled('featured_product_title') ||
+                             $request->filled('featured_product_description') ||
+                             $request->filled('video_title') ||
+                             $request->filled('video_description') ||
+                             $request->filled('video_url') ||
+                             $request->hasFile('featured_product_image');
+
+        if ($hasFeaturedContent) {
+            $featuredData = [
+                'tienda_id' => $tienda->id,
+                'featured_product_title' => $request->featured_product_title,
+                'featured_product_description' => $request->featured_product_description,
+                'video_title' => $request->video_title,
+                'video_description' => $request->video_description,
+                'video_url' => $request->video_url,
+            ];
+
+            // Manejar la imagen del producto destacado
+            if ($request->hasFile('featured_product_image')) {
+                $featuredImagePath = $request->file('featured_product_image')->store('tiendas/featured', 'public');
+                $featuredData['featured_product_image'] = $featuredImagePath;
+            }
+
+            // Crear el contenido destacado
+            TiendaFeaturedContent::create($featuredData);
+        }
 
         return redirect()->route('dashboard.artesano.gestionar-tienda')
             ->with('success', 'Tienda creada exitosamente.');
@@ -174,12 +208,7 @@ class ArtesanoDashboardController extends Controller
         $user = auth()->user();
         $tienda = $user->tienda;
 
-        if (!$tienda) {
-            return redirect()->route('dashboard.artesano.index')
-                ->with('error', 'No tienes una tienda creada.');
-        }
-
-        $featuredContent = $tienda->featuredContent;
+        $featuredContent = $tienda ? $tienda->featuredContent : null;
 
         return Inertia::render('Dashboard/Artesano/EditTienda', [
             'tienda' => $tienda,
@@ -229,26 +258,38 @@ class ArtesanoDashboardController extends Controller
         // Actualizar la tienda
         $tienda->update($data);
 
-        // Manejar el contenido destacado
-        $featuredData = [
-            'featured_product_title' => $request->featured_product_title,
-            'featured_product_description' => $request->featured_product_description,
-            'video_title' => $request->video_title,
-            'video_description' => $request->video_description,
-            'video_url' => $request->video_url,
-        ];
+        // Manejar el contenido destacado solo si hay contenido
+        $hasFeaturedContent = $request->filled('featured_product_title') ||
+                             $request->filled('featured_product_description') ||
+                             $request->filled('video_title') ||
+                             $request->filled('video_description') ||
+                             $request->filled('video_url') ||
+                             $request->hasFile('featured_product_image');
 
-        // Manejar la imagen del producto destacado
-        if ($request->hasFile('featured_product_image')) {
-            $featuredImagePath = $request->file('featured_product_image')->store('tiendas/featured', 'public');
-            $featuredData['featured_product_image'] = $featuredImagePath;
+        if ($hasFeaturedContent) {
+            $featuredData = [
+                'featured_product_title' => $request->featured_product_title,
+                'featured_product_description' => $request->featured_product_description,
+                'video_title' => $request->video_title,
+                'video_description' => $request->video_description,
+                'video_url' => $request->video_url,
+            ];
+
+            // Manejar la imagen del producto destacado
+            if ($request->hasFile('featured_product_image')) {
+                $featuredImagePath = $request->file('featured_product_image')->store('tiendas/featured', 'public');
+                $featuredData['featured_product_image'] = $featuredImagePath;
+            }
+
+            // Crear o actualizar el contenido destacado
+            TiendaFeaturedContent::updateOrCreate(
+                ['tienda_id' => $tienda->id],
+                $featuredData
+            );
+        } else {
+            // Si no hay contenido destacado, eliminar el registro existente si existe
+            TiendaFeaturedContent::where('tienda_id', $tienda->id)->delete();
         }
-
-        // Crear o actualizar el contenido destacado
-        TiendaFeaturedContent::updateOrCreate(
-            ['tienda_id' => $tienda->id],
-            $featuredData
-        );
 
         return redirect()->route('dashboard.artesano.gestionar-tienda')
             ->with('success', 'Tienda actualizada exitosamente.');

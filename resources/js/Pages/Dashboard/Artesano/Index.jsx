@@ -338,21 +338,20 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                             {/* Sección de Tienda */}
                             <div className="w-full max-w-full p-10 mx-auto mb-10 bg-white rounded-lg shadow">
                                 <div className="flex items-center justify-between mb-4">
-                                    {!tienda ? (
                                         <Link
-                                            href={route('dashboard.artesano.create-tienda')}
+                                            href={route('dashboard.artesano.edit-tienda')}
                                             className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200"
                                         >
-                                            Crear Tienda
+                                            {tienda ? 'Editar Tienda' : 'Crear Tienda'}
                                         </Link>
-                                    ) : (
-                                        <Link
-                                            href={route('dashboard.artesano.gestionar-tienda')}
-                                            className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-sm"
-                                        >
-                                            Gestionar Tienda
-                                        </Link>
-                                    )}
+                                        {tienda && (
+                                            <Link
+                                                href={route('dashboard.artesano.gestionar-tienda')}
+                                                className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-sm"
+                                            >
+                                                Gestionar Tienda
+                                            </Link>
+                                        )}
                                 </div>
                                 {tienda && (
                                     <div className="space-y-4">
