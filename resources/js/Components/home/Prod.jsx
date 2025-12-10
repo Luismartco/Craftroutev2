@@ -378,12 +378,6 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
                       Agregar al carrito
                     </button>
                   )}
-                  <button
-                    onClick={() => alert('Ver ruta de: ' + selected.nombre)}
-                    className="min-w-[140px] h-12 px-4 bg-[#4B3A3A] text-white font-semibold rounded-lg shadow hover:bg-[#2B1F1F] transition text-base"
-                  >
-                    Ver ruta
-                  </button>
                {/*<button
                     onClick={() => handleBuy(selected)}
                     className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"

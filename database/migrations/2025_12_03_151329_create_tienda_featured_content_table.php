@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('tienda_featured_contents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tienda_id')->constrained('tiendas')->onDelete('cascade');
-            $table->string('featured_product_title');
-            $table->text('featured_product_description');
+            $table->string('featured_product_title')->nullable();
+            $table->text('featured_product_description')->nullable();
             $table->string('featured_product_image')->nullable();
-            $table->string('video_title');
+            $table->string('video_title')->nullable();
             $table->text('video_description')->nullable();
-            $table->string('video_url');
+            $table->string('video_url')->nullable();
             $table->timestamps();
         });
     }

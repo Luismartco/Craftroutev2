@@ -924,7 +924,15 @@ export default function CheckoutIndex({ auth, cartProducts, subtotal, total, use
                                                     router.post(route('transacciones.compra'), payload, {
                                                         onSuccess: () => {
                                                             alert('Compra simulada realizada con éxito');
+                                                            // Limpiar carrito después de compra exitosa
+                                                            localStorage.removeItem('cart_data');
+                                                            setLocalCartProducts([]);
+                                                            setData('cart_products', []);
                                                             setShowNequiAuthModal(false);
+                                                            // Redirigir a la página principal
+                                                            setTimeout(() => {
+                                                                window.location.href = '/';
+                                                            }, 1000);
                                                         },
                                                         onError: (errors) => {
                                                             console.error('Error registrando compra', errors);

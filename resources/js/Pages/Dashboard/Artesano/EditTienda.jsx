@@ -10,18 +10,19 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 
 export default function EditTienda({ tienda, featuredContent }) {
+    const isCreating = !tienda;
     const [currentStep, setCurrentStep] = useState(1);
-    const [previewImage, setPreviewImage] = useState(tienda.foto_perfil ? `/storage/${tienda.foto_perfil}` : null);
+    const [previewImage, setPreviewImage] = useState(tienda?.foto_perfil ? `/storage/${tienda.foto_perfil}` : null);
     const [previewFeaturedImage, setPreviewFeaturedImage] = useState(featuredContent?.featured_product_image ? `/storage/${featuredContent.featured_product_image}` : null);
 
     const { data, setData, post, processing, errors } = useForm({
-        nombre: tienda.nombre,
-        barrio: tienda.barrio,
-        direccion: tienda.direccion,
-        telefono: tienda.telefono,
-        municipio_venta: tienda.municipio_venta,
-        latitude: tienda.latitude,
-        longitude: tienda.longitude,
+        nombre: tienda?.nombre || '',
+        barrio: tienda?.barrio || '',
+        direccion: tienda?.direccion || '',
+        telefono: tienda?.telefono || '',
+        municipio_venta: tienda?.municipio_venta || '',
+        latitude: tienda?.latitude || '',
+        longitude: tienda?.longitude || '',
         foto_perfil: null,
         featured_product_title: featuredContent?.featured_product_title || '',
         featured_product_description: featuredContent?.featured_product_description || '',
@@ -29,7 +30,7 @@ export default function EditTienda({ tienda, featuredContent }) {
         video_title: featuredContent?.video_title || '',
         video_description: featuredContent?.video_description || '',
         video_url: featuredContent?.video_url || '',
-        _method: 'PUT',
+        _method: isCreating ? 'POST' : 'PUT',
     });
 
     const handleSubmit = (e) => {
@@ -54,7 +55,7 @@ export default function EditTienda({ tienda, featuredContent }) {
         if (data.featured_product_image) {
             formData.append('featured_product_image', data.featured_product_image);
         }
-        post(route('dashboard.artesano.update-tienda'), {
+        post(isCreating ? route('dashboard.artesano.store-tienda') : route('dashboard.artesano.update-tienda'), {
             data: formData,
             forceFormData: true,
         });
@@ -134,12 +135,12 @@ export default function EditTienda({ tienda, featuredContent }) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold">Editar Tienda</h2>
+                                <h2 className="text-2xl font-bold">{isCreating ? 'Crear Tienda' : 'Editar Tienda'}</h2>
                                 <Link
-                                    href={route('dashboard.artesano.gestionar-tienda')}
+                                    href={route('dashboard.artesano.index')}
                                     className="text-indigo-600 hover:text-indigo-900"
                                 >
-                                    Volver a Gestionar Tienda
+                                    {isCreating ? 'Volver al Dashboard' : 'Volver a Gestionar Tienda'}
                                 </Link>
                             </div>
 
