@@ -48,13 +48,17 @@ const Recomendaciones = ({ productos = [] }) => {
                                         <div className="relative">
                                             {producto.imagenes && producto.imagenes.length > 0 ? (
                                                 <img
-                                                    src={`/storage/${producto.imagenes[0].imagen}`}
+                                                    src={typeof producto.imagenes[0] === 'string' ? `/storage/${producto.imagenes[0]}` : `/storage/${producto.imagenes[0].ruta_imagen}`}
                                                     alt={producto.nombre}
                                                     className="w-full h-48 object-cover rounded-lg transition-all duration-300"
                                                 />
                                             ) : (
                                                 <div className="w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg">
-                                                    <span className="text-gray-500">Sin imagen</span>
+                                                    <div className="h-20 w-20 rounded-full bg-gray-200 shadow-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                                                        <span className="text-3xl font-medium text-gray-600">
+                                                            {producto.nombre ? producto.nombre.charAt(0).toUpperCase() : '?'}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             )}
 
