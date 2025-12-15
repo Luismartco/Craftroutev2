@@ -1,7 +1,7 @@
 // Blog.js (página principal) - Diseño Moderno y Elegante
 import React, { useState, useMemo } from 'react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
 import CardArtisan from '@/Components/blog/CardArtisan';
 import HeroSection from '@/Components/blog/HeroSection';
@@ -12,10 +12,12 @@ import Prod from '@/Components/home/Prod';
 import Maps from '@/Components/home/Maps';
 
 export default function Blog({ tienda, artesano, productos, featuredContent, categorias }) {
-    // Filter states
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedPriceRange, setSelectedPriceRange] = useState('');
+     const { auth } = usePage().props;
+
+     // Filter states
+     const [searchTerm, setSearchTerm] = useState('');
+     const [selectedCategory, setSelectedCategory] = useState('');
+     const [selectedPriceRange, setSelectedPriceRange] = useState('');
 
     // Filtered products based on search and filters
     const filteredProducts = useMemo(() => {
@@ -45,7 +47,7 @@ export default function Blog({ tienda, artesano, productos, featuredContent, cat
     }, [productos, searchTerm, selectedCategory, selectedPriceRange]);
 
     return (
-        <GuestLayout fullWidth={true} className='flex flex-col bg-gradient-to-br from-slate-50 via-white to-amber-50'>
+        <GuestLayout auth={auth} fullWidth={true} className='flex flex-col bg-gradient-to-br from-slate-50 via-white to-amber-50'>
             <Head title={tienda?.nombre ? `Tienda: ${tienda.nombre}` : 'Tienda'} />
 
             {/* HERO SECTION - Modernizado */}
