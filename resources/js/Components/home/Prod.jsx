@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useCart } from '../../Contexts/CartContext';
 
 // Dynamic categories from backend
@@ -21,57 +22,57 @@ const RANGOS_PRECIOS = [
 ];
 
 const Prod = ({ producto, onClick, onBuy, user }) => {
-    const isCustomer = user && user.role === 'customer';
-    const isLogged = !!user;
-    let img = '';
-    if (producto.imagenes && producto.imagenes.length > 0) {
-      if (typeof producto.imagenes[0] === 'string') {
-        img = `/storage/${producto.imagenes[0]}`;
-      } else {
-        img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
-      }
+  const isCustomer = user && user.role === 'customer';
+  const isLogged = !!user;
+  let img = '';
+  if (producto.imagenes && producto.imagenes.length > 0) {
+    if (typeof producto.imagenes[0] === 'string') {
+      img = `/storage/${producto.imagenes[0]}`;
+    } else {
+      img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
     }
-    const showAddToCart = !isLogged || isCustomer;
+  }
+  const showAddToCart = !isLogged || isCustomer;
 
-    // Usar el contexto global del carrito
-    const { cart, addToCartSilently } = useCart();
+  // Usar el contexto global del carrito
+  const { cart, addToCartSilently } = useCart();
 
-    // Obtener la cantidad actual de este producto en el carrito
-    const currentQuantity = cart.find(item => item.id === producto.id)?.quantity || 0;
+  // Obtener la cantidad actual de este producto en el carrito
+  const currentQuantity = cart.find(item => item.id === producto.id)?.quantity || 0;
 
-   // Función para formatear precio
-   const formatPrice = (price) => {
-     if (!price) return '$0';
-     return new Intl.NumberFormat('es-CO', {
-       style: 'currency',
-       currency: 'COP',
-       minimumFractionDigits: 0,
-       maximumFractionDigits: 0,
-     }).format(price);
-   };
+  // Función para formatear precio
+  const formatPrice = (price) => {
+    if (!price) return '$0';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
-   return (
-     <div className="p-4 bg-white shadow rounded-xl w-64 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 flex-shrink-0 relative">
-       {img && (
-         <img
-           src={img}
-           alt={producto.nombre}
-           className="w-full h-48 object-contain rounded-lg mb-4"
-         />
-       )}
-       {/* Counter Badge */}
-       {currentQuantity > 0 && (
-         <div className="absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300">
-           <p className="text-sm">{currentQuantity}</p>
-         </div>
-       )}
-       <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
-       <p className="text-sm text-gray-500 mt-2">
-         Artesano: <span className="font-medium">{producto.user ? `${producto.user.name} ${producto.user.last_name || ''}` : 'Sin artesano'}</span> | {producto.municipio_venta}
-       </p>
-       <p className="text-gray-800 font-semibold mb-4">
-         {formatPrice(producto.precio)}
-       </p>
+  return (
+    <div className="p-4 bg-white shadow rounded-xl w-64 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 flex-shrink-0 relative">
+      {img && (
+        <img
+          src={img}
+          alt={producto.nombre}
+          className="w-full h-48 object-contain rounded-lg mb-4"
+        />
+      )}
+      {/* Counter Badge */}
+      {currentQuantity > 0 && (
+        <div className="absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300">
+          <p className="text-sm">{currentQuantity}</p>
+        </div>
+      )}
+      <h2 className="text-lg font-bold mb-1">{producto.nombre}</h2>
+      <p className="text-sm text-gray-500 mt-2">
+        Artesano: <span className="font-medium">{producto.user ? `${producto.user.name} ${producto.user.last_name || ''}` : 'Sin artesano'}</span> | {producto.municipio_venta}
+      </p>
+      <p className="text-gray-800 font-semibold mb-4">
+        {formatPrice(producto.precio)}
+      </p>
       <div className="flex flex-row justify-center gap-2">
         {showAddToCart && (
           <button
@@ -99,23 +100,23 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
 };
 
 const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
-   const [selected, setSelected] = useState(null);
-   const [imgIndex, setImgIndex] = useState(0);
-   const [localCategoria, setLocalCategoria] = useState('');
-   const [localMunicipio, setLocalMunicipio] = useState('');
-   const [localRangoPrecio, setLocalRangoPrecio] = useState('');
-   const [localSearchTerm, setLocalSearchTerm] = useState('');
-   const scrollRef = useRef(null);
+  const [selected, setSelected] = useState(null);
+  const [imgIndex, setImgIndex] = useState(0);
+  const [localCategoria, setLocalCategoria] = useState('');
+  const [localMunicipio, setLocalMunicipio] = useState('');
+  const [localRangoPrecio, setLocalRangoPrecio] = useState('');
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
+  const scrollRef = useRef(null);
 
-   // Use shared filters if provided, otherwise use local state
-   const currentCategoria = categoria !== undefined ? categoria : localCategoria;
-   const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
-   const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
-   const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
-   const setCurrentCategoria = setCategoria || setLocalCategoria;
-   const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
-   const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
-   const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
+  // Use shared filters if provided, otherwise use local state
+  const currentCategoria = categoria !== undefined ? categoria : localCategoria;
+  const currentMunicipio = municipio !== undefined ? municipio : localMunicipio;
+  const currentRangoPrecio = rangoPrecio !== undefined ? rangoPrecio : localRangoPrecio;
+  const currentSearchTerm = searchTerm !== undefined ? searchTerm : localSearchTerm;
+  const setCurrentCategoria = setCategoria || setLocalCategoria;
+  const setCurrentMunicipio = setMunicipio || setLocalMunicipio;
+  const setCurrentRangoPrecio = setRangoPrecio || setLocalRangoPrecio;
+  const setCurrentSearchTerm = setSearchTerm || setLocalSearchTerm;
 
   // Usar el contexto global del carrito
   const { addToCart } = useCart();
@@ -260,8 +261,8 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
       </div>
 
       {/* Modal de los productos */}
-      {selected && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {selected && createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 pt-20 overflow-y-auto">
           <div className="bg-white rounded-3xl p-10 w-full max-w-5xl relative shadow-2xl border border-gray-200">
             <button
               onClick={() => {
@@ -378,7 +379,7 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
                       Agregar al carrito
                     </button>
                   )}
-               {/*<button
+                  {/*<button
                     onClick={() => handleBuy(selected)}
                     className="min-w-[140px] h-12 px-4 bg-[#2B1F1F] text-white font-semibold rounded-lg shadow hover:bg-[#4B3A3A] transition text-base"
                   >
@@ -388,7 +389,8 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </>
