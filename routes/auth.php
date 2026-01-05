@@ -54,6 +54,15 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
+    Route::get('verify-2fa', [App\Http\Controllers\Auth\TwoFactorController::class, 'index'])
+        ->name('2fa.index');
+
+    Route::post('verify-2fa', [App\Http\Controllers\Auth\TwoFactorController::class, 'store'])
+        ->name('2fa.store');
+
+    Route::get('email/resend-2fa', [App\Http\Controllers\Auth\TwoFactorController::class, 'resend'])
+        ->name('2fa.resend');
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });

@@ -31,7 +31,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\TwoFactorMiddleware::class])->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
 

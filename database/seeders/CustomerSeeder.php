@@ -18,7 +18,7 @@ class CustomerSeeder extends Seeder
             [
                     'name' => 'Luis',
                     'last_name' => 'Martinez',
-                    'email' => 'luis@cr.com',
+                    'email' => 'luismartinezc2003@gmail.com',
                     'password' => Hash::make('123456789'),
                     'role' => 'customer',
                     'birth_date' => '1990-05-12',
@@ -54,7 +54,7 @@ class CustomerSeeder extends Seeder
             [
                 'name' => 'Eliasib',
                 'last_name' => 'Benitez',
-                'email' => 'eliasib@cr.com',
+                'email' => 'ysdvsf0503@gmail.com',
                 'password' => Hash::make('123456789'),
                 'role' => 'customer',
                 'birth_date' => '1990-05-12',
