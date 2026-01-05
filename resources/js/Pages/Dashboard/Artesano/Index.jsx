@@ -107,7 +107,8 @@ export default function Index({ stats, user, tienda }) {
     const handleImageError = (e) => {
         console.error('Error al cargar imagen:', e.target.src);
         e.target.onerror = null;
-        e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
+        // Base64 simple SVG placeholder
+        e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='100%25' height='100%25' fill='%23cccccc'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='20' fill='%23666666' text-anchor='middle' dy='.3em'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
     };
 
     const [profilePhoto, setProfilePhoto] = useState(user.profile_photo || null);
@@ -127,95 +128,95 @@ export default function Index({ stats, user, tienda }) {
 
     const [carouselIndexes, setCarouselIndexes] = useState({});
     const handlePrev = (productoId, totalImages) => {
-    setCarouselIndexes(prev => {
-        const currentIndex = prev[productoId] ?? 0;
-        const newIndex = (currentIndex - 1 + totalImages) % totalImages;
-        return { ...prev, [productoId]: newIndex };
-    });
-};
+        setCarouselIndexes(prev => {
+            const currentIndex = prev[productoId] ?? 0;
+            const newIndex = (currentIndex - 1 + totalImages) % totalImages;
+            return { ...prev, [productoId]: newIndex };
+        });
+    };
 
-const handleNext = (productoId, totalImages) => {
-    setCarouselIndexes(prev => {
-        const currentIndex = prev[productoId] ?? 0;
-        const newIndex = (currentIndex + 1) % totalImages;
-        return { ...prev, [productoId]: newIndex };
-    });
-};
+    const handleNext = (productoId, totalImages) => {
+        setCarouselIndexes(prev => {
+            const currentIndex = prev[productoId] ?? 0;
+            const newIndex = (currentIndex + 1) % totalImages;
+            return { ...prev, [productoId]: newIndex };
+        });
+    };
 
-const location = {
-    lat: parseFloat(user.latitude),
-    lng: parseFloat(user.longitude),
-    name: user.residence_municipality
-}
-
-// Acá estará parte de la lógica para la venta
-//Estado para la canasta de productos, este es un arreglo de objetos, en el cual están los productos seleccionados para la venta.
-const [selectedProducts, setSelectedProducts] = useState([]);
-//Estado para mostrar el modal de venta, este es un booleano, que se usa para mostrar o no el modal de venta.
-const [showSaleModal, setShowSaleModal] = useState(false);
-
-//Función para agregar un producto a la canasta, esta función se efectua cuando se hace click en el producto, y se agrega al arreglo de productos seleccionados.
-const addProduct = (product) => {
-    //Si el producto que se quiere agregar ya está en la canasta, se muestra el modal de venta.
-    if (selectedProducts.find(p => p.id === product.id)){
-        setShowSaleModal(true);
-    //Si el producto que se va a agregar no está en la canasta, se agrega al arreglo de productos seleccionados, y se muestra el modal de venta.
-    } else {
-        setSelectedProducts(prev => [...prev, product]);
-        product.cantidad = 1;
-        product.subtotal = product.precio;
+    const location = {
+        lat: parseFloat(user.latitude),
+        lng: parseFloat(user.longitude),
+        name: user.residence_municipality
     }
-} 
 
+    // Acá estará parte de la lógica para la venta
+    //Estado para la canasta de productos, este es un arreglo de objetos, en el cual están los productos seleccionados para la venta.
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    //Estado para mostrar el modal de venta, este es un booleano, que se usa para mostrar o no el modal de venta.
+    const [showSaleModal, setShowSaleModal] = useState(false);
 
-//Función para eliminar un producto de la canasta, se efectua al dar click en el botón de eliminar en la canasta. 
-const handleDeleteProduct = (productId) => {
-    //Lo que hace, es básicamente filtrar el arreglo de productos seleccionado, y deja los productos que el id sea diferente al id del producto que se desea eliminar.
-    setSelectedProducts(prev => prev.filter(product => product.id !== productId));
-}
-
-//Función para vaciar la canasta, se acciona al dar click en el botón de vaciar la canasta.
-const handleClearBasket = () => {
-    setSelectedProducts([]);
-}
-
-//Función para cambiar la cantidad de un producto en la canasta y el subtotal, se efecua mediante los botones de agregar o quitar cantidad.
-const handleQuantityChange = (productId, quantity, subtotal) => {
-    setSelectedProducts(prev => prev.map(product => product.id === productId ? {...product, cantidad: quantity, subtotal: subtotal} : product));
-}
-
-// Función para formatear moneda en formato colombiano
-const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '$0,00';
-    return (
-        <NumericFormat
-            value={amount}
-            displayType={'text'}
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="$"
-            decimalScale={2}
-            fixedDecimalScale={true}
-        />
-    );
-};
-
-// Función para actualizar el estado de un pedido
-const updatePedidoStatus = async (pedidoId, newStatus) => {
-    console.log('Iniciando actualización de pedido:', { pedidoId, newStatus });
-
-    router.put(`/pedidos/${pedidoId}/status`, { estado: newStatus }, {
-        onSuccess: (page) => {
-            console.log('Pedido actualizado exitosamente');
-            // Recargar la página para mostrar los cambios
-            window.location.reload();
-        },
-        onError: (errors) => {
-            console.error('Error al actualizar pedido:', errors);
-            alert('Error al actualizar el estado del pedido');
+    //Función para agregar un producto a la canasta, esta función se efectua cuando se hace click en el producto, y se agrega al arreglo de productos seleccionados.
+    const addProduct = (product) => {
+        //Si el producto que se quiere agregar ya está en la canasta, se muestra el modal de venta.
+        if (selectedProducts.find(p => p.id === product.id)) {
+            setShowSaleModal(true);
+            //Si el producto que se va a agregar no está en la canasta, se agrega al arreglo de productos seleccionados, y se muestra el modal de venta.
+        } else {
+            setSelectedProducts(prev => [...prev, product]);
+            product.cantidad = 1;
+            product.subtotal = product.precio;
         }
-    });
-};
+    }
+
+
+    //Función para eliminar un producto de la canasta, se efectua al dar click en el botón de eliminar en la canasta. 
+    const handleDeleteProduct = (productId) => {
+        //Lo que hace, es básicamente filtrar el arreglo de productos seleccionado, y deja los productos que el id sea diferente al id del producto que se desea eliminar.
+        setSelectedProducts(prev => prev.filter(product => product.id !== productId));
+    }
+
+    //Función para vaciar la canasta, se acciona al dar click en el botón de vaciar la canasta.
+    const handleClearBasket = () => {
+        setSelectedProducts([]);
+    }
+
+    //Función para cambiar la cantidad de un producto en la canasta y el subtotal, se efecua mediante los botones de agregar o quitar cantidad.
+    const handleQuantityChange = (productId, quantity, subtotal) => {
+        setSelectedProducts(prev => prev.map(product => product.id === productId ? { ...product, cantidad: quantity, subtotal: subtotal } : product));
+    }
+
+    // Función para formatear moneda en formato colombiano
+    const formatCurrency = (amount) => {
+        if (!amount && amount !== 0) return '$0,00';
+        return (
+            <NumericFormat
+                value={amount}
+                displayType={'text'}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="$"
+                decimalScale={2}
+                fixedDecimalScale={true}
+            />
+        );
+    };
+
+    // Función para actualizar el estado de un pedido
+    const updatePedidoStatus = async (pedidoId, newStatus) => {
+        console.log('Iniciando actualización de pedido:', { pedidoId, newStatus });
+
+        router.put(`/pedidos/${pedidoId}/status`, { estado: newStatus }, {
+            onSuccess: (page) => {
+                console.log('Pedido actualizado exitosamente');
+                // Recargar la página para mostrar los cambios
+                window.location.reload();
+            },
+            onError: (errors) => {
+                console.error('Error al actualizar pedido:', errors);
+                alert('Error al actualizar el estado del pedido');
+            }
+        });
+    };
 
 
     return (
@@ -292,10 +293,10 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                     className="object-cover w-full h-full"
                                                 />
                                             ) : (
-                                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
-                                                <span className="text-2xl font-medium text-gray-600">
-                                                    {user.name.charAt(0)}{user.last_name.charAt(0)}
-                                                </span>
+                                                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+                                                    <span className="text-2xl font-medium text-gray-600">
+                                                        {user.name.charAt(0)}{user.last_name.charAt(0)}
+                                                    </span>
                                                 </div>
                                             )}
                                             <input
@@ -331,27 +332,27 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                     </div>
 
 
-                                    
+
                                 </div>
                             </div>
 
                             {/* Sección de Tienda */}
                             <div className="w-full max-w-full p-10 mx-auto mb-10 bg-white rounded-lg shadow">
                                 <div className="flex items-center justify-between mb-4">
+                                    <Link
+                                        href={route('dashboard.artesano.edit-tienda')}
+                                        className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200"
+                                    >
+                                        {tienda ? 'Editar Tienda' : 'Crear Tienda'}
+                                    </Link>
+                                    {tienda && (
                                         <Link
-                                            href={route('dashboard.artesano.edit-tienda')}
-                                            className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200"
+                                            href={route('dashboard.artesano.gestionar-tienda')}
+                                            className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-sm"
                                         >
-                                            {tienda ? 'Editar Tienda' : 'Crear Tienda'}
+                                            Gestionar Tienda
                                         </Link>
-                                        {tienda && (
-                                            <Link
-                                                href={route('dashboard.artesano.gestionar-tienda')}
-                                                className="inline-flex items-center px-4 py-2 bg-[rgb(60,47,47)] text-white rounded-md hover:bg-[rgb(43,31,31)] transition-colors duration-200 no-underline text-sm"
-                                            >
-                                                Gestionar Tienda
-                                            </Link>
-                                        )}
+                                    )}
                                 </div>
                                 {tienda && (
                                     <div className="space-y-4">
@@ -545,7 +546,7 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                 {/* Condición para mostrar la modal de venta */}
                                 {showSaleModal && (
                                     //Sale es un componente, que es basicamente la modal de ventas, este recibe 5 props, como se ve acontinuación.
-                                     <Sale onClose={() => setShowSaleModal(false)} products={selectedProducts} onDeleteProduct={handleDeleteProduct} onClearBasket={handleClearBasket} onQuantityChange={handleQuantityChange} />
+                                    <Sale onClose={() => setShowSaleModal(false)} products={selectedProducts} onDeleteProduct={handleDeleteProduct} onClearBasket={handleClearBasket} onQuantityChange={handleQuantityChange} />
                                 )}
 
                                 {/* Modal de pedidos */}
@@ -609,18 +610,17 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                                                                 <span className="font-medium">Método:</span> {pedido.metodo_entrega === 'contra_entrega' ? 'Contra Entrega' : 'Envío a Domicilio'}
                                                                                             </div>
                                                                                             <div className="flex items-center gap-2">
-                                                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                                                                    pedido.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
-                                                                                                    pedido.estado === 'confirmado' ? 'bg-blue-100 text-blue-800' :
-                                                                                                    pedido.estado === 'enviado' ? 'bg-purple-100 text-purple-800' :
-                                                                                                    pedido.estado === 'entregado' ? 'bg-green-100 text-green-800' :
-                                                                                                    'bg-red-100 text-red-800'
-                                                                                                }`}>
+                                                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${pedido.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                                                                                                        pedido.estado === 'confirmado' ? 'bg-blue-100 text-blue-800' :
+                                                                                                            pedido.estado === 'enviado' ? 'bg-purple-100 text-purple-800' :
+                                                                                                                pedido.estado === 'entregado' ? 'bg-green-100 text-green-800' :
+                                                                                                                    'bg-red-100 text-red-800'
+                                                                                                    }`}>
                                                                                                     {pedido.estado === 'pendiente' ? 'Pendiente' :
-                                                                                                     pedido.estado === 'confirmado' ? 'Confirmado' :
-                                                                                                     pedido.estado === 'enviado' ? 'Enviado' :
-                                                                                                     pedido.estado === 'entregado' ? 'Entregado' :
-                                                                                                     'Cancelado'}
+                                                                                                        pedido.estado === 'confirmado' ? 'Confirmado' :
+                                                                                                            pedido.estado === 'enviado' ? 'Enviado' :
+                                                                                                                pedido.estado === 'entregado' ? 'Entregado' :
+                                                                                                                    'Cancelado'}
                                                                                                 </span>
                                                                                                 <select
                                                                                                     value={pedido.estado}
@@ -709,11 +709,10 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                                                         <button
                                                                                             key={page}
                                                                                             onClick={() => setCurrentPage(page)}
-                                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                                                                                currentPage === page
+                                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === page
                                                                                                     ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
                                                                                                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                                                                            }`}
+                                                                                                }`}
                                                                                         >
                                                                                             {page}
                                                                                         </button>
@@ -761,135 +760,134 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                             <>
                                                 <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
                                                     {currentProducts.map((producto) => {
-                                        // Depuración en consola
-                                        console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
-                                        
-                                        // Obtener la imagen principal o la primera imagen
-                                        const imagenPrincipal = producto.imagenes?.find(img => img.es_principal) || producto.imagenes?.[0];
-                                        
-                                        const imagenes = producto.imagenes || [];
-                                        const currentImg = carouselIndexes[producto.id] || 0;
+                                                        // Depuración en consola
+                                                        console.log(`Producto ${producto.id} - Imágenes:`, producto.imagenes);
 
-                                        return (
-                                            <div key={producto.id} className="relative flex-col w-full overflow-auto transition-all duration-300 bg-white border rounded-lg shadow over overflow- hover:cursor-pointer hover:-translate-y-1 hover:shadow-md md:flex-row">
-                                                {/* Icono de cantidad seleccionada del producto */}
-                                                {/* Si el producto que está siendo renderizado está en la canasta (selectedProducts), siginifica que fue seleccionado, por ende se muestra el icono de cantidad, de lo contrario no se muestra */}
-                                                { selectedProducts.find(p => p.id === producto.id) && <div className='absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300'>
-                                                    <p className='text-sm'>{
-                                                        //Con esta línea de código se obtiene la cantidad seleccionad del producto. 
-                                                        //Básicamente lo que hace es que mediante la función find se busca el producto en la canasta, si ese producto que está siendo renderizado actualmente se encuentra en la canasta, se obtiene la cantidad seleccionada de ese producto, de lo contrario, no se obtiene nada.
-                                                        selectedProducts.find(p => p.id === producto.id)?.cantidad || ''
-                                                    }</p>
-                                                </div> }
-                                                {/* Carrusel de imágenes */}
-                                                <div className="flex items-center justify-center w-full h-48 bg-gray-100 hoverflow-hiddecoration-purple-50">
-                                                    {imagenes.length > 0 && (
-                                                        <>
-                                                            <img
-                                                                src={getImageUrl(imagenes[currentImg]?.ruta_imagen)}
-                                                                alt={producto.nombre}
-                                                                className="object-contain w-full h-full"
-                                                                onError={handleImageError}
-                                                            />
-                                                            {imagenes.length > 1 && (
-                                                                <>
-                                                                    <button
-                                                                        onClick={() => handlePrev(producto.id, imagenes.length)}
-                                                                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
-                                                                        aria-label="Anterior"
-                                                                    >
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleNext(producto.id, imagenes.length)}
-                                                                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
-                                                                        aria-label="Siguiente"
-                                                                    >
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                                                    </button>
-                                                                    <div className="absolute flex gap-1 -translate-x-1/2 bottom-2 left-1/2 z-10">
-                                                                        {imagenes.map((_, idx) => (
-                                                                            <span
-                                                                                key={idx}
-                                                                                className={`inline-block w-2 h-2 rounded-full ${idx === currentImg ? 'bg-[#4B3A3A]' : 'bg-gray-300'}`}
+                                                        // Obtener la imagen principal o la primera imagen
+                                                        const imagenPrincipal = producto.imagenes?.find(img => img.es_principal) || producto.imagenes?.[0];
+
+                                                        const imagenes = producto.imagenes || [];
+                                                        const currentImg = carouselIndexes[producto.id] || 0;
+
+                                                        return (
+                                                            <div key={producto.id} className="relative flex-col w-full overflow-auto transition-all duration-300 bg-white border rounded-lg shadow over overflow- hover:cursor-pointer hover:-translate-y-1 hover:shadow-md md:flex-row">
+                                                                {/* Icono de cantidad seleccionada del producto */}
+                                                                {/* Si el producto que está siendo renderizado está en la canasta (selectedProducts), siginifica que fue seleccionado, por ende se muestra el icono de cantidad, de lo contrario no se muestra */}
+                                                                {selectedProducts.find(p => p.id === producto.id) && <div className='absolute flex justify-center w-8 h-8 px-1 py-2 text-gray-800 transition-colors duration-200 bg-gray-200 rounded-md top-2 right-2 hover:bg-gray-300'>
+                                                                    <p className='text-sm'>{
+                                                                        //Con esta línea de código se obtiene la cantidad seleccionad del producto. 
+                                                                        //Básicamente lo que hace es que mediante la función find se busca el producto en la canasta, si ese producto que está siendo renderizado actualmente se encuentra en la canasta, se obtiene la cantidad seleccionada de ese producto, de lo contrario, no se obtiene nada.
+                                                                        selectedProducts.find(p => p.id === producto.id)?.cantidad || ''
+                                                                    }</p>
+                                                                </div>}
+                                                                {/* Carrusel de imágenes */}
+                                                                <div className="flex items-center justify-center w-full h-48 bg-gray-100 hoverflow-hiddecoration-purple-50">
+                                                                    {imagenes.length > 0 && (
+                                                                        <>
+                                                                            <img
+                                                                                src={getImageUrl(imagenes[currentImg]?.ruta_imagen)}
+                                                                                alt={producto.nombre}
+                                                                                className="object-contain w-full h-full"
+                                                                                onError={handleImageError}
                                                                             />
-                                                                        ))}
+                                                                            {imagenes.length > 1 && (
+                                                                                <>
+                                                                                    <button
+                                                                                        onClick={() => handlePrev(producto.id, imagenes.length)}
+                                                                                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                                        aria-label="Anterior"
+                                                                                    >
+                                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                                                    </button>
+                                                                                    <button
+                                                                                        onClick={() => handleNext(producto.id, imagenes.length)}
+                                                                                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 border border-[#4B3A3A] text-[#4B3A3A] rounded-full p-1 w-8 h-8 flex items-center justify-center hover:bg-[#4B3A3A] hover:text-white transition-colors"
+                                                                                        aria-label="Siguiente"
+                                                                                    >
+                                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                                                    </button>
+                                                                                    <div className="absolute flex gap-1 -translate-x-1/2 bottom-2 left-1/2 z-10">
+                                                                                        {imagenes.map((_, idx) => (
+                                                                                            <span
+                                                                                                key={idx}
+                                                                                                className={`inline-block w-2 h-2 rounded-full ${idx === currentImg ? 'bg-[#4B3A3A]' : 'bg-gray-300'}`}
+                                                                                            />
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </>
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="relative flex flex-col justify-between p-4">
+                                                                    <div>
+                                                                        <h4 className="text-lg font-medium text-gray-900">{producto.nombre}</h4>
+                                                                        <p className="mt-1 text-sm text-gray-500 line-clamp-2">{producto.descripcion}</p>
+                                                                        <div className="grid grid-cols-2 mt-4 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Precio:</span> {formatCurrency(producto.precio)}
+                                                                            </p>
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Cantidad:</span> <span className={producto.cantidad_disponible === 0 ? 'text-red-600 font-bold' : ''}>{producto.cantidad_disponible}</span>
+                                                                            </p>
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Categoría:</span>{' '}
+                                                                                <span className="capitalize">{producto.categoria?.nombre || 'Sin categoría'}</span>
+                                                                            </p>
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Técnica:</span>{' '}
+                                                                                <span className="capitalize">{producto.tecnica?.nombre || 'No especificado'}</span>
+                                                                            </p>
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Materia Prima:</span>{' '}
+                                                                                <span className="capitalize">{producto.material?.nombre || 'No especificado'}</span>
+                                                                            </p>
+                                                                            <p className="text-sm">
+                                                                                <span className="font-medium">Color:</span>{' '}
+                                                                                <span className="capitalize">{producto.color || 'No especificado'}</span>
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                </>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </div>
-                                                
-                                                <div className="relative flex flex-col justify-between p-4">
-                                                    <div>
-                                                        <h4 className="text-lg font-medium text-gray-900">{producto.nombre}</h4>
-                                                        <p className="mt-1 text-sm text-gray-500 line-clamp-2">{producto.descripcion}</p>
-                                                        <div className="grid grid-cols-2 mt-4 sm:grid-cols-2 gap-x-4 gap-y-2">
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Precio:</span> {formatCurrency(producto.precio)}
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Cantidad:</span> <span className={producto.cantidad_disponible === 0 ? 'text-red-600 font-bold' : ''}>{producto.cantidad_disponible}</span>
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Categoría:</span>{' '}
-                                                                <span className="capitalize">{producto.categoria?.nombre || 'Sin categoría'}</span>
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Técnica:</span>{' '}
-                                                                <span className="capitalize">{producto.tecnica?.nombre || 'No especificado'}</span>
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Materia Prima:</span>{' '}
-                                                                <span className="capitalize">{producto.material?.nombre || 'No especificado'}</span>
-                                                            </p>
-                                                            <p className="text-sm">
-                                                                <span className="font-medium">Color:</span>{' '}
-                                                                <span className="capitalize">{producto.color || 'No especificado'}</span>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex flex-wrap gap-2 mt-2">
-                                                        <Link
-                                                            href={route('dashboard.artesano.edit-producto', producto.id)}
-                                                            className="flex items-center justify-center flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-gray-800 border border-transparent rounded-md hover:bg-gray-700"
-                                                        >
-                                                            Editar
-                                                        </Link>
-                                                        <button
-                                                            onClick={() => {
-                                                                if (confirm('¿Está seguro de que desea eliminar este producto?')) {
-                                                                    router.delete(route('dashboard.artesano.delete-producto', producto.id), {
-                                                                        onError: (errors) => {
-                                                                            if (errors.delete) {
-                                                                                alert(errors.delete);
-                                                                            } else {
-                                                                                alert('Error al eliminar el producto');
-                                                                            }
-                                                                        }
-                                                                    });
-                                                                }
-                                                            }}
-                                                            className="flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-red-600 border border-transparent rounded-md hover:bg-red-700"
-                                                        >
-                                                            Eliminar
-                                                        </button>
-                                                        <button
-                                                            onClick={() => addProduct(producto)}
-                                                            disabled={producto.cantidad_disponible === 0}
-                                                            className={`w-full p-2 text-xs font-semibold tracking-widest text-white uppercase border border-transparent rounded-md buttom-0 lg:w-auto ${
-                                                                producto.cantidad_disponible === 0
-                                                                    ? 'bg-gray-400 cursor-not-allowed'
-                                                                    : 'bg-green-600 hover:bg-green-700'
-                                                            }`}
-                                                        >
-                                                            Agregar a la canasta
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
+                                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                                        <Link
+                                                                            href={route('dashboard.artesano.edit-producto', producto.id)}
+                                                                            className="flex items-center justify-center flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-gray-800 border border-transparent rounded-md hover:bg-gray-700"
+                                                                        >
+                                                                            Editar
+                                                                        </Link>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+                                                                                    router.delete(route('dashboard.artesano.delete-producto', producto.id), {
+                                                                                        onError: (errors) => {
+                                                                                            if (errors.delete) {
+                                                                                                alert(errors.delete);
+                                                                                            } else {
+                                                                                                alert('Error al eliminar el producto');
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            }}
+                                                                            className="flex-1 p-2 text-xs font-semibold tracking-widest text-white uppercase bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+                                                                        >
+                                                                            Eliminar
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => addProduct(producto)}
+                                                                            disabled={producto.cantidad_disponible === 0}
+                                                                            className={`w-full p-2 text-xs font-semibold tracking-widest text-white uppercase border border-transparent rounded-md buttom-0 lg:w-auto ${producto.cantidad_disponible === 0
+                                                                                    ? 'bg-gray-400 cursor-not-allowed'
+                                                                                    : 'bg-green-600 hover:bg-green-700'
+                                                                                }`}
+                                                                        >
+                                                                            Agregar a la canasta
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
                                                     })}
                                                 </div>
 
@@ -925,11 +923,10 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                                                                         <button
                                                                             key={page}
                                                                             onClick={() => setCurrentProductPage(page)}
-                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                                                                currentProductPage === page
+                                                                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentProductPage === page
                                                                                     ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
                                                                                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                                                            }`}
+                                                                                }`}
                                                                         >
                                                                             {page}
                                                                         </button>
@@ -954,7 +951,7 @@ const updatePedidoStatus = async (pedidoId, newStatus) => {
                             </div>
 
 
-                            
+
                         </div>
                     </div>
                 </div>
