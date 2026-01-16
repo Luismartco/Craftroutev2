@@ -30,7 +30,11 @@ class BlogController extends Controller
         $featuredContent = TiendaFeaturedContent::where('tienda_id', $tienda->id)->first();
 
         $productos = Producto::with([
-                'imagenes' => function($q) { $q->orderByDesc('es_principal'); }
+                'imagenes' => function($q) { $q->orderByDesc('es_principal'); },
+                'categoria',
+                'material',
+                'tecnica',
+                'user'
             ])
             ->where('user_id', $artesano?->id)
             ->get()
@@ -40,10 +44,25 @@ class BlogController extends Controller
                     'nombre' => $producto->nombre,
                     'precio' => $producto->precio,
                     'descripcion' => $producto->descripcion,
+                    'cantidad_disponible' => $producto->cantidad_disponible,
+                    'color' => $producto->color,
+                    'municipio_venta' => $producto->municipio_venta,
+                    'categoria' => $producto->categoria ? ['nombre' => $producto->categoria->nombre] : null,
+                    'material' => $producto->material ? ['nombre' => $producto->material->nombre] : null,
+                    'tecnica' => $producto->tecnica ? ['nombre' => $producto->tecnica->nombre] : null,
+                    'user' => $producto->user ? [
+                        'id' => $producto->user->id,
+                        'name' => $producto->user->name,
+                        'last_name' => $producto->user->last_name,
+                        'tienda' => $producto->user->tienda ? [
+                            'nombre' => $producto->user->tienda->nombre,
+                            'foto_perfil' => $producto->user->tienda->foto_perfil,
+                        ] : null,
+                    ] : null,
                     'imagenes' => $producto->imagenes->map(function ($img) {
                         return [
                             'id' => $img->id,
-                            'ruta' => $img->ruta,
+                            'ruta_imagen' => $img->ruta_imagen,
                             'es_principal' => $img->es_principal,
                         ];
                     }),

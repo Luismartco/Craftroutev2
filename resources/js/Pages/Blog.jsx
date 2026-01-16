@@ -8,7 +8,7 @@ import HeroSection from '@/Components/blog/HeroSection';
 import LocationCard from '@/Components/blog/LocationCard';
 import FeaturedProductCard from '@/Components/blog/FeaturedProductCard';
 import VideoSampleCard from '@/Components/blog/VideoSampleCard';
-import Prod from '@/Components/home/Prod';
+import ProductGallery from '@/Components/home/Prod';
 import Maps from '@/Components/home/Maps';
 
 export default function Blog({ tienda, artesano, productos, featuredContent, categorias }) {
@@ -225,7 +225,7 @@ export default function Blog({ tienda, artesano, productos, featuredContent, cat
 
                     {/* Products Component */}
                     <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8 md:p-12">
-                        <Prod productos={filteredProducts} user={artesano} showFilters={false} />
+                        <ProductGallery productos={filteredProducts} user={artesano} showFilters={false} tienda={tienda} featuredContent={featuredContent} />
                     </div>
                 </div>
             </section>

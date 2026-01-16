@@ -20,7 +20,8 @@ const RANGOS_PRECIOS = [
   { value: '200001-', label: 'Más de $200.000' },
 ];
 
-const Prod = ({ producto, onClick, onBuy, user }) => {
+
+const Prod = ({ producto, onClick, onBuy, user, tienda, featuredContent }) => {
     const isCustomer = user && user.role === 'customer';
     const isLogged = !!user;
     let img = '';
@@ -30,6 +31,8 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
       } else {
         img = producto.imagenes[0].ruta_imagen ? `/storage/${producto.imagenes[0].ruta_imagen}` : '';
       }
+    } else if (producto.user?.tienda?.foto_perfil) {
+      img = `/storage/${producto.user.tienda.foto_perfil}`;
     }
     const showAddToCart = !isLogged || isCustomer;
 
@@ -98,7 +101,7 @@ const Prod = ({ producto, onClick, onBuy, user }) => {
   );
 };
 
-const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm }) => {
+const ProductGallery = ({ productos = [], categorias = [], user, showFilters = true, categoria, setCategoria, municipio, setMunicipio, rangoPrecio, setRangoPrecio, searchTerm, setSearchTerm, tienda, featuredContent }) => {
    const [selected, setSelected] = useState(null);
    const [imgIndex, setImgIndex] = useState(0);
    const [localCategoria, setLocalCategoria] = useState('');
@@ -249,6 +252,8 @@ const ProductGallery = ({ productos = [], categorias = [], user, showFilters = t
               key={prod.id || index}
               producto={prod}
               user={user}
+              tienda={tienda}
+              featuredContent={featuredContent}
               onClick={() => {
                 setSelected(prod);
                 setImgIndex(0);
