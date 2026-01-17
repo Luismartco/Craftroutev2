@@ -35,7 +35,6 @@ const Prod = ({ producto, onClick, onBuy, user, tienda, featuredContent }) => {
     } else if (producto.user?.tienda?.foto_perfil) {
       img = `/storage/${producto.user.tienda.foto_perfil}`;
     }
-  }
   const showAddToCart = !isLogged || isCustomer;
 
   // Usar el contexto global del carrito

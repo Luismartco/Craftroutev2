@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('productos', function (Blueprint $table) {
-            $table->foreignId('material_id')->nullable()->constrained('materiales')->onDelete('set null');
-            $table->foreignId('tecnica_id')->nullable()->constrained('tecnicas')->onDelete('set null');
+            if (!Schema::hasColumn('productos', 'material_id')) {
+                $table->foreignId('material_id')->nullable()->constrained('materiales')->onDelete('set null');
+            }
+            if (!Schema::hasColumn('productos', 'tecnica_id')) {
+                $table->foreignId('tecnica_id')->nullable()->constrained('tecnicas')->onDelete('set null');
+            }
         });
     }
 
