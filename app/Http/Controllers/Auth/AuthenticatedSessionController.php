@@ -33,13 +33,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
     
         $user = Auth::user();
+        $user->generateTwoFactorCode();
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\TwoFactorCode($user->two_factor_code));
     
-        // Verificar que el usuario tiene un rol y redirigir
-        return match ($user->role) {
-            'admin' => redirect()->intended(route('dashboard.admin.index')),
-            'artisan' => redirect()->intended(route('dashboard.artesano.index')),
-            'customer' => redirect()->intended(route('dashboard.cliente.index')),
-        };
+        return redirect()->route('2fa.index');
     }
 
     /**
